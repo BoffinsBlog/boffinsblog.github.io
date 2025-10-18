@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Navidrome Streaming | Boffins Blog</title>
+<meta name="keywords" content="Linux, Raspberry Pi, Self Hosting, Software">
+<meta name="description" content="Navidrome is a Server and Streamer compatible with Subsonic/Airsonic Clients.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/navidrome-streaming/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/navidrome-streaming/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/navidrome-streaming/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Navidrome Streaming">
+  <meta property="og:description" content="Navidrome is a Server and Streamer compatible with Subsonic/Airsonic Clients.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-09-01T07:02:14+01:00">
+    <meta property="article:modified_time" content="2024-09-01T07:02:14+01:00">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/navidrome-streaming/01_Navidrome_Homepage_Screenshot.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/navidrome-streaming/01_Navidrome_Homepage_Screenshot.webp">
+<meta name="twitter:title" content="Navidrome Streaming">
+<meta name="twitter:description" content="Navidrome is a Server and Streamer compatible with Subsonic/Airsonic Clients.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Navidrome Streaming",
+      "item": "https://boffinsblog.github.io/posts/navidrome-streaming/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Navidrome Streaming",
+  "name": "Navidrome Streaming",
+  "description": "Navidrome is a Server and Streamer compatible with Subsonic/Airsonic Clients.",
+  "keywords": [
+    "Linux", "Raspberry Pi", "Self Hosting", "Software"
+  ],
+  "articleBody": "It’s my music and I’ll stream if I want to, stream if I want to, stream if I want to! This is hands down one the easiest self-hosting project that I’ve installed.\nWhat is Navidrome Streaming? Navidrome can be used as a standalone server, that allows you to browse and listen to your music collection using a web browser.\nIt can also work as a lightweight Subsonic-API compatible server, that can be used with any Subsonic compatible client .\nhttps://www.navidrome.org/docs/overview/ Navidrome Random Albums Screenshot\nWhy choose Navidrome for Streaming? I already have a Jellyfin media server, so I could have used my existing Jellyfin app to listen to my music when out and about.\nHowever, as per the name of this blog, I like tinkering.\nWithout a doubt, setting up the reverse proxy was the most time consuming part for me.\nGiven that there were so few necessary steps, the whole process took about thirty minutes.\n(It probably helped that I already had all of the music folders on the server already.)\nInstalling the Navidrome Server https://www.navidrome.org/docs/installation/linux Create the directory structure The following will create the directory to store the Navidrome executable with the proper permissions.\nsudo install -d -o $USER -g $USER /opt/navidrome\nThen create a Navidrome working directory with the proper permissions.\nsudo install -d -o $USER -g $USER /var/lib/navidrome\nDownload the archive The following will grab the Navidrome release.\nSpecifically the one for my Raspberry Pi.\nwget https://github.com/navidrome/navidrome/releases/download/v0.52.5/navidrome_0.52.5_linux_arm64.tar.gz -O Navidrome.tar.gz\nExtract the archive The following extracts the archive contents to the previously created Navidrome executable directory.\nsudo tar -xvzf Navidrome.tar.gz -C /opt/navidrome/\nTake ownership Then, take ownership of the executable.\nsudo chown -R $USER:$USER /opt/navidrome\nPoint to a music library First, create the config file:\nnano /var/lib/navidrome/navidrome.toml\nThen add:\n# Music location MusicFolder = \"/home/foo/music\" Create a Navidrome .service file (optional) First, create the config file:\nsudo nano /etc/systemd/system/navidrome.service\nThen add:\n[Unit] Description=Navidrome Music Server and Streamer compatible with Subsonic/Airsonic After=remote-fs.target network.target AssertPathExists=/var/lib/navidrome [Install] WantedBy=multi-user.target [Service] User=foo Group=foo Type=simple ExecStart=/opt/navidrome/navidrome --configfile \"/var/lib/navidrome/navidrome.toml\" WorkingDirectory=/var/lib/navidrome TimeoutStopSec=20 KillMode=process Restart=on-failure # See https://www.freedesktop.org/software/systemd/man/systemd.exec.html DevicePolicy=closed NoNewPrivileges=yes PrivateTmp=yes PrivateUsers=yes ProtectControlGroups=yes ProtectKernelModules=yes ProtectKernelTunables=yes RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 RestrictNamespaces=yes RestrictRealtime=yes SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap ReadWritePaths=/var/lib/navidrome # You can uncomment the following line if you're not using the jukebox This # will prevent navidrome from accessing any real (physical) devices PrivateDevices=yes # You can change the following line to `strict` instead of `full` if you don't # want navidrome to be able to write anything on your filesystem outside of # /var/lib/navidrome. ProtectSystem=strict # You can uncomment the following line if you don't have any media in /home/*. # This will prevent navidrome from ever reading/writing anything there. ProtectHome=true # You can customize some Navidrome config options by setting environment variables here. Ex: #Environment=ND_BASEURL=\"/navidrome\" Open a port on the firewall (optional depending on firewall usage) First, add a rule to allow Navidrome traffic:\nsudo ufw allow 4533 comment 'Navidrome Traffic'\nThen, check the status:\nsudo ufw status\nOr, to only allow traffic on the internal network:\nsudo ufw allow from 192.168.0.0/24 to any port 4533 comment \"Navidrome traffic from LAN only\"\nCreate an account Remember that the first account created will have Admin i.e. escalted privileges.\nSet up a reverse proxy (optional) https://blog.yossarian.net/2022/02/02/Setting-up-Navidrome-with-Nginx-as-a-reverse-proxy https://ked.wtf/posts/2022/navidrome-setup-guide First, create a basic nginx config file for Navidrome:\nsudo nano /etc/nginx/sites-available/NAVIDROME\nThen, add:\nserver { listen 80; listen [::]:80; server_name navidrome.example.net; location / { proxy_pass http://:4533; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; proxy_set_header X-Forwarded-Protocol $scheme; proxy_set_header X-Forwarded-Host $http_host; proxy_buffering off; } } Then, link:\nsudo ln -s /etc/nginx/sites-available/NAVIDROME /etc/nginx/sites-enabled/\nNow, check the nginx status:\nsudo nginx -t\nFinally, restart nginx:\nsudo systemctl restart nginx\nNow, grab an SSL Certificate:\nsudo certbot\nCertbot will do it’s thing and update the previously created nginx conf.\nThen, check and restart nginx:\nsudo nginx -t \u0026\u0026 sudo systemctl restart nginx\nSet an encryption key (optional) This is a one-time only configuration\nhttps://www.navidrome.org/docs/usage/security/#encrypted-passwords Generate a key (basically a long password):\nhttps://bitwarden.com/password-generator Then, in:\nnano /var/lib/navidrome/navidrome.toml\nAdd:\n# Re-encrypt all existing current passwords (one time thing) PasswordEncryptionKey = \"super_long_password\" Then, restart and check the status:\nsudo systemctl restart navidrome\nsudo systemctl status navidrome\nWhich Navidrome Streaming Client? The hardest aspect of using Navidrome for me, was choosing a client that I liked.\nAll of my music is stored in folders (Artist – Album Title) and I wanted a client that could reflect this.\nAdditionally I wanted a simple UI.\nAfter an array of clients were trawled through, (one popular Android player has a dizzying amount of customisation options) I settled on Tempo from the F-Droid store.\nBonus! Navidrome will also stream radio stations.\nNavidrome Radio Tab Screenshot\nObviously you will have to add your own stations to the list but here are a couple to get you started:\nLove a Brother Radio – http://23.106.236.229:24914/stream\nRadio Free Fedi Closed\nHowever, many more stations can be added.\n",
+  "wordCount" : "817",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/navidrome-streaming/01_Navidrome_Homepage_Screenshot.webp","datePublished": "2024-09-01T07:02:14+01:00",
+  "dateModified": "2024-09-01T07:02:14+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/navidrome-streaming/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Navidrome Streaming
+    </h1>
+    <div class="post-meta"><span title='2024-09-01 07:02:14 +0100 BST'>September 1, 2024</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#its-my-music-and-ill-stream-if-i-want-to-stream-if-i-want-to-stream-if-i-want-to" aria-label="It’s my music and I’ll stream if I want to, stream if I want to, stream if I want to!">It’s my music and I’ll stream if I want to, stream if I want to, stream if I want to!</a></li>
+                <li>
+                    <a href="#what-is-navidrome-streaming" aria-label="What is Navidrome Streaming?">What is Navidrome Streaming?</a></li>
+                <li>
+                    <a href="#why-choose-navidrome-for-streaming" aria-label="Why choose Navidrome for Streaming?">Why choose Navidrome for Streaming?</a></li>
+                <li>
+                    <a href="#installing-the-navidrome-server" aria-label="Installing the Navidrome Server">Installing the Navidrome Server</a><ul>
+                        
+                <li>
+                    <a href="#create-the-directory-structure" aria-label="Create the directory structure">Create the directory structure</a></li>
+                <li>
+                    <a href="#download-the-archive" aria-label="Download the archive">Download the archive</a></li>
+                <li>
+                    <a href="#extract-the-archive" aria-label="Extract the archive">Extract the archive</a></li>
+                <li>
+                    <a href="#take-ownership" aria-label="Take ownership">Take ownership</a></li>
+                <li>
+                    <a href="#point-to-a-music-library" aria-label="Point to a music library">Point to a music library</a></li>
+                <li>
+                    <a href="#create-a-navidrome-service-file-optional" aria-label="Create a Navidrome .service file (optional)">Create a Navidrome .service file (optional)</a></li>
+                <li>
+                    <a href="#open-a-port-on-the-firewall-optional-depending-on-firewall-usage" aria-label="Open a port on the firewall (optional depending on firewall usage)">Open a port on the firewall (optional depending on firewall usage)</a></li>
+                <li>
+                    <a href="#create-an-account" aria-label="Create an account">Create an account</a></li>
+                <li>
+                    <a href="#set-up-a-reverse-proxy-optional" aria-label="Set up a reverse proxy (optional)">Set up a reverse proxy (optional)</a></li>
+                <li>
+                    <a href="#set-an-encryption-key-optional" aria-label="Set an encryption key (optional)">Set an encryption key (optional)</a></li></ul>
+                </li>
+                <li>
+                    <a href="#which-navidrome-streaming-client" aria-label="Which Navidrome Streaming Client?">Which Navidrome Streaming Client?</a></li>
+                <li>
+                    <a href="#bonus" aria-label="Bonus!">Bonus!</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="its-my-music-and-ill-stream-if-i-want-to-stream-if-i-want-to-stream-if-i-want-to">It’s my music and I’ll stream if I want to, stream if I want to, stream if I want to!<a hidden class="anchor" aria-hidden="true" href="#its-my-music-and-ill-stream-if-i-want-to-stream-if-i-want-to-stream-if-i-want-to">#</a></h2>
+<p>This is hands down one the easiest self-hosting project that I’ve installed.</p>
+<h2 id="what-is-navidrome-streaming">What is Navidrome Streaming?<a hidden class="anchor" aria-hidden="true" href="#what-is-navidrome-streaming">#</a></h2>
+<blockquote>
+<p>Navidrome can be used as a standalone server, that allows you to browse and listen to your music collection using a web browser.</p>
+<p>It can also work as a lightweight Subsonic-API compatible server, that can be used with any 
+
+<a href="https://www.navidrome.org/docs/overview/#apps" target="_blank" rel="nofollow noopener noreferrer">Subsonic compatible client</a>
+.</p>
+<p><em>
+
+<a href="https://www.navidrome.org/docs/overview/" target="_blank" rel="nofollow noopener noreferrer">https://www.navidrome.org/docs/overview/</a>
+</em></p></blockquote>
+<p><img alt="A screenshot of the Navidrome &lsquo;Random Albums&rsquo; page showing the album artwork." loading="lazy" src="/posts/navidrome-streaming/02_Navidrome_Random_Albums_Screenshot.webp#center" title="A screenshot of the Navidrome &#39;Random Albums&#39; page showing the album artwork.">
+<em>Navidrome Random Albums Screenshot</em></p>
+<h2 id="why-choose-navidrome-for-streaming">Why choose Navidrome for Streaming?<a hidden class="anchor" aria-hidden="true" href="#why-choose-navidrome-for-streaming">#</a></h2>
+<p>I already have a Jellyfin media server, so I could have used my existing Jellyfin app to listen to my music when out and about.</p>
+<p>However, as per the name of this blog, I like tinkering.</p>
+<p>Without a doubt, setting up the reverse proxy was the most time consuming part for me.</p>
+<p>Given that there were so few necessary steps, the whole process took about thirty minutes.</p>
+<p>(It probably helped that I already had all of the music folders on the server already.)</p>
+<h2 id="installing-the-navidrome-server">Installing the Navidrome Server<a hidden class="anchor" aria-hidden="true" href="#installing-the-navidrome-server">#</a></h2>
+<p>
+
+<a href="https://www.navidrome.org/docs/installation/linux" target="_blank" rel="nofollow noopener noreferrer">https://www.navidrome.org/docs/installation/linux</a>
+</p>
+<h3 id="create-the-directory-structure">Create the directory structure<a hidden class="anchor" aria-hidden="true" href="#create-the-directory-structure">#</a></h3>
+<p>The following will create the directory to store the Navidrome executable with the proper permissions.</p>
+<p><code>sudo install -d -o $USER -g $USER /opt/navidrome</code></p>
+<p>Then create a Navidrome working directory with the proper permissions.</p>
+<p><code>sudo install -d -o $USER -g $USER /var/lib/navidrome</code></p>
+<h3 id="download-the-archive">Download the archive<a hidden class="anchor" aria-hidden="true" href="#download-the-archive">#</a></h3>
+<p>The following will grab the Navidrome release.</p>
+<p>Specifically the one for my Raspberry Pi.</p>
+<p><code>wget https://github.com/navidrome/navidrome/releases/download/v0.52.5/navidrome_0.52.5_linux_arm64.tar.gz -O Navidrome.tar.gz</code></p>
+<h3 id="extract-the-archive">Extract the archive<a hidden class="anchor" aria-hidden="true" href="#extract-the-archive">#</a></h3>
+<p>The following extracts the archive contents to the previously created Navidrome executable directory.</p>
+<p><code>sudo tar -xvzf Navidrome.tar.gz -C /opt/navidrome/</code></p>
+<h3 id="take-ownership">Take ownership<a hidden class="anchor" aria-hidden="true" href="#take-ownership">#</a></h3>
+<p>Then, take ownership of the executable.</p>
+<p><code>sudo chown -R $USER:$USER /opt/navidrome</code></p>
+<h3 id="point-to-a-music-library">Point to a music library<a hidden class="anchor" aria-hidden="true" href="#point-to-a-music-library">#</a></h3>
+<p>First, create the config file:</p>
+<p><code>nano /var/lib/navidrome/navidrome.toml</code></p>
+<p>Then add:</p>
+<pre tabindex="0"><code># Music location
+MusicFolder = &#34;/home/foo/music&#34;
+</code></pre><h3 id="create-a-navidrome-service-file-optional">Create a Navidrome .service file (optional)<a hidden class="anchor" aria-hidden="true" href="#create-a-navidrome-service-file-optional">#</a></h3>
+<p>First, create the config file:</p>
+<p><code>sudo nano /etc/systemd/system/navidrome.service</code></p>
+<p>Then add:</p>
+<pre tabindex="0"><code>[Unit]
+Description=Navidrome Music Server and Streamer compatible with Subsonic/Airsonic
+After=remote-fs.target network.target
+AssertPathExists=/var/lib/navidrome
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=foo
+Group=foo
+Type=simple
+ExecStart=/opt/navidrome/navidrome --configfile &#34;/var/lib/navidrome/navidrome.toml&#34;
+WorkingDirectory=/var/lib/navidrome
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+
+# See https://www.freedesktop.org/software/systemd/man/systemd.exec.html
+DevicePolicy=closed
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateUsers=yes
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap
+ReadWritePaths=/var/lib/navidrome
+
+# You can uncomment the following line if you&#39;re not using the jukebox This
+# will prevent navidrome from accessing any real (physical) devices
+PrivateDevices=yes
+
+# You can change the following line to `strict` instead of `full` if you don&#39;t
+# want navidrome to be able to write anything on your filesystem outside of
+# /var/lib/navidrome.
+ProtectSystem=strict
+
+# You can uncomment the following line if you don&#39;t have any media in /home/*.
+# This will prevent navidrome from ever reading/writing anything there.
+ProtectHome=true
+
+# You can customize some Navidrome config options by setting environment variables here. Ex:
+#Environment=ND_BASEURL=&#34;/navidrome&#34;
+</code></pre><h3 id="open-a-port-on-the-firewall-optional-depending-on-firewall-usage">Open a port on the firewall (optional depending on firewall usage)<a hidden class="anchor" aria-hidden="true" href="#open-a-port-on-the-firewall-optional-depending-on-firewall-usage">#</a></h3>
+<p>First, add a rule to allow Navidrome traffic:</p>
+<p><code>sudo ufw allow 4533 comment 'Navidrome Traffic'</code></p>
+<p>Then, check the status:</p>
+<p><code>sudo ufw status</code></p>
+<p>Or, to only allow traffic on the internal network:</p>
+<p><code>sudo ufw allow from 192.168.0.0/24 to any port 4533 comment &quot;Navidrome traffic from LAN only&quot;</code></p>
+<h3 id="create-an-account">Create an account<a hidden class="anchor" aria-hidden="true" href="#create-an-account">#</a></h3>
+<p>Remember that the first account created will have Admin i.e. escalted privileges.</p>
+<h3 id="set-up-a-reverse-proxy-optional">Set up a reverse proxy (optional)<a hidden class="anchor" aria-hidden="true" href="#set-up-a-reverse-proxy-optional">#</a></h3>
+<p>
+
+<a href="https://blog.yossarian.net/2022/02/02/Setting-up-Navidrome-with-Nginx-as-a-reverse-proxy" target="_blank" rel="nofollow noopener noreferrer">https://blog.yossarian.net/2022/02/02/Setting-up-Navidrome-with-Nginx-as-a-reverse-proxy</a>
+</p>
+<p>
+
+<a href="https://ked.wtf/posts/2022/navidrome-setup-guide" target="_blank" rel="nofollow noopener noreferrer">https://ked.wtf/posts/2022/navidrome-setup-guide</a>
+</p>
+<p>First, create a basic nginx config file for Navidrome:</p>
+<p><code>sudo nano /etc/nginx/sites-available/NAVIDROME</code></p>
+<p>Then, add:</p>
+<pre tabindex="0"><code>server {
+    listen                  80;
+    listen                  [::]:80;
+    server_name             navidrome.example.net;
+
+    location / {
+        proxy_pass          http://&lt;server_ip&gt;:4533;
+        proxy_set_header    Host $host;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto $scheme;
+        proxy_set_header    X-Forwarded-Protocol $scheme;
+        proxy_set_header    X-Forwarded-Host $http_host;
+        proxy_buffering     off;
+    }
+}
+</code></pre><p>Then, link:</p>
+<p><code>sudo ln -s /etc/nginx/sites-available/NAVIDROME /etc/nginx/sites-enabled/</code></p>
+<p>Now, check the nginx status:</p>
+<p><code>sudo nginx -t</code></p>
+<p>Finally, restart nginx:</p>
+<p><code>sudo systemctl restart nginx</code></p>
+<p>Now, grab an SSL Certificate:</p>
+<p><code>sudo certbot</code></p>
+<p>Certbot will do it’s thing and update the previously created nginx conf.</p>
+<p>Then, check and restart nginx:</p>
+<p><code>sudo nginx -t &amp;&amp; sudo systemctl restart nginx</code></p>
+<h3 id="set-an-encryption-key-optional">Set an encryption key (optional)<a hidden class="anchor" aria-hidden="true" href="#set-an-encryption-key-optional">#</a></h3>
+<blockquote>
+<p>This is a one-time only configuration</p>
+<p><em>
+
+<a href="https://www.navidrome.org/docs/usage/security/#encrypted-passwords" target="_blank" rel="nofollow noopener noreferrer">https://www.navidrome.org/docs/usage/security/#encrypted-passwords</a>
+</em></p></blockquote>
+<p>Generate a key (basically a long password):</p>
+<p>
+
+<a href="https://bitwarden.com/password-generator" target="_blank" rel="nofollow noopener noreferrer">https://bitwarden.com/password-generator</a>
+</p>
+<p>Then, in:</p>
+<p><code>nano /var/lib/navidrome/navidrome.toml</code></p>
+<p>Add:</p>
+<pre tabindex="0"><code># Re-encrypt all existing current passwords (one time thing)
+PasswordEncryptionKey = &#34;super_long_password&#34;
+</code></pre><p>Then, restart and check the status:</p>
+<p><code>sudo systemctl restart navidrome</code></p>
+<p><code>sudo systemctl status navidrome</code></p>
+<h2 id="which-navidrome-streaming-client">Which Navidrome Streaming Client?<a hidden class="anchor" aria-hidden="true" href="#which-navidrome-streaming-client">#</a></h2>
+<p>The hardest aspect of using Navidrome for me, was choosing a client that I liked.</p>
+<p>All of my music is stored in folders (Artist – Album Title) and I wanted a client that could reflect this.</p>
+<p>Additionally I wanted a simple UI.</p>
+<p>After an array of clients were trawled through, (one popular Android player has a dizzying amount of customisation options) I settled on 
+
+<a href="https://f-droid.org/en/packages/com.cappielloantonio.notquitemy.tempo/" target="_blank" rel="nofollow noopener noreferrer">Tempo</a>
+ from the 
+
+<a href="https://f-droid.org/" target="_blank" rel="nofollow noopener noreferrer">F-Droid</a>
+ store.</p>
+<h2 id="bonus">Bonus!<a hidden class="anchor" aria-hidden="true" href="#bonus">#</a></h2>
+<p>Navidrome will also stream radio stations.</p>
+<p><img alt="A screenshot of the Navidrome &lsquo;Radio&rsquo; page showing the currently listed stations." loading="lazy" src="/posts/navidrome-streaming/03_Navidrome_Radio_Tab_Screenshot.webp#center" title="A screenshot of the Navidrome &#39;Radio&#39; page showing the currently listed stations.">
+<em>Navidrome Radio Tab Screenshot</em></p>
+<p>Obviously you will have to add your own stations to the list but here are a couple to get you started:</p>
+<p>
+
+<a href="https://labr.online/" target="_blank" rel="nofollow noopener noreferrer">Love a Brother Radio</a>
+ – http://23.106.236.229:24914/stream</p>
+<p><del>Radio Free Fedi</del> Closed</p>
+<p>However, many more stations can be added.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/self-hosting-freshrss/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Self-Hosting FreshRSS</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Iceshrimp.NET Grafana Dashboard</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Data Collection, Logging and Plotting | Boffins Blog</title>
+<meta name="keywords" content="Data Visualisation, gnuplot, Linux, Python, Raspberry Pi, Software, Web-Servers">
+<meta name="description" content="Data collection using an environment sensor, logging that info to a csv file and plotting a graph using gnuplot.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Data Collection, Logging and Plotting">
+  <meta property="og:description" content="Data collection using an environment sensor, logging that info to a csv file and plotting a graph using gnuplot.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-03-13T20:12:32+00:00">
+    <meta property="article:modified_time" content="2019-03-13T20:12:32+00:00">
+    <meta property="article:tag" content="Data Visualisation">
+    <meta property="article:tag" content="Gnuplot">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Python">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/01_Temperature_Graphs_FI.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/01_Temperature_Graphs_FI.webp">
+<meta name="twitter:title" content="Data Collection, Logging and Plotting">
+<meta name="twitter:description" content="Data collection using an environment sensor, logging that info to a csv file and plotting a graph using gnuplot.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Data Collection, Logging and Plotting",
+      "item": "https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Data Collection, Logging and Plotting",
+  "name": "Data Collection, Logging and Plotting",
+  "description": "Data collection using an environment sensor, logging that info to a csv file and plotting a graph using gnuplot.",
+  "keywords": [
+    "Data Visualisation", "gnuplot", "Linux", "Python", "Raspberry Pi", "Software", "Web-Servers"
+  ],
+  "articleBody": "The good kind of plotting I was interested in data collection using an environment sensor, logging that info to a csv file and plotting a graph using gnuplot.\nI have a couple of RaspberryPi HATs and pHATs knocking about and wondered how to collect data from one, and log the data it to a local file and then present that info in an understandable way.\nThe routine below should be a good jumping off point for people to start with and does the following:\nUses python to collect data from a sensor (in my case an Enviro pHAT)\nThen, writes the python output to a comma separated file\nUses gnuplot to turn slices of the .csv file in to graphs, stored locally\nInstructs a web server on a different machine to pull those files into the /var/www folder\nA web page then easily serves these, as they always have the same name.\nSo, putting all of this together:\nThe data collection bit The Enviro pHAT sits on top of a pi Zero WH (named phats). It uses ssh keys for authentication.\nThe pi is connected to the internal network (and therefore the web server) and has a known IP address.\nThe web server is named sheevaplug, it has a single user with no rights allocated. The user has to su to get rights.\nOn the pi there are a few files:\nThe python file that collects data from the Enviro pHAT (enviroplot.py)\nThe .csv file that the python file writes comma separated values to (enviroplot.csv)\nThe gnuplot script(s) that interpret the .csv rows and produce the .png graphs (temp_range.plot, temp_recent.plot)\nThe sh file that wraps the python file and the gnuplot scripts together (enviroplot.sh)\nA cron job then executes the sh file every 15 minutes\nThe logging bit enviroplot.py #!/usr/bin/env python import csv from datetime import datetime from envirophat import weather dt = datetime.now() full_date = dt.strftime(’%Y-%m-%d’) full_time = dt.strftime(’%H:%M:%S’) full_day = dt.strftime(’%A’) year = dt.year month = dt.month date = dt.day hour = dt.hour temp = round(weather.temperature(), 2) baro = round(weather.pressure(unit = ‘hPa’), 2) csvWrite = full_date, full_time, full_day, year, month, date, hour, temp, baro csvFile = open(’/home/foo/Dev/Raspi/enviroplot/enviroplot.csv’, ‘a’) with csvFile: writer = csv.writer(csvFile) writer.writerow(csvWrite) The important bits here are:\nround(xxxx, 2) rounds to two decimal places\nThe ‘a’ at the end of the csvFile line means append. The .csv file must exist first, even if it is empty to start with\nThe logging output enviroplot.csv (Example of data collected) full_date\tfull_time\tfull_day\tyear\tmonth\tdate\thour\ttemp\tbaro 2019-01-23\t22:15:01\tWednesday\t2019\t1\t23\t22\t23.12\t998.17 2019-01-23\t22:30:01\tWednesday\t2019\t1\t23\t22\t22.89\t998.35 2019-01-23\t22:45:02\tWednesday\t2019\t1\t23\t22\t22.54\t998.41 2019-01-23\t23:00:02\tWednesday\t2019\t1\t23\t23\t22.2\t998.44 2019-01-23\t23:15:01\tWednesday\t2019\t1\t23\t23\t21.9\t998.46 I have deliberately collected the full date, full time, day, year, month, date, hour separately as I may want to analyse these elements later and don’t want to have to dissect the .csv string.\n(The final two values are temperature and barometric pressure.)\nThe plotting part The following two .plot examples are the gnuplot scripts.\nGnuplot is an incredibly versatile open source plotting piece of software and is available in the repos.\nsudo apt install gnuplot\nIt is capable of creating 2D and 3D graphs and outputting to a variety of formats.\nYou can even plot ASCII graphs in the terminal with it!\nYou can create a graph with as little as one line, specifying simply where the input data is.\nI’m still learning, so you may have better looking outputs with more practice.\ntemp_range.plot reset unset key set key off set terminal png set datafile separator \",\" set xdata time set timefmt \"%Y-%m-%dT%H:%M:%S\" set format x \"%d/%m\" set xlabel \"Date (day/month)\" set ylabel \"Temp\" set style data points set title \"Temp Range\" set grid plot '/home/foo/Dev/Raspi/enviroplot/enviroplot.csv' using 1:8 The important bits here are:\n‘plot’ i.e. the location of the .csv file containing data\n‘Using 1:8’ i.e. use data columns 1 \u0026 8\ntemp_recent.plot reset unset key set key off set terminal png set datafile separator \",\" set xdata time set timefmt \"%Y-%m-%dT%H:%M:%S\" set format x \"%d/%m\" set xlabel \"Date (day/month)\" set ylabel \"Temp\" set style data line set title \"Recent Temp\" set grid plot '\u003c tail -n 672 /home/foo/Dev/Raspi/enviroplot/enviroplot.csv' using 1\u00262:8 The important bits here are:\n‘tail -n 672’ i.e. take the last 672 data points ( 1 x week at 15 minute intervals)\n‘using 1\u00262:8’ i.e. concatenate columns 1 \u0026 2 as one data column and column 8 as the other\nAutomating using cron enviroplot.sh #!/bin/sh # This is the script that the cron job will execute # Run the python script to collect the variables python /home/foo/Dev/Raspi/enviroplot/enviroplot.py #### Create the graph images from gnuplot # 'Sleep' is there to prevent a conflict gnuplot /home/foo/Dev/Raspi/enviroplot/temp_range.plot \u003e /home/foo/Dev/Raspi/enviroplot/temp_range.png sleep 5 gnuplot /home/foo/Dev/Raspi/enviroplot/temp_recent.plot \u003e /home/foo/Dev/Raspi/enviroplot/temp_recent.png The important bits here are:\nRuns the python script that writes the Enviro pHAT data to the .csv file\nCalls the gnuplot file(s) and outputs it to a named .png file i.e. creates the graph image file(s)\n‘Sleep’ is there as cron will execute both commands at the same time; better to have a slight delay and wait for the first command to finish\nphats crontab # m h dom mon dow command # This is the script that runs the bash script to collect data and create graphs */15 * * * * /home/foo/Dev/Raspi/enviroplot/enviroplot.sh The cron job that runs every 15 minutes to execute the above enviroplot.sh script.\nThe above will get you a working pair of graphs that are refreshed every 15 minutes.\nBut they will be on the pi which may be headless or unattached to any sort of display.\nMuch better to put the images on the interweb where you can watch your house getting hotter when it’s burning.\nThe next two files are on the web server and comprise of:\nA sh script to pull the files from the pi over the local network\nA cron job to do that every 15 minutes\nServing it all up I have to pull the files into the web server, rather than push the files from the pi because, as I said earlier the server only has a single user with no rights and I couldn’t find a way to connect to the server using ssh, then pass a password to get rights. (Probably is a way, but too late now.)\nget_graphs.sh #!/bin/sh # This is the script that the cron job will execute # Collect the graphs from the 'phats' machine # 'Sleep' is there to prevent a conflict scp -i ~/.ssh/id_rsa_phats foo@phats:/home/foo/Dev/Raspi/enviroplot/temp_range.png /var/www/html/ sleep 5 scp -i ~/.ssh/id_rsa_phats foo@phats:/home/foo/Dev/Raspi/enviroplot/temp_recent.png /var/www/html/ The important bits here are:\nscp is secure copy and allows use of ssh keys\nAlso, I’m using ssh keys for authentication, this prevents having to type my password repeatedly and offers secure copying and logins\n‘Sleep’ is there as cron will execute both commands at the same time; better to have a slight delay and wait for the first command to finish\nsheevaplug crontab # m h dom mon dow command # This is the script that runs the bash script to collect the graphs from the 'phats' machine */15 * * * * sh /var/www/html/get_graphs.sh The cron job that runs every 15 minutes to execute the above get_graphs.sh script.\nAnd finally! This is what the output looks like, snipped from a web page.\nTemperature Over the Last Fortnight and All Time\nAlso, I know the axis on the first graph looks a bit odd, as I said I’m just starting out with gnuplot.\nThis method has now been updated , with corrected graphs axes on a dual axis chart, showing temperature and pressure over both the last week and the prior 24 hours.\n",
+  "wordCount" : "1299",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/01_Temperature_Graphs_FI.webp","datePublished": "2019-03-13T20:12:32Z",
+  "dateModified": "2019-03-13T20:12:32Z",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Data Collection, Logging and Plotting
+    </h1>
+    <div class="post-meta"><span title='2019-03-13 20:12:32 +0000 GMT'>March 13, 2019</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#the-good-kind-of-plotting" aria-label="The good kind of plotting">The good kind of plotting</a></li>
+                <li>
+                    <a href="#the-data-collection-bit" aria-label="The data collection bit">The data collection bit</a></li>
+                <li>
+                    <a href="#the-logging-bit" aria-label="The logging bit">The logging bit</a><ul>
+                        
+                <li>
+                    <a href="#enviroplotpy" aria-label="enviroplot.py">enviroplot.py</a></li></ul>
+                </li>
+                <li>
+                    <a href="#the-logging-output" aria-label="The logging output">The logging output</a><ul>
+                        
+                <li>
+                    <a href="#enviroplotcsv-example-of-data-collected" aria-label="enviroplot.csv (Example of data collected)">enviroplot.csv (Example of data collected)</a></li></ul>
+                </li>
+                <li>
+                    <a href="#the-plotting-part" aria-label="The plotting part">The plotting part</a><ul>
+                        
+                <li>
+                    <a href="#temp_rangeplot" aria-label="temp_range.plot">temp_range.plot</a></li>
+                <li>
+                    <a href="#temp_recentplot" aria-label="temp_recent.plot">temp_recent.plot</a></li></ul>
+                </li>
+                <li>
+                    <a href="#automating-using-cron" aria-label="Automating using cron">Automating using cron</a><ul>
+                        
+                <li>
+                    <a href="#enviroplotsh" aria-label="enviroplot.sh">enviroplot.sh</a></li>
+                <li>
+                    <a href="#phats-crontab" aria-label="phats crontab">phats crontab</a></li></ul>
+                </li>
+                <li>
+                    <a href="#serving-it-all-up" aria-label="Serving it all up">Serving it all up</a><ul>
+                        
+                <li>
+                    <a href="#get_graphssh" aria-label="get_graphs.sh">get_graphs.sh</a></li>
+                <li>
+                    <a href="#sheevaplug-crontab" aria-label="sheevaplug crontab">sheevaplug crontab</a></li></ul>
+                </li>
+                <li>
+                    <a href="#and-finally" aria-label="And finally!">And finally!</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="the-good-kind-of-plotting">The good kind of plotting<a hidden class="anchor" aria-hidden="true" href="#the-good-kind-of-plotting">#</a></h2>
+<p>I was interested in data collection using an environment sensor, logging that info to a csv file and plotting a graph using gnuplot.</p>
+<p>I have a couple of RaspberryPi HATs and pHATs knocking about and wondered how to collect data from one, and log the data it to a local file and then present that info in an understandable way.</p>
+<p>The routine below should be a good jumping off point for people to start with and does the following:</p>
+<ul>
+<li>
+<p>Uses python to collect data from a sensor (in my case an Enviro pHAT)</p>
+</li>
+<li>
+<p>Then, writes the python output to a comma separated file</p>
+</li>
+<li>
+<p>Uses 
+
+<a href="http://www.gnuplot.info/" target="_blank" rel="nofollow noopener noreferrer">gnuplot</a>
+ to turn slices of the <strong>.csv</strong> file in to graphs, stored locally</p>
+</li>
+<li>
+<p>Instructs a web server on a different machine to <em>pull</em> those files into the <strong>/var/www</strong> folder</p>
+</li>
+</ul>
+<p>A web page then easily serves these, as they always have the same name.</p>
+<p>So, putting all of this together:</p>
+<h2 id="the-data-collection-bit">The data collection bit<a hidden class="anchor" aria-hidden="true" href="#the-data-collection-bit">#</a></h2>
+<p>The Enviro pHAT sits on top of a pi Zero WH (named <strong>phats</strong>). It uses ssh keys for authentication.</p>
+<p>The pi is connected to the internal network (and therefore the web server) and has a known IP address.</p>
+<p>The web server is named <strong>sheevaplug</strong>, it has a single user with no rights allocated. The user has to su to get rights.</p>
+<p>On the pi there are a few files:</p>
+<ul>
+<li>
+<p>The python file that collects data from the Enviro pHAT (<strong>enviroplot.py</strong>)</p>
+</li>
+<li>
+<p>The <strong>.csv</strong> file that the python file writes comma separated values to (<strong>enviroplot.csv</strong>)</p>
+</li>
+<li>
+<p>The gnuplot script(s) that interpret the <strong>.csv</strong> rows and produce the <strong>.png</strong> graphs (<strong>temp_range.plot, temp_recent.plot</strong>)</p>
+</li>
+<li>
+<p>The <strong>sh</strong> file that wraps the python file and the gnuplot scripts together (<strong>enviroplot.sh</strong>)</p>
+</li>
+<li>
+<p>A <strong>cron</strong> job then executes the <strong>sh</strong> file every 15 minutes</p>
+</li>
+</ul>
+<h2 id="the-logging-bit">The logging bit<a hidden class="anchor" aria-hidden="true" href="#the-logging-bit">#</a></h2>
+<h3 id="enviroplotpy">enviroplot.py<a hidden class="anchor" aria-hidden="true" href="#enviroplotpy">#</a></h3>
+<pre tabindex="0"><code>#!/usr/bin/env python
+
+import csv
+from datetime import datetime
+from envirophat import weather
+
+dt = datetime.now()
+
+full_date = dt.strftime(’%Y-%m-%d’)
+full_time = dt.strftime(’%H:%M:%S’)
+full_day = dt.strftime(’%A’)
+year = dt.year
+month = dt.month
+date = dt.day
+hour = dt.hour
+
+temp = round(weather.temperature(), 2)
+baro = round(weather.pressure(unit = ‘hPa’), 2)
+
+csvWrite = full_date, full_time, full_day, year, month, date, hour, temp, baro
+csvFile = open(’/home/foo/Dev/Raspi/enviroplot/enviroplot.csv’, ‘a’)
+
+with csvFile:
+writer = csv.writer(csvFile)
+writer.writerow(csvWrite)
+</code></pre><p>The important bits here are:</p>
+<ul>
+<li>
+<p>round(xxxx, 2) rounds to two decimal places</p>
+</li>
+<li>
+<p>The ‘a’ at the end of the csvFile line means append. The <strong>.csv</strong> file must exist first, even if it is empty to start with</p>
+</li>
+</ul>
+<h2 id="the-logging-output">The logging output<a hidden class="anchor" aria-hidden="true" href="#the-logging-output">#</a></h2>
+<h3 id="enviroplotcsv-example-of-data-collected">enviroplot.csv (Example of data collected)<a hidden class="anchor" aria-hidden="true" href="#enviroplotcsv-example-of-data-collected">#</a></h3>
+<pre tabindex="0"><code>full_date	full_time	full_day	year	month	date	hour	temp	baro
+2019-01-23	22:15:01	Wednesday	2019	1	23	22	23.12	998.17
+2019-01-23	22:30:01	Wednesday	2019	1	23	22	22.89	998.35
+2019-01-23	22:45:02	Wednesday	2019	1	23	22	22.54	998.41
+2019-01-23	23:00:02	Wednesday	2019	1	23	23	22.2	998.44
+2019-01-23	23:15:01	Wednesday	2019	1	23	23	21.9	998.46
+</code></pre><p>I have deliberately collected the full date, full time, day, year, month, date, hour separately as I may want to analyse these elements later and don’t want to have to dissect the <strong>.csv</strong> string.</p>
+<p>(The final two values are temperature and barometric pressure.)</p>
+<h2 id="the-plotting-part">The plotting part<a hidden class="anchor" aria-hidden="true" href="#the-plotting-part">#</a></h2>
+<p>The following two <strong>.plot</strong> examples are the gnuplot scripts.</p>
+<p>Gnuplot is an incredibly versatile open source plotting piece of software and is available in the repos.</p>
+<p><code>sudo apt install gnuplot</code></p>
+<p>It is capable of creating 2D and 3D graphs and outputting to a variety of formats.</p>
+<p>You can even plot ASCII graphs in the terminal with it!</p>
+<p>You can create a graph with as little as one line, specifying simply where the input data is.</p>
+<p>I’m still learning, so you may have better looking outputs with more practice.</p>
+<h3 id="temp_rangeplot">temp_range.plot<a hidden class="anchor" aria-hidden="true" href="#temp_rangeplot">#</a></h3>
+<pre tabindex="0"><code>reset
+
+unset key
+set key off
+
+set terminal png
+
+set datafile separator &#34;,&#34;
+
+set xdata time
+set timefmt &#34;%Y-%m-%dT%H:%M:%S&#34;
+set format x &#34;%d/%m&#34;
+
+set xlabel &#34;Date (day/month)&#34;
+set ylabel &#34;Temp&#34;
+
+set style data points
+
+set title &#34;Temp Range&#34;
+set grid
+
+plot &#39;/home/foo/Dev/Raspi/enviroplot/enviroplot.csv&#39; using 1:8
+</code></pre><p>The important bits here are:</p>
+<ul>
+<li>
+<p>‘plot’ i.e. the location of the .csv file containing data</p>
+</li>
+<li>
+<p>‘Using 1:8’ i.e. use data columns 1 &amp; 8</p>
+</li>
+</ul>
+<h3 id="temp_recentplot">temp_recent.plot<a hidden class="anchor" aria-hidden="true" href="#temp_recentplot">#</a></h3>
+<pre tabindex="0"><code>reset
+
+unset key
+set key off
+
+set terminal png
+
+set datafile separator &#34;,&#34;
+
+set xdata time
+set timefmt &#34;%Y-%m-%dT%H:%M:%S&#34;
+set format x &#34;%d/%m&#34;
+
+set xlabel &#34;Date (day/month)&#34;
+set ylabel &#34;Temp&#34;
+
+set style data line
+
+set title &#34;Recent Temp&#34;
+set grid
+
+plot &#39;&lt; tail -n 672 /home/foo/Dev/Raspi/enviroplot/enviroplot.csv&#39; using 1&amp;2:8
+</code></pre><p>The important bits here are:</p>
+<ul>
+<li>
+<p>‘tail -n 672’ i.e. take the last 672 data points ( 1 x week at 15 minute intervals)</p>
+</li>
+<li>
+<p>‘using 1&amp;2:8’ i.e. concatenate columns 1 &amp; 2 as one data column and column 8 as the other</p>
+</li>
+</ul>
+<h2 id="automating-using-cron">Automating using cron<a hidden class="anchor" aria-hidden="true" href="#automating-using-cron">#</a></h2>
+<h3 id="enviroplotsh">enviroplot.sh<a hidden class="anchor" aria-hidden="true" href="#enviroplotsh">#</a></h3>
+<pre tabindex="0"><code>#!/bin/sh
+# This is the script that the cron job will execute
+
+# Run the python script to collect the variables
+python /home/foo/Dev/Raspi/enviroplot/enviroplot.py
+
+#### Create the graph images from gnuplot
+# &#39;Sleep&#39; is there to prevent a conflict
+gnuplot /home/foo/Dev/Raspi/enviroplot/temp_range.plot &gt; /home/foo/Dev/Raspi/enviroplot/temp_range.png
+sleep 5
+gnuplot /home/foo/Dev/Raspi/enviroplot/temp_recent.plot &gt; /home/foo/Dev/Raspi/enviroplot/temp_recent.png
+</code></pre><p>The important bits here are:</p>
+<ul>
+<li>
+<p>Runs the python script that writes the Enviro pHAT data to the <strong>.csv</strong> file</p>
+</li>
+<li>
+<p>Calls the gnuplot file(s) and outputs it to a named <strong>.png</strong> file i.e. creates the graph image file(s)</p>
+</li>
+<li>
+<p>‘Sleep’ is there as <strong>cron</strong> will execute both commands at the same time; better to have a slight delay and wait for the first command to finish</p>
+</li>
+</ul>
+<h3 id="phats-crontab">phats crontab<a hidden class="anchor" aria-hidden="true" href="#phats-crontab">#</a></h3>
+<pre tabindex="0"><code># m h dom mon dow command
+# This is the script that runs the bash script to collect data and create graphs
+*/15 * * * * /home/foo/Dev/Raspi/enviroplot/enviroplot.sh
+</code></pre><p>The <strong>cron</strong> job that runs every 15 minutes to execute the above <strong>enviroplot.sh</strong> script.</p>
+<p>The above will get you a working pair of graphs that are refreshed every 15 minutes.</p>
+<p>But they will be on the pi which may be headless or unattached to any sort of display.</p>
+<p>Much better to put the images on the interweb where you can watch your house getting hotter when it’s burning.</p>
+<p>The next two files are on the web server and comprise of:</p>
+<ul>
+<li>
+<p>A <strong>sh</strong> script to pull the files from the pi over the local network</p>
+</li>
+<li>
+<p>A <strong>cron</strong> job to do that every 15 minutes</p>
+</li>
+</ul>
+<h2 id="serving-it-all-up">Serving it all up<a hidden class="anchor" aria-hidden="true" href="#serving-it-all-up">#</a></h2>
+<p>I have to pull the files into the web server, rather than push the files from the pi because, as I said earlier the server only has a single user with no rights and I couldn’t find a way to connect to the server using ssh, then pass a password to get rights. (Probably is a way, but too late now.)</p>
+<h3 id="get_graphssh">get_graphs.sh<a hidden class="anchor" aria-hidden="true" href="#get_graphssh">#</a></h3>
+<pre tabindex="0"><code>#!/bin/sh
+# This is the script that the cron job will execute
+
+# Collect the graphs from the &#39;phats&#39; machine
+# &#39;Sleep&#39; is there to prevent a conflict
+
+scp -i ~/.ssh/id_rsa_phats foo@phats:/home/foo/Dev/Raspi/enviroplot/temp_range.png /var/www/html/
+sleep 5
+scp -i ~/.ssh/id_rsa_phats foo@phats:/home/foo/Dev/Raspi/enviroplot/temp_recent.png /var/www/html/
+</code></pre><p>The important bits here are:</p>
+<ul>
+<li>
+<p><strong>scp</strong> is secure copy and allows use of ssh keys</p>
+</li>
+<li>
+<p>Also, I’m using <strong>ssh</strong> keys for authentication, this prevents having to type my password repeatedly and offers secure copying and logins</p>
+</li>
+<li>
+<p>‘Sleep’ is there as <strong>cron</strong> will execute both commands at the same time; better to have a slight delay and wait for the first command to finish</p>
+</li>
+</ul>
+<h3 id="sheevaplug-crontab">sheevaplug crontab<a hidden class="anchor" aria-hidden="true" href="#sheevaplug-crontab">#</a></h3>
+<pre tabindex="0"><code># m h dom mon dow command
+# This is the script that runs the bash script to collect the graphs from the &#39;phats&#39; machine
+*/15 * * * * sh /var/www/html/get_graphs.sh
+</code></pre><p>The <strong>cron</strong> job that runs every 15 minutes to execute the above <strong>get_graphs.sh</strong> script.</p>
+<h2 id="and-finally">And finally!<a hidden class="anchor" aria-hidden="true" href="#and-finally">#</a></h2>
+<p>This is what the output looks like, snipped from a web page.</p>
+<p><img alt="Data collection using an enviroment sensor, logging to a csv file and plotting a graph using gnuplot. Screen-grab of two graphs side by side showing the temperature. The left hand graph shows a two week time period whilst the right hand one shows temperature over all time. The date axis on both is odd looking and clearly wrong." loading="lazy" src="/posts/data-collection-logging-and-plotting/01_Temperature_Graphs.webp#center" title="Data collection using an enviroment sensor, logging to a csv file and plotting a graph using gnuplot. Screen-grab of two graphs side by side showing the temperature. The left hand graph shows a two week time period whilst the right hand one shows temperature over all time. The date axis on both is odd looking and clearly wrong.">
+<em>Temperature Over the Last Fortnight and All Time</em></p>
+<p>Also, I know the axis on the first graph looks a bit odd, as I said I’m just starting out with gnuplot.</p>
+<p>This 
+
+
+  <a href="/posts/more-data-collection-logging-and-plotting/">method has now been updated</a>
+, with corrected graphs axes on a dual axis chart, showing temperature and pressure over both the last week and the prior 24 hours.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/data-visualisation/">Data Visualisation</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/gnuplot/">Gnuplot</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/python/">Python</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/oled-bus-timetable/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>OLED Bus Timetable</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/refurbishing-a-picade/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Refurbishing a Picade</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

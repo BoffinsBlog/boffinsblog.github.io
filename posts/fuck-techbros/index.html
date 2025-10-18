@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Fuck Techbros | Boffins Blog</title>
+<meta name="keywords" content="Fediverse, Self Hosting, Web-Servers">
+<meta name="description" content="Redirect their web scraping, either to a friendly URL or a not-so-friendly one. Now with a how-to on null bombs and tarpits.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/fuck-techbros/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/fuck-techbros/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/fuck-techbros/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Fuck Techbros">
+  <meta property="og:description" content="Redirect their web scraping, either to a friendly URL or a not-so-friendly one. Now with a how-to on null bombs and tarpits.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-03-20T14:33:58+00:00">
+    <meta property="article:modified_time" content="2024-03-20T14:33:58+00:00">
+    <meta property="article:tag" content="Fediverse">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="Web-Servers">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/fuck-techbros/01_RSS_as_XML_Screenshot.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/fuck-techbros/01_RSS_as_XML_Screenshot.webp">
+<meta name="twitter:title" content="Fuck Techbros">
+<meta name="twitter:description" content="Redirect their web scraping, either to a friendly URL or a not-so-friendly one. Now with a how-to on null bombs and tarpits.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Fuck Techbros",
+      "item": "https://boffinsblog.github.io/posts/fuck-techbros/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Fuck Techbros",
+  "name": "Fuck Techbros",
+  "description": "Redirect their web scraping, either to a friendly URL or a not-so-friendly one. Now with a how-to on null bombs and tarpits.",
+  "keywords": [
+    "Fediverse", "Self Hosting", "Web-Servers"
+  ],
+  "articleBody": "Scrape my site, get a free surprise Fuck techbros\nWhy would you want to fuck techbros? So you’ve published your latest pithy take on something to the Fediverse.\nAnd a supremely arrogant and entitled white guy comes along (it’s always a white guy) and scrapes your aphorisms for their latest widget.\nIt’s also probably some AI bollocks.\nThe something doesn’t matter, suffice to say it won’t work without your output being its input.\nHow to fuck techbros with tech Yes, stuff that you post on the Internet is generally viewable (and therefore scrapeable) by all.\nYes, any engineer entitled white guy with beautiful soup and pandas can scrape a Fedi timeline but that is not the only way that your info can be grabbed.\nAlso, closing some of the ways that data is harvested boils down to a personal choice:\nYou can be nice.\nOr you can choose violence.\nAct accordingly!\nBeing nice Any feed can become unwanted RSS feeds Every Fedi feed is accessible through an RSS link.\nSimply append .rss to a domain@username combination.\nSurprisingly, this is a feature, not a bug.\nSo, those people who set the “Require follow requests” option in preferences, thinking that their accounts are unviewable by non followers, sorry, you were misled.\nThe fix: Send the RSS requests back to the instance homepage # Send any .rss request to the homepage location ~* \\.rss$ { return 301 $scheme://social.example.net; } The /api/v1/instance leaks broadcasts personal info This one really annoys me.\nIf you append /api/v1/instance to the end of a Mastodon URL, you get the instance info.\nFine.\nBut part of the info returned is an Admin account name, presented as the ‘contact_account’.\n(Which is usually the first account created when setting up the software.)\nThe Mastodon helpers from /packages/backend/src/server/api/mastodon/helpers/misc.ts code seems to me to be saying; “find the first Admin account that is not deleted or suspended and present that User as a contact”.\nThis is Internet Security 101.\nHave separate Users and Admins.\nDon’t broadcast any aspect of the Admin account login details.\nexport class MiscHelpers { public static async getInstance(ctx: MastoContext): Promise { const userCount = Users.count({ where: { host: IsNull() } }); const noteCount = Notes.count({ where: { userHost: IsNull() } }); const instanceCount = Instances.count({ cache: 3600000 }); const contact = await Users.findOne({ where: { host: IsNull(), isAdmin: true, isDeleted: false, isSuspended: false, }, order: { id: \"ASC\" }, }) The fix: Reroute the traffic In the same fashion that we reroute the RSS request, we send the traffic back to the instance homepage.\n# Send the instance API URL to the homepage location = /api/v1/instance { return 301 $scheme://social.example.com; } The /api/v1/peers leaks broadcasts instance info The fix: Reroute the traffic once more In the same fashion that we re-route the RSS request, we send the traffic back to the instance homepage.\n# Send the peers API URL to the homepage location = /api/v1/peers { return 301 $scheme://social.example.com; } Choosing violence Make it someone else’s problem So far the ‘fixes’ have been non adversarial.\nYour server routes requests from URLs to another, different URL, also on your server.\nHowever, nothing is preventing the re-routing of traffic to a third party, say, an intelligence agency with letters in its name.\nHere’s the /api/v1/peers example again but this time re-routing the traffic to an external web address.\n# Send the peers API URL to an external Address location = /api/v1/peers { return 301 ThreeLetterAgency.Address; } Make it their problem But what if you wanted to disrupt the incoming request?\nMaybe respond somehow?\nnull bombs Rather than rerouting the traffic to a URL, why not send a null bomb?\nI found the following somewhere on the Internets at some point in the distant past.\nI have NOT tried it out.\nFirst, make a bomb Create a 42.gz file.\nThis is a file that:\ncreates an archive that requires an excessive amount of time, disk space, or memory to unpack. https://en.wikipedia.org/wiki/Zip_bomb Execute the following in a Terminal:\ndd if=/dev/zero bs=1M count=102400 | gzip -c - \u003e 42.gz\nThen, deploy the bomb 42.gz in the example below is in the root folder of the web server (which we can change).\nThis nginx.conf code example would send the 42.gz file when a request is made to /wp-login.php location.\n# Any location you want to deny location = /wp-login.php { # Make the bot think it's just transport compression add_header Content-Encoding gzip; try_files /42.gz =404; # tell nginx to not blow it's own foot off if the client doesn't support gzip gunzip off; # lie to the client that the nullbomb is HTML so it doesn't immediately reject it types { text/html gz; } } tarpits Tarpits are a tried and tested way to devour incoming SSH requests.\nEndlessh is an SSH tarpit that very slowly sends an endless, random SSH banner.\nIt keeps SSH clients locked up for hours or even days at a time.\nThe purpose is to put your real SSH server on another port and then let the script kiddies get stuck in this tarpit instead of bothering a real server.\nhttps://github.com/skeeto/endlessh https://www.digitalocean.com/community/tutorials/how-to-set-up-an-endlessh-tarpit-on-ubuntu-22-04 Wrap it all up and present it with a bow What if you could:\nIdentify the scrapers\nReroute the traffic\nMake it someone else’s problem\nDeploy a null bomb\nAll at once ?\nWell, Hetzner have a ‘speed test’ file you can use for such a project.\nhttps://fsn1-speed.hetzner.com (Other files are also available.)\nMaybe add something like the below to your nginx.conf file?\n# Send bots a present if ($http_user_agent ~* \"AdsBot-Google|Amazonbot\") { return 307 https://fsn1-speed.hetzner.com/10GB.bin; } Resources I’ll also add to this list as time goes by and more useful resources appear.\nHow to block ChatGPT https://sizeof.cat/post/block-chatgpt-scraping Keep a robots.txt file up to date automatically https://darkvisitors.com ",
+  "wordCount" : "959",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/fuck-techbros/01_RSS_as_XML_Screenshot.webp","datePublished": "2024-03-20T14:33:58Z",
+  "dateModified": "2024-03-20T14:33:58Z",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/fuck-techbros/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Fuck Techbros
+    </h1>
+    <div class="post-meta"><span title='2024-03-20 14:33:58 +0000 GMT'>March 20, 2024</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#scrape-my-site-get-a-free-surprise" aria-label="Scrape my site, get a free surprise">Scrape my site, get a free surprise</a></li>
+                <li>
+                    <a href="#why-would-you-want-to-fuck-techbros" aria-label="Why would you want to fuck techbros?">Why would you want to fuck techbros?</a></li>
+                <li>
+                    <a href="#how-to-fuck-techbros-with-tech" aria-label="How to fuck techbros with tech">How to fuck techbros with tech</a></li>
+                <li>
+                    <a href="#being-nice" aria-label="Being nice">Being nice</a><ul>
+                        
+                <li>
+                    <a href="#any-feed-can-become-unwanted-rss-feeds" aria-label="Any feed can become unwanted RSS feeds">Any feed can become unwanted RSS feeds</a><ul>
+                        
+                <li>
+                    <a href="#the-fix-send-the-rss-requests-back-to-the-instance-homepage" aria-label="The fix: Send the RSS requests back to the instance homepage">The fix: Send the RSS requests back to the instance homepage</a></li></ul>
+                </li>
+                <li>
+                    <a href="#the-apiv1instance-leaks-broadcasts-personal-info" aria-label="The /api/v1/instance leaks broadcasts personal info">The /api/v1/instance leaks broadcasts personal info</a><ul>
+                        
+                <li>
+                    <a href="#the-fix-reroute-the-traffic" aria-label="The fix: Reroute the traffic">The fix: Reroute the traffic</a></li></ul>
+                </li>
+                <li>
+                    <a href="#the-apiv1peers-leaks-broadcasts-instance-info" aria-label="The /api/v1/peers leaks broadcasts instance info">The /api/v1/peers leaks broadcasts instance info</a><ul>
+                        
+                <li>
+                    <a href="#the-fix-reroute-the-traffic-once-more" aria-label="The fix: Reroute the traffic once more">The fix: Reroute the traffic once more</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#choosing-violence" aria-label="Choosing violence">Choosing violence</a><ul>
+                        
+                <li>
+                    <a href="#make-it-someone-elses-problem" aria-label="Make it someone else’s problem">Make it someone else’s problem</a></li>
+                <li>
+                    <a href="#make-it-their-problem" aria-label="Make it their problem">Make it their problem</a><ul>
+                        
+                <li>
+                    <a href="#null-bombs" aria-label="null bombs">null bombs</a><ul>
+                        
+                <li>
+                    <a href="#first-make-a-bomb" aria-label="First, make a bomb">First, make a bomb</a></li>
+                <li>
+                    <a href="#then-deploy-the-bomb" aria-label="Then, deploy the bomb">Then, deploy the bomb</a></li></ul>
+                </li>
+                <li>
+                    <a href="#tarpits" aria-label="tarpits">tarpits</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#wrap-it-all-up-and-present-it-with-a-bow" aria-label="Wrap it all up and present it with a bow">Wrap it all up and present it with a bow</a></li>
+                <li>
+                    <a href="#resources" aria-label="Resources">Resources</a><ul>
+                        
+                <li>
+                    <a href="#how-to-block-chatgpt" aria-label="How to block ChatGPT">How to block ChatGPT</a></li>
+                <li>
+                    <a href="#keep-a-robotstxt-file-up-to-date-automatically" aria-label="Keep a robots.txt file up to date automatically">Keep a robots.txt file up to date automatically</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="scrape-my-site-get-a-free-surprise">Scrape my site, get a free surprise<a hidden class="anchor" aria-hidden="true" href="#scrape-my-site-get-a-free-surprise">#</a></h2>
+<p>Fuck techbros</p>
+<h2 id="why-would-you-want-to-fuck-techbros">Why would you want to fuck techbros?<a hidden class="anchor" aria-hidden="true" href="#why-would-you-want-to-fuck-techbros">#</a></h2>
+<p>So you’ve published your latest pithy take on something to the Fediverse.</p>
+<p>And a supremely arrogant and entitled white guy comes along (it’s always a white guy) and scrapes your aphorisms for their latest widget.</p>
+<p>It’s also probably some AI bollocks.</p>
+<p>The something doesn’t matter, suffice to say it won’t work without <strong>your</strong> output being <strong>its</strong> input.</p>
+<h2 id="how-to-fuck-techbros-with-tech">How to fuck techbros with tech<a hidden class="anchor" aria-hidden="true" href="#how-to-fuck-techbros-with-tech">#</a></h2>
+<p>Yes, stuff that you post on the Internet is generally viewable (and therefore scrapeable) by all.</p>
+<p>Yes, any <del>engineer</del> entitled white guy with <code>beautiful soup</code> and <code>pandas</code> can scrape a Fedi timeline but that is not the only way that your info can be grabbed.</p>
+<p>Also, closing some of the ways that data is harvested boils down to a personal choice:</p>
+<p>You can be nice.</p>
+<p>Or you can choose violence.</p>
+<p>Act accordingly!</p>
+<h2 id="being-nice">Being nice<a hidden class="anchor" aria-hidden="true" href="#being-nice">#</a></h2>
+<h3 id="any-feed-can-become-unwanted-rss-feeds">Any feed can become unwanted RSS feeds<a hidden class="anchor" aria-hidden="true" href="#any-feed-can-become-unwanted-rss-feeds">#</a></h3>
+<p>Every Fedi feed is accessible through an RSS link.</p>
+<p>Simply append <code>.rss</code> to a domain@username combination.</p>
+<p>Surprisingly, this is a feature, not a bug.</p>
+<p>So, those people who set the “Require follow requests” option in preferences, thinking that their accounts are unviewable by non followers, sorry, you were misled.</p>
+<h4 id="the-fix-send-the-rss-requests-back-to-the-instance-homepage">The fix: Send the RSS requests back to the instance homepage<a hidden class="anchor" aria-hidden="true" href="#the-fix-send-the-rss-requests-back-to-the-instance-homepage">#</a></h4>
+<pre tabindex="0"><code># Send any .rss request to the homepage
+location ~* \.rss$ {
+    return 301 $scheme://social.example.net;
+}
+</code></pre><h3 id="the-apiv1instance-leaks-broadcasts-personal-info">The /api/v1/instance <del>leaks</del> broadcasts personal info<a hidden class="anchor" aria-hidden="true" href="#the-apiv1instance-leaks-broadcasts-personal-info">#</a></h3>
+<p>This one really annoys me.</p>
+<p>If you append <code>/api/v1/instance</code> to the end of a Mastodon URL, you get the instance info.</p>
+<p>Fine.</p>
+<p>But part of the info returned is an Admin account name, presented as the ‘contact_account’.</p>
+<p>(Which is usually the first account created when setting up the software.)</p>
+<p>The Mastodon helpers from <code>/packages/backend/src/server/api/mastodon/helpers/misc.ts</code> code seems to me to be saying; “find the first Admin account that is not deleted or suspended and present that User as a contact”.</p>
+<p>This is Internet Security 101.</p>
+<p>Have separate Users and Admins.</p>
+<p>Don’t broadcast any aspect of the Admin account login details.</p>
+<pre tabindex="0"><code>export class MiscHelpers {
+    public static async getInstance(ctx: MastoContext): Promise&lt;MastodonEntity.Instance&gt; {
+        const userCount = Users.count({ where: { host: IsNull() } });
+        const noteCount = Notes.count({ where: { userHost: IsNull() } });
+        const instanceCount = Instances.count({ cache: 3600000 });
+        const contact = await Users.findOne({
+            where: {
+                host: IsNull(),
+                isAdmin: true,
+                isDeleted: false,
+                isSuspended: false,
+            },
+            order: { id: &#34;ASC&#34; },
+        })
+</code></pre><h4 id="the-fix-reroute-the-traffic">The fix: Reroute the traffic<a hidden class="anchor" aria-hidden="true" href="#the-fix-reroute-the-traffic">#</a></h4>
+<p>In the same fashion that we reroute the RSS request, we send the traffic back to the instance homepage.</p>
+<pre tabindex="0"><code># Send the instance API URL to the homepage
+location = /api/v1/instance {
+    return 301 $scheme://social.example.com;
+}
+</code></pre><h3 id="the-apiv1peers-leaks-broadcasts-instance-info">The /api/v1/peers <del>leaks</del> broadcasts instance info<a hidden class="anchor" aria-hidden="true" href="#the-apiv1peers-leaks-broadcasts-instance-info">#</a></h3>
+<h4 id="the-fix-reroute-the-traffic-once-more">The fix: Reroute the traffic once more<a hidden class="anchor" aria-hidden="true" href="#the-fix-reroute-the-traffic-once-more">#</a></h4>
+<p>In the same fashion that we re-route the RSS request, we send the traffic back to the instance homepage.</p>
+<pre tabindex="0"><code># Send the peers API URL to the homepage
+location = /api/v1/peers {
+    return 301 $scheme://social.example.com;
+}
+</code></pre><h2 id="choosing-violence">Choosing violence<a hidden class="anchor" aria-hidden="true" href="#choosing-violence">#</a></h2>
+<h3 id="make-it-someone-elses-problem">Make it someone else’s problem<a hidden class="anchor" aria-hidden="true" href="#make-it-someone-elses-problem">#</a></h3>
+<p>So far the ‘fixes’ have been non adversarial.</p>
+<p>Your server routes requests from URLs to another, different URL, also on your server.</p>
+<p>However, nothing is preventing the re-routing of traffic to a third party, say, an intelligence agency with letters in its name.</p>
+<p>Here’s the <code>/api/v1/peers</code> example again but this time re-routing the traffic to an external web address.</p>
+<pre tabindex="0"><code># Send the peers API URL to an external Address
+location = /api/v1/peers {
+    return 301 ThreeLetterAgency.Address;
+}
+</code></pre><h3 id="make-it-their-problem">Make it their problem<a hidden class="anchor" aria-hidden="true" href="#make-it-their-problem">#</a></h3>
+<p>But what if you wanted to disrupt the incoming request?</p>
+<p>Maybe respond somehow?</p>
+<h4 id="null-bombs">null bombs<a hidden class="anchor" aria-hidden="true" href="#null-bombs">#</a></h4>
+<p>Rather than rerouting the traffic to a URL, why not send a null bomb?</p>
+<p>I found the following somewhere on the Internets at some point in the distant past.</p>
+<p>I have <strong>NOT</strong> tried it out.</p>
+<h5 id="first-make-a-bomb">First, make a bomb<a hidden class="anchor" aria-hidden="true" href="#first-make-a-bomb">#</a></h5>
+<p>Create a <code>42.gz</code> file.</p>
+<p>This is a file that:</p>
+<blockquote>
+<p>creates an archive that requires an excessive amount of time, disk space, or memory to unpack.<sup>
+
+<a href="https://en.wikipedia.org/wiki/Zip_bomb#cite_note-2" target="_blank" rel="nofollow noopener noreferrer"></a>
+</sup></p>
+<p><em>
+
+<a href="https://en.wikipedia.org/wiki/Zip_bomb" target="_blank" rel="nofollow noopener noreferrer">https://en.wikipedia.org/wiki/Zip_bomb</a>
+</em></p></blockquote>
+<p>Execute the following in a Terminal:</p>
+<p><code>dd if=/dev/zero bs=1M count=102400 | gzip -c - &gt; 42.gz</code></p>
+<h5 id="then-deploy-the-bomb">Then, deploy the bomb<a hidden class="anchor" aria-hidden="true" href="#then-deploy-the-bomb">#</a></h5>
+<p><code>42.gz</code> in the example below is in the root folder of the web server (which we can change).</p>
+<p>This nginx.conf code example would send the <code>42.gz</code> file when a request is made to <code>/wp-login.php</code> location.</p>
+<pre tabindex="0"><code># Any location you want to deny
+location = /wp-login.php {
+
+    # Make the bot think it&#39;s just transport compression
+    add_header Content-Encoding gzip;
+
+    try_files /42.gz =404;
+
+    # tell nginx to not blow it&#39;s own foot off if the client doesn&#39;t support gzip
+    gunzip off;
+
+    # lie to the client that the nullbomb is HTML so it doesn&#39;t immediately reject it
+    types { text/html gz; }
+}
+</code></pre><h4 id="tarpits">tarpits<a hidden class="anchor" aria-hidden="true" href="#tarpits">#</a></h4>
+<p>Tarpits are a tried and tested way to devour incoming SSH requests.</p>
+<blockquote>
+<p>Endlessh is an SSH tarpit that <em>very</em> slowly sends an endless, random SSH banner.</p>
+<p>It keeps SSH clients locked up for hours or even days at a time.</p>
+<p>The purpose is to put your real SSH server on another port and then let the script kiddies get stuck in this tarpit instead of bothering a real server.</p>
+<p><em>
+
+<a href="https://github.com/skeeto/endlessh" target="_blank" rel="nofollow noopener noreferrer">https://github.com/skeeto/endlessh</a>
+</em></p></blockquote>
+<p>
+
+<a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-endlessh-tarpit-on-ubuntu-22-04" target="_blank" rel="nofollow noopener noreferrer">https://www.digitalocean.com/community/tutorials/how-to-set-up-an-endlessh-tarpit-on-ubuntu-22-04</a>
+</p>
+<h2 id="wrap-it-all-up-and-present-it-with-a-bow">Wrap it all up and present it with a bow<a hidden class="anchor" aria-hidden="true" href="#wrap-it-all-up-and-present-it-with-a-bow">#</a></h2>
+<p>What if you could:</p>
+<ul>
+<li>
+<p>Identify the scrapers</p>
+</li>
+<li>
+<p>Reroute the traffic</p>
+</li>
+<li>
+<p>Make it someone else’s problem</p>
+</li>
+<li>
+<p>Deploy a null bomb</p>
+</li>
+</ul>
+<p>All at once ?</p>
+<p>Well, Hetzner have a ‘speed test’ file you can use for such a project.</p>
+<p>
+
+<a href="https://fsn1-speed.hetzner.com" target="_blank" rel="nofollow noopener noreferrer">https://fsn1-speed.hetzner.com</a>
+</p>
+<p>(Other files are also available.)</p>
+<p>Maybe add something like the below to your <code>nginx.conf</code> file?</p>
+<pre tabindex="0"><code># Send bots a present
+if ($http_user_agent ~* &#34;AdsBot-Google|Amazonbot&#34;) {
+    return 307 https://fsn1-speed.hetzner.com/10GB.bin;
+}
+</code></pre><h2 id="resources">Resources<a hidden class="anchor" aria-hidden="true" href="#resources">#</a></h2>
+<p>I’ll also add to this list as time goes by and more useful resources appear.</p>
+<h3 id="how-to-block-chatgpt">How to block ChatGPT<a hidden class="anchor" aria-hidden="true" href="#how-to-block-chatgpt">#</a></h3>
+<p>
+
+<a href="https://sizeof.cat/post/block-chatgpt-scraping" target="_blank" rel="nofollow noopener noreferrer">https://sizeof.cat/post/block-chatgpt-scraping</a>
+</p>
+<h3 id="keep-a-robotstxt-file-up-to-date-automatically">Keep a <code>robots.txt</code> file up to date automatically<a hidden class="anchor" aria-hidden="true" href="#keep-a-robotstxt-file-up-to-date-automatically">#</a></h3>
+<p>
+
+<a href="https://darkvisitors.com" target="_blank" rel="nofollow noopener noreferrer">https://darkvisitors.com</a>
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/fediverse/">Fediverse</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/installing-iceshrimp-net/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Installing Iceshrimp.NET</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/logging-the-broadband-outages/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Logging the Broadband Outages</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

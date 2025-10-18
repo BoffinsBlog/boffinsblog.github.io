@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Installing Iceshrimp | Boffins Blog</title>
+<meta name="keywords" content="Bash, Fediverse, Linux, Raspberry Pi, Self Hosting, Software, Web-Servers">
+<meta name="description" content="How I installed and finally settled on Iceshrimp as my Fediverse software of choice, a full bare-metal guide.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/installing-iceshrimp/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/installing-iceshrimp/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/installing-iceshrimp/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Installing Iceshrimp">
+  <meta property="og:description" content="How I installed and finally settled on Iceshrimp as my Fediverse software of choice, a full bare-metal guide.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-08-25T08:10:29+01:00">
+    <meta property="article:modified_time" content="2023-08-25T08:10:29+01:00">
+    <meta property="article:tag" content="Bash">
+    <meta property="article:tag" content="Fediverse">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/installing-iceshrimp/01_Iceshrimp_Login_Screenshot.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/installing-iceshrimp/01_Iceshrimp_Login_Screenshot.webp">
+<meta name="twitter:title" content="Installing Iceshrimp">
+<meta name="twitter:description" content="How I installed and finally settled on Iceshrimp as my Fediverse software of choice, a full bare-metal guide.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Installing Iceshrimp",
+      "item": "https://boffinsblog.github.io/posts/installing-iceshrimp/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Installing Iceshrimp",
+  "name": "Installing Iceshrimp",
+  "description": "How I installed and finally settled on Iceshrimp as my Fediverse software of choice, a full bare-metal guide.",
+  "keywords": [
+    "Bash", "Fediverse", "Linux", "Raspberry Pi", "Self Hosting", "Software", "Web-Servers"
+  ],
+  "articleBody": "The road even less travelled I’ve always made life difficult for myself, and my self-hosting journey is no different; from Calckey through Firefish, my Fediverse journey has led me to here; installing Iceshrimp.\nWhat is Iceshrimp? From the project web page.\nIceshrimp is yet another Misskey fork (you know the drill by now) Need help or want to contribute? Join the matrix room ! Documentation on installing (and updating) Iceshrimp: Bare metal Docker Compose Don’t like the Web UI? We test our Mastodon-compatible API against the following clients: Elk , Phanpy , Enafore , Masto-FE-standalone (Web) Mona , Toot! , Ice Cubes , Tusker , Feditext , Mastodon (iOS) Tusky , Moshidon , Megalodon, Mastodon (Android) Project goals: No-nonsense bug fixes QoL improvements Better performance Change of focus to actual community needs Project anti-goals: Flashy marketing Commercialization of any kind https://iceshrimp.dev/iceshrimp/iceshrimp There is a full ‘ How-To ‘ in the Iceshrimp git repo but these are my notes on how I installed Iceshrimp on my Pi.\nInstalling Iceshrimp – Overclocking I’d seen from my Calckey and Firefish hosting that I need to overclock my Pi.\nRun the following in a Terminal to overclock:\nsudo nano /boot/firmware/config.txt\n# Overclocking over_voltage=6 arm_freq=2000 gpu_freq=700 And reboot using sudo reboot\nRun the following in a Terminal to install a monitor and see the CPU speed in real-time:\nwatch -n 1 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq\nInstalling Iceshrimp – Preparations Firstly update everything and add a couple of packages that may or may not already be present:\nsudo apt update; sudo apt install git wget; sudo apt full-upgrade -y; sudo reboot\nBuild Dependencies The following may already be in place:\nC/C++ compiler like GCC or Clang\n- Can be checked by running `gcc --version` in a Terminal Build tools like make\n- Can be checked by running `make --version` in a Terminal Python 3\n- Can be checked by running `python3 --version` in a Terminal The meta package ‘build-essential’ is useful too:\nsudo apt install build-essential\nInstall PostgreSQL PostgreSQL: The World’s Most Advanced Open Source Relational Database\nhttps://www.postgresql.org/ Full installation instructions are on the PostgreSQL website .\nCreate the file repository configuration:\nsudo sh -c 'echo \"deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main\" \u003e /etc/apt/sources.list.d/pgdg.list'\nImport the repository signing key:\nwget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -\nUpdate the package lists:\nsudo apt-get update\nInstall the latest version of PostgreSQL.\nIf you want a specific version, use ‘postgresql-12’ or similar instead of ‘postgresql’:\nsudo apt-get -y install postgresql\nConfigure PostgreSQL for Iceshrimp Iceshrimp also needs a database to store its info in.\nTo add the Iceshrimp database run the following in a Terminal:\nsudo -u postgres psql\ncreate database iceshrimp with encoding = 'UTF8';\ncreate user iceshrimp with encrypted password 'super_long_postgres_password';\ngrant all privileges on database iceshrimp to iceshrimp;\n\\q\nThe ‘iceshrimp’ db needs to be owned by role ‘iceshrimp’ so ALTER the database OWNER by running the following:\nsudo -u postgres psql\n\\l\nALTER DATABASE iceshrimp OWNER TO iceshrimp;\nInstall Redis The open source, in-memory data store used by millions of developers as a database, cache, streaming engine, and message broker.\nhttps://redis.io/ As with PostgreSQL I already have a working Redis server as I use it alongside my WordPress installation.\nHowever, if Redis is not installed, full instructions are on this website .\ncurl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg\necho \"deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main\" | sudo tee /etc/apt/sources.list.d/redis.list\nsudo apt-get update\nsudo apt-get install redis\nInstall NodeJS Node.js® is an open-source, cross-platform JavaScript runtime environment.\nhttps://nodejs.org/en/ NodeJS is responsible for the interaction between the client (the browser) and the server (my Pi).\nNodeJS creates the dynamic page content and opens, modifies and closes files on the server: it is managed by Node Version Manager (NVM):\ncurl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash\nConfirm the installed version by running nvm -v in a Terminal.\nThe result should be ‘0.39.3’ or higher.\nTo list the available Node versions run nvm ls-remote in a Terminal.\nPick the latest version to install, in my case v21.1.0, install and use:\nnvm install v21.1.0 \u0026\u0026 nvm use v21.1.0\nThis can be checked by running node -v and looking at the result (it should be the same as the version in the nvm install command).\nNOTE: nvm is not ‘persistent’, it will only use that version for the lifetime of the current shell.\nTo ensure that the latest version is remembered run the following in a Terminal:\nnvm alias default v21.1.0\nCreate a ‘foo’ user I prefer to run dedicated processes with a dedicated user.\nTo add a new user run the following in a Terminal:\nsudo adduser foo\nAnd password protect it:\nsudo passwd foo\nInstalling Iceshrimp Finally, it’s time to install Iceshrimp.\nChange to the newly created user:\nsudo su foo\nAnd clone the latest repository:\ngit clone https://iceshrimp.dev/iceshrimp/iceshrimp\nCopy the ‘example.yml‘ and edit:\ncp /home/foo/iceshrimp/.config/example.yml /home/foo/iceshrimp/.config/default.yml\nsudo nano /home/foo/iceshrimp/.config/default.yml\n# Final accessible URL seen by a user. url: https://social.example.com/ # PostgreSQL configuration db: host: localhost port: 5432 db: iceshrimp user: iceshrimp pass: super_long_postgres_password # Redis configuration redis: host: localhost port: 6379 pass: super_long_redis_password NOTE: There is a ‘super_long_redis_password’ here.\nThis is not the password that restricts access to the Redis configuration settings found in /etc/redis/redis.conf\nRedis works differently to other databases in that there are no predefined schemas, tables etc.\nOut of the box, a Redis instance supports 16 logical databases. These databases are effectively siloed off from one another, and when you run a command in one database, it doesn’t affect any of the data stored in other databases in your Redis instance.\nhttps://www.digitalocean.com/community/cheatsheets/how-to-manage-redis-databases-and-keys So that ‘super_long_redis_password’ is the password for the logical database that Iceshrimp is using.\nTo watch Redis working, run the following in a Terminal:\nredis-cli\nmonitor\nInstall project dependencies Corepack is an experimental tool to help with managing versions of your package managers.\nhttps://nodejs.org/api/corepack.html As it is experimental, corepack needs enabling:\ncorepack enable\ncorepack prepare yarn@stable --activate\nyarn\nBuild Iceshrimp yarn build\nFirst migration yarn run init\nCertbot Certbot is a free, open source software tool for automatically using Let’s Encrypt certificates on manually-administrated websites to enable HTTPS.\nCertbot is made by the Electronic Frontier Foundation (EFF), a 501(c)3 nonprofit based in San Francisco, CA, that defends digital privacy, free speech, and innovation.\nhttps://certbot.eff.org/pages/about I already have a HTTPS site running on this server (you are reading it) so there was no need for me to install the extra Certbot software.\nThough, if needed Certbot is a Terminal command away:\nsudo apt install certbot python3-certbot-nginx\nTo only get a certificate before editing the nginx conf file:\nsudo certbot certonly\nThen put in the domain name e.g. social.example.com to create the certificate.\nConfigure nginx Copy the ‘iceshrimp.nginx.conf‘:\nsudo cp /home/foo/iceshrimp/docs/examples/iceshrimp.nginx.conf /etc/nginx/sites-available/EXAMPLE\nEdit accordingly:\nsudo nano /etc/nginx/sites-available/EXAMPLE\nserver { listen 80; listen [::]:80; server_name social.example.com; # For SSL domain validation root /var/www/html; location /.well-known/acme-challenge/ { allow all; } location /.well-known/pki-validation/ { allow all; } location / { return 301 https://$server_name$request_uri; } } And:\nserver { listen 443 ssl http2; listen [::]:443 ssl http2; server_name social.example.com; ssl_session_timeout 1d; ssl_session_cache shared:ssl_session_cache:10m; ssl_session_tickets off; # To use Let's Encrypt certificate ssl_certificate /etc/letsencrypt/live/social.example.com/fullchain.pem; ssl_certificate_key /etc/letsencrypt/live/social.example.com/privkey.pem; } Then, ‘enable’ the site by creating a symlink:\nsudo ln -s /etc/nginx/sites-available/EXAMPLE /etc/nginx/sites-enabled/\nCheck and reload nginx Then make sure it all works:\nsudo nginx -t \u0026\u0026 sudo systemctl reload nginx\nRunning iceshrimp using systemd I want Iceshrimp to start up after a reboot so I create a systemd unit file and enable it.\nCopy the ‘iceshrimp.service‘ and edit:\nsudo cp /home/foo/iceshrimp/docs/examples/iceshrimp.service /etc/systemd/system/\nEdit accordingly:\nsudo nano /etc/systemd/system/iceshrimp.service\n[Unit] Description=Iceshrimp daemon [Service] Type=simple User=foo ExecStart=/usr/bin/yarn start WorkingDirectory=/home/foo/iceshrimp Environment=\"NODE_ENV=production\" TimeoutSec=60 SyslogIdentifier=iceshrimp Restart=always [Install] WantedBy=multi-user.target Reload the systemctl daemon and enable the iceshrimp service:\nsudo systemctl daemon-reload\nsudo systemctl enable --now iceshrimp\nAnd that should pretty much be everything!\nInstalling Iceshrimp – Updating Updates are regular and some of them significant.\nI keep an eye on the releases page to see when this needs doing.\nEDIT: I’ve just noticed that there is a notification on the Admin Control Panel saying ‘There might be an update available!’, although I rarely get to see this as I hardly ever log in as an Admin.\nUpdate everything sudo apt update \u0026\u0026 sudo apt upgrade\nThere may be a sudo systemctl daemon-reload after an apt update if a package with a systemd unit file has been updated.\nHowever, if the kernel has been updated, there will need to be a sudo reboot.\nUpdate node.js node -v\nnvm ls-remote\nThis will list the updates available; choose the latest one.\nnvm install 21.1.0 \u0026\u0026 nvm use 21.1.0\nStop the iceshrimp service sudo systemctl stop iceshrimp\nsudo systemctl status iceshrimp\nChange to the foo user sudo su foo\ncd /home/foo/iceshrimp\nGit commands Git commands are a bit of dark art that I don’t fully comprehend, so these commands are from the Iceshrimp installation instructions .\nI pull the latest repository by running the following Git commands in a Terminal:\ngit pull\nyarn\nyarn build \u0026\u0026 yarn migrate\nReturn to the normal user exit\nStart the iceshrimp service sudo systemctl start iceshrimp\nsudo systemctl status iceshrimp\nFinally (I did mention this in a prior post but it bears repeating.)\nFor anyone interested in getting into the SQL side, pgAdmin is a useful tool.\nI installed it using:\ncurl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg\nsudo sh -c 'echo \"deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/jammy pgadmin4 main\" \u003e /etc/apt/sources.list.d/pgadmin4.list \u0026\u0026 apt update'\nsudo apt update\nsudo apt install pgadmin4\npgAdmin Screenshot\nHowever you Fediverse, Enjoy!\nUPDATE 1 As of version 2023.11.1 Iceshrimp uses Git-LFS.\nGit LFS is a command line extension and specification for managing large files with Git.\nhttps://github.com/git-lfs/git-lfs/tree/main Iceshrimp will not update past 2023.11 without installing Git-LFS.\nThis repository uses Git LFS. Please make sure it is installed before cloning this repository.\nhttps://iceshrimp.dev/iceshrimp/iceshrimp/wiki/Git-LFS Update everything once more sudo apt update \u0026\u0026 sudo apt upgrade\nInstall Git-LFS I installed Git-LFS by running the following in a Terminal:\ncurl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash\nsudo apt-get install git-lfs\nStop the iceshrimp service once more sudo systemctl stop iceshrimp\nsudo systemctl status iceshrimp\nChange to the foo user once more sudo su foo\ncd /home/foo/iceshrimp\nGit commands once more I pulled the latest repository by running the following Git commands in a Terminal:\ngit fetch\ngit reset --hard origin/dev\nyarn\nyarn build \u0026\u0026 yarn migrate\nReturn to the normal user once more exit\nStart the iceshrimp service once more sudo systemctl start iceshrimp\nsudo systemctl status iceshrimp\nUPDATE 2 Iceshrimp is moving to a .NET framework.\nA further comprehensive walk through can be found here .\n",
+  "wordCount" : "1761",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/installing-iceshrimp/01_Iceshrimp_Login_Screenshot.webp","datePublished": "2023-08-25T08:10:29+01:00",
+  "dateModified": "2023-08-25T08:10:29+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/installing-iceshrimp/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Installing Iceshrimp
+    </h1>
+    <div class="post-meta"><span title='2023-08-25 08:10:29 +0100 BST'>August 25, 2023</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#the-road-even-less-travelled" aria-label="The road even less travelled">The road even less travelled</a></li>
+                <li>
+                    <a href="#what-is-iceshrimp" aria-label="What is Iceshrimp?">What is Iceshrimp?</a></li>
+                <li>
+                    <a href="#installing-iceshrimp--overclocking" aria-label="Installing Iceshrimp – Overclocking">Installing Iceshrimp – Overclocking</a></li>
+                <li>
+                    <a href="#installing-iceshrimp--preparations" aria-label="Installing Iceshrimp – Preparations">Installing Iceshrimp – Preparations</a><ul>
+                        
+                <li>
+                    <a href="#build-dependencies" aria-label="Build Dependencies">Build Dependencies</a></li>
+                <li>
+                    <a href="#install-postgresql" aria-label="Install PostgreSQL">Install PostgreSQL</a></li>
+                <li>
+                    <a href="#configure-postgresql-for-iceshrimp" aria-label="Configure PostgreSQL for Iceshrimp">Configure PostgreSQL for Iceshrimp</a></li>
+                <li>
+                    <a href="#install-redis" aria-label="Install Redis">Install Redis</a></li>
+                <li>
+                    <a href="#install-nodejs" aria-label="Install NodeJS">Install NodeJS</a></li>
+                <li>
+                    <a href="#create-a-foo-user" aria-label="Create a ‘foo’ user">Create a ‘foo’ user</a></li></ul>
+                </li>
+                <li>
+                    <a href="#installing-iceshrimp" aria-label="Installing Iceshrimp">Installing Iceshrimp</a><ul>
+                        
+                <li>
+                    <a href="#install-project-dependencies" aria-label="Install project dependencies">Install project dependencies</a></li>
+                <li>
+                    <a href="#build-iceshrimp" aria-label="Build Iceshrimp">Build Iceshrimp</a></li>
+                <li>
+                    <a href="#first-migration" aria-label="First migration">First migration</a></li>
+                <li>
+                    <a href="#certbot" aria-label="Certbot">Certbot</a></li>
+                <li>
+                    <a href="#configure-nginx" aria-label="Configure nginx">Configure nginx</a><ul>
+                        
+                <li>
+                    <a href="#check-and-reload-nginx" aria-label="Check and reload nginx">Check and reload nginx</a></li></ul>
+                </li>
+                <li>
+                    <a href="#running-iceshrimp-using-systemd" aria-label="Running iceshrimp using systemd">Running iceshrimp using systemd</a></li></ul>
+                </li>
+                <li>
+                    <a href="#installing-iceshrimp--updating" aria-label="Installing Iceshrimp – Updating">Installing Iceshrimp – Updating</a><ul>
+                        
+                <li>
+                    <a href="#update-everything" aria-label="Update everything">Update everything</a></li>
+                <li>
+                    <a href="#update-nodejs" aria-label="Update node.js">Update node.js</a></li>
+                <li>
+                    <a href="#stop-the-iceshrimp-service" aria-label="Stop the iceshrimp service">Stop the iceshrimp service</a></li>
+                <li>
+                    <a href="#change-to-the-foo-user" aria-label="Change to the foo user">Change to the foo user</a></li>
+                <li>
+                    <a href="#git-commands" aria-label="Git commands">Git commands</a></li>
+                <li>
+                    <a href="#return-to-the-normal-user" aria-label="Return to the normal user">Return to the normal user</a></li>
+                <li>
+                    <a href="#start-the-iceshrimp-service" aria-label="Start the iceshrimp service">Start the iceshrimp service</a></li></ul>
+                </li>
+                <li>
+                    <a href="#finally" aria-label="Finally">Finally</a></li>
+                <li>
+                    <a href="#update-1" aria-label="UPDATE 1">UPDATE 1</a><ul>
+                        
+                <li>
+                    <a href="#update-everything-once-more" aria-label="Update everything once more">Update everything once more</a></li>
+                <li>
+                    <a href="#install-git-lfs" aria-label="Install Git-LFS">Install Git-LFS</a></li>
+                <li>
+                    <a href="#stop-the-iceshrimp-service-once-more" aria-label="Stop the iceshrimp service once more">Stop the iceshrimp service once more</a></li>
+                <li>
+                    <a href="#change-to-the-foo-user-once-more" aria-label="Change to the foo user once more">Change to the foo user once more</a></li>
+                <li>
+                    <a href="#git-commands-once-more" aria-label="Git commands once more">Git commands once more</a></li>
+                <li>
+                    <a href="#return-to-the-normal-user-once-more" aria-label="Return to the normal user once more">Return to the normal user once more</a></li>
+                <li>
+                    <a href="#start-the-iceshrimp-service-once-more" aria-label="Start the iceshrimp service once more">Start the iceshrimp service once more</a></li></ul>
+                </li>
+                <li>
+                    <a href="#update-2" aria-label="UPDATE 2">UPDATE 2</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="the-road-even-less-travelled">The road even less travelled<a hidden class="anchor" aria-hidden="true" href="#the-road-even-less-travelled">#</a></h2>
+<p>I’ve always made life difficult for myself, and my self-hosting journey is no different; from Calckey through Firefish, my Fediverse journey has led me to here; installing Iceshrimp.</p>
+<h2 id="what-is-iceshrimp">What is Iceshrimp?<a hidden class="anchor" aria-hidden="true" href="#what-is-iceshrimp">#</a></h2>
+<p>From the project web page.</p>
+<blockquote>
+<ul>
+<li>Iceshrimp is yet another Misskey fork (you know the drill by now)</li>
+<li>Need help or want to contribute? Join the 
+
+<a href="https://matrix.to/#/%23iceshrimp-dev:161.rocks" target="_blank" rel="nofollow noopener noreferrer">matrix room</a>
+!</li>
+<li>Documentation on installing (and updating) Iceshrimp:
+<ul>
+<li>
+
+<a href="https://iceshrimp.dev/iceshrimp/iceshrimp/src/branch/dev/docs/install.md" target="_blank" rel="nofollow noopener noreferrer">Bare metal</a>
+</li>
+<li>
+
+<a href="https://iceshrimp.dev/iceshrimp/iceshrimp/src/branch/dev/docs/docker-compose-install.md" target="_blank" rel="nofollow noopener noreferrer">Docker Compose</a>
+</li>
+</ul>
+</li>
+<li>Don’t like the Web UI? We test our Mastodon-compatible API against the following clients:
+<ul>
+<li>
+
+<a href="https://elk.zone" target="_blank" rel="nofollow noopener noreferrer">Elk</a>
+, 
+
+<a href="https://phanpy.social/" target="_blank" rel="nofollow noopener noreferrer">Phanpy</a>
+, 
+
+<a href="https://enafore.social/" target="_blank" rel="nofollow noopener noreferrer">Enafore</a>
+, 
+
+<a href="https://iceshrimp.dev/iceshrimp/masto-fe-standalone" target="_blank" rel="nofollow noopener noreferrer">Masto-FE-standalone</a>
+ (Web)</li>
+<li>
+
+<a href="https://apps.apple.com/us/app/mona-for-mastodon/id1659154653" target="_blank" rel="nofollow noopener noreferrer">Mona</a>
+, 
+
+<a href="https://apps.apple.com/us/app/toot-for-mastodon/id1229021451" target="_blank" rel="nofollow noopener noreferrer">Toot!</a>
+, 
+
+<a href="https://apps.apple.com/us/app/ice-cubes-for-mastodon/id6444915884" target="_blank" rel="nofollow noopener noreferrer">Ice Cubes</a>
+, 
+
+<a href="https://apps.apple.com/us/app/tusker/id1498334597" target="_blank" rel="nofollow noopener noreferrer">Tusker</a>
+, 
+
+<a href="https://github.com/feditext/feditext" target="_blank" rel="nofollow noopener noreferrer">Feditext</a>
+, 
+
+<a href="https://apps.apple.com/us/app/mastodon-for-iphone-and-ipad/id1571998974" target="_blank" rel="nofollow noopener noreferrer">Mastodon</a>
+ (iOS)</li>
+<li>
+
+<a href="https://tusky.app/" target="_blank" rel="nofollow noopener noreferrer">Tusky</a>
+, 
+
+<a href="https://lucasggamerm.github.io/moshidon/" target="_blank" rel="nofollow noopener noreferrer">Moshidon</a>
+, <del>Megalodon</del>, 
+
+<a href="https://play.google.com/store/apps/details?id=org.joinmastodon.android" target="_blank" rel="nofollow noopener noreferrer">Mastodon</a>
+ (Android)</li>
+</ul>
+</li>
+<li>Project goals:
+<ul>
+<li>No-nonsense bug fixes</li>
+<li>QoL improvements</li>
+<li>Better performance</li>
+<li>Change of focus to actual community needs</li>
+</ul>
+</li>
+<li>Project anti-goals:
+<ul>
+<li>Flashy marketing</li>
+<li>Commercialization of any kind</li>
+</ul>
+</li>
+</ul>
+<p><em>
+
+<a href="https://iceshrimp.dev/iceshrimp/iceshrimp" target="_blank" rel="nofollow noopener noreferrer">https://iceshrimp.dev/iceshrimp/iceshrimp</a>
+</em></p></blockquote>
+<p>There is a full ‘
+
+<a href="https://iceshrimp.dev/iceshrimp/iceshrimp/src/branch/dev/docs/install.md" target="_blank" rel="nofollow noopener noreferrer">How-To</a>
+‘ in the Iceshrimp git repo but these are my notes on how I installed Iceshrimp on <em><strong>my</strong></em> Pi.</p>
+<h2 id="installing-iceshrimp--overclocking">Installing Iceshrimp – Overclocking<a hidden class="anchor" aria-hidden="true" href="#installing-iceshrimp--overclocking">#</a></h2>
+<p>I’d seen from my Calckey and Firefish hosting that I need to overclock my Pi.</p>
+<p>Run the following in a Terminal to overclock:</p>
+<p><code>sudo nano /boot/firmware/config.txt</code></p>
+<pre tabindex="0"><code># Overclocking
+over_voltage=6
+arm_freq=2000
+gpu_freq=700
+</code></pre><p>And reboot using <code>sudo reboot</code></p>
+<p>Run the following in a Terminal to install a monitor and see the CPU speed in real-time:</p>
+<p><code>watch -n 1 cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq</code></p>
+<h2 id="installing-iceshrimp--preparations">Installing Iceshrimp – Preparations<a hidden class="anchor" aria-hidden="true" href="#installing-iceshrimp--preparations">#</a></h2>
+<p>Firstly update everything and add a couple of packages that may or may not already be present:</p>
+<p><code>sudo apt update; sudo apt install git wget; sudo apt full-upgrade -y; sudo reboot</code></p>
+<h3 id="build-dependencies">Build Dependencies<a hidden class="anchor" aria-hidden="true" href="#build-dependencies">#</a></h3>
+<p>The following may already be in place:</p>
+<p>C/C++ compiler like <strong>GCC</strong> or <strong>Clang</strong></p>
+<pre><code>- Can be checked by running `gcc --version` in a Terminal
+</code></pre>
+<p>Build tools like <strong>make</strong></p>
+<pre><code>- Can be checked by running `make --version` in a Terminal
+</code></pre>
+<p><strong>Python 3</strong></p>
+<pre><code>- Can be checked by running `python3 --version` in a Terminal
+</code></pre>
+<p>The meta package ‘build-essential’ is useful too:</p>
+<p><code>sudo apt install build-essential</code></p>
+<h3 id="install-postgresql">Install PostgreSQL<a hidden class="anchor" aria-hidden="true" href="#install-postgresql">#</a></h3>
+<blockquote>
+<p>PostgreSQL: The World’s Most Advanced Open Source Relational Database</p>
+<p><em>
+
+<a href="https://www.postgresql.org/" target="_blank" rel="nofollow noopener noreferrer">https://www.postgresql.org/</a>
+</em></p></blockquote>
+<p>Full installation instructions are on the 
+
+<a href="https://www.postgresql.org/download/linux/ubuntu/" target="_blank" rel="nofollow noopener noreferrer">PostgreSQL website</a>
+.</p>
+<p><strong>Create the file repository configuration:</strong></p>
+<p><code>sudo sh -c 'echo &quot;deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main&quot; &gt; /etc/apt/sources.list.d/pgdg.list'</code></p>
+<p><strong>Import the repository signing key:</strong></p>
+<p><code>wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -</code></p>
+<p><strong>Update the package lists:</strong></p>
+<p><code>sudo apt-get update</code></p>
+<p><strong>Install the latest version of PostgreSQL.</strong></p>
+<p>If you want a specific version, use &lsquo;postgresql-12&rsquo; or similar instead of &lsquo;postgresql&rsquo;:</p>
+<p><code>sudo apt-get -y install postgresql</code></p>
+<h3 id="configure-postgresql-for-iceshrimp">Configure PostgreSQL for Iceshrimp<a hidden class="anchor" aria-hidden="true" href="#configure-postgresql-for-iceshrimp">#</a></h3>
+<p>Iceshrimp also needs a database to store its info in.</p>
+<p>To add the Iceshrimp database run the following in a Terminal:</p>
+<p><code>sudo -u postgres psql</code></p>
+<p><code>create database iceshrimp with encoding = 'UTF8';</code></p>
+<p><code>create user iceshrimp with encrypted password 'super_long_postgres_password';</code></p>
+<p><code>grant all privileges on database iceshrimp to iceshrimp;</code></p>
+<p><code>\q</code></p>
+<p>The ‘iceshrimp’ db needs to be owned by role ‘iceshrimp’ so <code>ALTER</code> the database <code>OWNER</code> by running the following:</p>
+<p><code>sudo -u postgres psql</code></p>
+<p><code>\l</code></p>
+<p><code>ALTER DATABASE iceshrimp OWNER TO iceshrimp;</code></p>
+<h3 id="install-redis">Install Redis<a hidden class="anchor" aria-hidden="true" href="#install-redis">#</a></h3>
+<blockquote>
+<p>The open source, in-memory data store used by millions of developers as a database, cache, streaming engine, and message broker.</p>
+<p><em>
+
+<a href="https://redis.io/" target="_blank" rel="nofollow noopener noreferrer">https://redis.io/</a>
+</em></p></blockquote>
+<p>As with PostgreSQL I already have a working Redis server as I use it alongside my WordPress installation.</p>
+<p>However, if Redis is not installed, full instructions are on 
+
+<a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-20-04" target="_blank" rel="nofollow noopener noreferrer">this website</a>
+.</p>
+<p><code>curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg</code></p>
+<p><code>echo &quot;deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main&quot; | sudo tee /etc/apt/sources.list.d/redis.list</code></p>
+<p><code>sudo apt-get update</code></p>
+<p><code>sudo apt-get install redis</code></p>
+<h3 id="install-nodejs">Install NodeJS<a hidden class="anchor" aria-hidden="true" href="#install-nodejs">#</a></h3>
+<blockquote>
+<p>Node.js® is an open-source, cross-platform JavaScript runtime environment.</p>
+<p><em>
+
+<a href="https://nodejs.org/en/" target="_blank" rel="nofollow noopener noreferrer">https://nodejs.org/en/</a>
+</em></p></blockquote>
+<p>NodeJS is responsible for the interaction between the client (the browser) and the server (my Pi).</p>
+<p>NodeJS creates the dynamic page content and opens, modifies and closes files on the server: it is managed by Node Version Manager (NVM):</p>
+<p><code>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash</code></p>
+<p>Confirm the installed version by running <code>nvm -v</code> in a Terminal.</p>
+<p>The result should be ‘0.39.3’ or higher.</p>
+<p>To list the available Node versions run <code>nvm ls-remote</code> in a Terminal.</p>
+<p>Pick the latest version to <code>install</code>, in my case v21.1.0, install and <code>use</code>:</p>
+<p><code>nvm install v21.1.0 &amp;&amp; nvm use v21.1.0</code></p>
+<p>This can be checked by running <code>node -v</code> and looking at the result (it should be the same as the version in the <code>nvm install</code> command).</p>
+<p><strong>NOTE:</strong> <code>nvm</code> is not ‘persistent’, it will only use that version for the lifetime of the current shell.</p>
+<p>To ensure that the latest version is remembered run the following in a Terminal:</p>
+<p><code>nvm alias default v21.1.0</code></p>
+<h3 id="create-a-foo-user">Create a ‘foo’ user<a hidden class="anchor" aria-hidden="true" href="#create-a-foo-user">#</a></h3>
+<p>I prefer to run dedicated processes with a dedicated user.</p>
+<p>To add a new user run the following in a Terminal:</p>
+<p><code>sudo adduser foo</code></p>
+<p>And password protect it:</p>
+<p><code>sudo passwd foo</code></p>
+<h2 id="installing-iceshrimp">Installing Iceshrimp<a hidden class="anchor" aria-hidden="true" href="#installing-iceshrimp">#</a></h2>
+<p>Finally, it’s time to install Iceshrimp.</p>
+<p>Change to the newly created user:</p>
+<p><code>sudo su foo</code></p>
+<p>And clone the latest repository:</p>
+<p><code>git clone https://iceshrimp.dev/iceshrimp/iceshrimp</code></p>
+<p>Copy the ‘<code>example.yml</code>‘ and edit:</p>
+<p><code>cp /home/foo/iceshrimp/.config/example.yml /home/foo/iceshrimp/.config/default.yml</code></p>
+<p><code>sudo nano /home/foo/iceshrimp/.config/default.yml</code></p>
+<pre tabindex="0"><code># Final accessible URL seen by a user.
+url: https://social.example.com/
+
+# PostgreSQL configuration
+db:
+  host: localhost
+  port: 5432
+  db: iceshrimp
+  user: iceshrimp
+  pass: super_long_postgres_password
+
+# Redis configuration
+redis:
+  host: localhost
+  port: 6379
+  pass: super_long_redis_password
+</code></pre><p><strong>NOTE:</strong> There is a ‘super_long_redis_password’ here.</p>
+<p>This is <strong>not</strong> the password that restricts access to the Redis configuration settings found in <code>/etc/redis/redis.conf</code></p>
+<p>Redis works differently to other databases in that there are no predefined schemas, tables etc.</p>
+<blockquote>
+<p>Out of the box, a Redis instance supports 16 logical databases. These databases are effectively siloed off from one another, and when you run a command in one database, it doesn’t affect any of the data stored in other databases in your Redis instance.</p>
+<p><em>
+
+<a href="https://www.digitalocean.com/community/cheatsheets/how-to-manage-redis-databases-and-keys" target="_blank" rel="nofollow noopener noreferrer">https://www.digitalocean.com/community/cheatsheets/how-to-manage-redis-databases-and-keys</a>
+</em></p></blockquote>
+<p>So that ‘super_long_redis_password’ is the password for the logical database that Iceshrimp is using.</p>
+<p>To watch Redis working, run the following in a Terminal:</p>
+<p><code>redis-cli</code></p>
+<p><code>monitor</code></p>
+<h3 id="install-project-dependencies">Install project dependencies<a hidden class="anchor" aria-hidden="true" href="#install-project-dependencies">#</a></h3>
+<blockquote>
+<p><em>
+
+<a href="https://github.com/nodejs/corepack" target="_blank" rel="nofollow noopener noreferrer">Corepack</a>
+</em> is an experimental tool to help with managing versions of your package managers.</p>
+<p><em>
+
+<a href="https://nodejs.org/api/corepack.html" target="_blank" rel="nofollow noopener noreferrer">https://nodejs.org/api/corepack.html</a>
+</em></p></blockquote>
+<p>As it is experimental, corepack needs enabling:</p>
+<p><code>corepack enable</code></p>
+<p><code>corepack prepare yarn@stable --activate</code></p>
+<p><code>yarn</code></p>
+<h3 id="build-iceshrimp">Build Iceshrimp<a hidden class="anchor" aria-hidden="true" href="#build-iceshrimp">#</a></h3>
+<p><code>yarn build</code></p>
+<h3 id="first-migration">First migration<a hidden class="anchor" aria-hidden="true" href="#first-migration">#</a></h3>
+<p><code>yarn run init</code></p>
+<h3 id="certbot">Certbot<a hidden class="anchor" aria-hidden="true" href="#certbot">#</a></h3>
+<blockquote>
+<p>Certbot is a free, open source software tool for automatically using Let’s Encrypt certificates on manually-administrated websites to enable HTTPS.</p>
+<p>Certbot is made by the Electronic Frontier Foundation (EFF), a 501(c)3 nonprofit based in San Francisco, CA, that defends digital privacy, free speech, and innovation.</p>
+<p><em>
+
+<a href="https://certbot.eff.org/pages/about" target="_blank" rel="nofollow noopener noreferrer">https://certbot.eff.org/pages/about</a>
+</em></p></blockquote>
+<p>I already have a HTTPS site running on this server (you are reading it) so there was no need for me to install the extra Certbot software.</p>
+<p>Though, if needed Certbot is a Terminal command away:</p>
+<p><code>sudo apt install certbot python3-certbot-nginx</code></p>
+<p>To only get a certificate before editing the nginx conf file:</p>
+<p><code>sudo certbot certonly</code></p>
+<p>Then put in the domain name e.g. social.example.com to create the certificate.</p>
+<h3 id="configure-nginx">Configure nginx<a hidden class="anchor" aria-hidden="true" href="#configure-nginx">#</a></h3>
+<p>Copy the ‘<code>iceshrimp.nginx.conf</code>‘:</p>
+<p><code>sudo cp /home/foo/iceshrimp/docs/examples/iceshrimp.nginx.conf /etc/nginx/sites-available/EXAMPLE</code></p>
+<p>Edit accordingly:</p>
+<p><code>sudo nano /etc/nginx/sites-available/EXAMPLE</code></p>
+<pre tabindex="0"><code>server {
+    listen 80;
+    listen [::]:80;
+    server_name social.example.com;
+
+    # For SSL domain validation
+    root /var/www/html;
+    location /.well-known/acme-challenge/ { allow all; }
+    location /.well-known/pki-validation/ { allow all; }
+    location / { return 301 https://$server_name$request_uri; }
+}
+</code></pre><p>And:</p>
+<pre tabindex="0"><code>server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name social.example.com;
+
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:ssl_session_cache:10m;
+    ssl_session_tickets off;
+
+    # To use Let&#39;s Encrypt certificate
+    ssl_certificate     /etc/letsencrypt/live/social.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/social.example.com/privkey.pem;
+}
+</code></pre><p>Then, ‘enable’ the site by creating a symlink:</p>
+<p><code>sudo ln -s /etc/nginx/sites-available/EXAMPLE /etc/nginx/sites-enabled/</code></p>
+<h4 id="check-and-reload-nginx">Check and reload nginx<a hidden class="anchor" aria-hidden="true" href="#check-and-reload-nginx">#</a></h4>
+<p>Then make sure it all works:</p>
+<p><code>sudo nginx -t &amp;&amp; sudo systemctl reload nginx</code></p>
+<h3 id="running-iceshrimp-using-systemd">Running iceshrimp using systemd<a hidden class="anchor" aria-hidden="true" href="#running-iceshrimp-using-systemd">#</a></h3>
+<p>I want Iceshrimp to start up after a reboot so I create a systemd unit file and enable it.</p>
+<p>Copy the ‘<code>iceshrimp.service</code>‘ and edit:</p>
+<p><code>sudo cp /home/foo/iceshrimp/docs/examples/iceshrimp.service /etc/systemd/system/</code></p>
+<p>Edit accordingly:</p>
+<p><code>sudo nano /etc/systemd/system/iceshrimp.service</code></p>
+<pre tabindex="0"><code>[Unit]
+Description=Iceshrimp daemon
+
+[Service]
+Type=simple
+User=foo
+ExecStart=/usr/bin/yarn start
+WorkingDirectory=/home/foo/iceshrimp
+Environment=&#34;NODE_ENV=production&#34;
+TimeoutSec=60
+SyslogIdentifier=iceshrimp
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><p>Reload the <code>systemctl daemon</code> and <code>enable</code> the iceshrimp service:</p>
+<p><code>sudo systemctl daemon-reload</code></p>
+<p><code>sudo systemctl enable --now iceshrimp</code></p>
+<p>And that should pretty much be everything!</p>
+<h2 id="installing-iceshrimp--updating">Installing Iceshrimp – Updating<a hidden class="anchor" aria-hidden="true" href="#installing-iceshrimp--updating">#</a></h2>
+<p>Updates are regular and some of them significant.</p>
+<p>I keep an eye on the 
+
+<a href="https://iceshrimp.dev/iceshrimp/iceshrimp/releases" target="_blank" rel="nofollow noopener noreferrer">releases page</a>
+ to see when this needs doing.</p>
+<p><strong>EDIT:</strong> I’ve just noticed that there is a notification on the Admin Control Panel saying ‘There might be an update available!’, although I rarely get to see this as I hardly ever log in as an Admin.</p>
+<h3 id="update-everything">Update everything<a hidden class="anchor" aria-hidden="true" href="#update-everything">#</a></h3>
+<p><code>sudo apt update &amp;&amp; sudo apt upgrade</code></p>
+<p>There may be a <code>sudo systemctl daemon-reload</code> after an <code>apt update</code> if a package with a systemd unit file has been updated.</p>
+<p>However, if the kernel has been updated, there will need to be a <code>sudo reboot</code>.</p>
+<h3 id="update-nodejs">Update node.js<a hidden class="anchor" aria-hidden="true" href="#update-nodejs">#</a></h3>
+<p><code>node -v</code></p>
+<p><code>nvm ls-remote</code></p>
+<p>This will list the updates available; choose the latest one.</p>
+<p><code>nvm install 21.1.0 &amp;&amp; nvm use 21.1.0</code></p>
+<h3 id="stop-the-iceshrimp-service">Stop the iceshrimp service<a hidden class="anchor" aria-hidden="true" href="#stop-the-iceshrimp-service">#</a></h3>
+<p><code>sudo systemctl stop iceshrimp</code></p>
+<p><code>sudo systemctl status iceshrimp</code></p>
+<h3 id="change-to-the-foo-user">Change to the foo user<a hidden class="anchor" aria-hidden="true" href="#change-to-the-foo-user">#</a></h3>
+<p><code>sudo su foo</code></p>
+<p><code>cd /home/foo/iceshrimp</code></p>
+<h3 id="git-commands">Git commands<a hidden class="anchor" aria-hidden="true" href="#git-commands">#</a></h3>
+<p>Git commands are a bit of dark art that I don’t fully comprehend, so these commands are from the 
+
+<a href="https://iceshrimp.dev/iceshrimp/iceshrimp/src/branch/dev/docs/install.md" target="_blank" rel="nofollow noopener noreferrer">Iceshrimp installation instructions</a>
+.</p>
+<p>I pull the latest repository by running the following Git commands in a Terminal:</p>
+<p><code>git pull</code></p>
+<p><code>yarn</code></p>
+<p><code>yarn build &amp;&amp; yarn migrate</code></p>
+<h3 id="return-to-the-normal-user">Return to the normal user<a hidden class="anchor" aria-hidden="true" href="#return-to-the-normal-user">#</a></h3>
+<p><code>exit</code></p>
+<h3 id="start-the-iceshrimp-service">Start the iceshrimp service<a hidden class="anchor" aria-hidden="true" href="#start-the-iceshrimp-service">#</a></h3>
+<p><code>sudo systemctl start iceshrimp</code></p>
+<p><code>sudo systemctl status iceshrimp</code></p>
+<h2 id="finally">Finally<a hidden class="anchor" aria-hidden="true" href="#finally">#</a></h2>
+<p>(I did mention this in a 
+
+
+  <a href="/posts/calckey-fediverse-server/">prior post</a>
+ but it bears repeating.)</p>
+<p>For anyone interested in getting into the SQL side, pgAdmin is a useful tool.</p>
+<p>I installed it using:</p>
+<p><code>curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg</code></p>
+<p><code>sudo sh -c 'echo &quot;deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/jammy pgadmin4 main&quot; &gt; /etc/apt/sources.list.d/pgadmin4.list &amp;&amp; apt update'</code></p>
+<p><code>sudo apt update</code></p>
+<p><code>sudo apt install pgadmin4</code></p>
+<p><img alt="A screenshot of the Linux application pgAdmin, used to administer PostgreSQL databases. The Calckey Fediverse Server uses PostgreSQL as its back end database engine." loading="lazy" src="/posts/installing-iceshrimp/01_pgAdmin_Screenshot.webp#center" title="A screenshot of the Linux application pgAdmin, used to administer PostgreSQL databases. The Calckey Fediverse Server uses PostgreSQL as its back end database engine.">
+<em>pgAdmin Screenshot</em></p>
+<p>However you Fediverse, Enjoy!</p>
+<h2 id="update-1"><strong>UPDATE 1</strong><a hidden class="anchor" aria-hidden="true" href="#update-1">#</a></h2>
+<p>As of version 2023.11.1 Iceshrimp uses Git-LFS.</p>
+<blockquote>
+<p>
+
+<a href="https://git-lfs.github.com" target="_blank" rel="nofollow noopener noreferrer">Git LFS</a>
+ is a command line extension and 
+
+<a href="https://github.com/git-lfs/git-lfs/blob/main/docs/spec.md" target="_blank" rel="nofollow noopener noreferrer">specification</a>
+ for managing large files with Git.</p>
+<p><em>
+
+<a href="https://github.com/git-lfs/git-lfs/tree/main" target="_blank" rel="nofollow noopener noreferrer">https://github.com/git-lfs/git-lfs/tree/main</a>
+</em></p></blockquote>
+<p>Iceshrimp will not update past 2023.11 without installing Git-LFS.</p>
+<blockquote>
+<p>This repository uses Git LFS. Please make sure it is installed before cloning this repository.</p>
+<p><em>
+
+<a href="https://iceshrimp.dev/iceshrimp/iceshrimp/wiki/Git-LFS" target="_blank" rel="nofollow noopener noreferrer">https://iceshrimp.dev/iceshrimp/iceshrimp/wiki/Git-LFS</a>
+</em></p></blockquote>
+<h3 id="update-everything-once-more">Update everything once more<a hidden class="anchor" aria-hidden="true" href="#update-everything-once-more">#</a></h3>
+<p><code>sudo apt update &amp;&amp; sudo apt upgrade</code></p>
+<h3 id="install-git-lfs">Install Git-LFS<a hidden class="anchor" aria-hidden="true" href="#install-git-lfs">#</a></h3>
+<p>I installed Git-LFS by running the following in a Terminal:</p>
+<p><code>curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash</code></p>
+<p><code>sudo apt-get install git-lfs</code></p>
+<h3 id="stop-the-iceshrimp-service-once-more">Stop the iceshrimp service once more<a hidden class="anchor" aria-hidden="true" href="#stop-the-iceshrimp-service-once-more">#</a></h3>
+<p><code>sudo systemctl stop iceshrimp</code></p>
+<p><code>sudo systemctl status iceshrimp</code></p>
+<h3 id="change-to-the-foo-user-once-more">Change to the foo user once more<a hidden class="anchor" aria-hidden="true" href="#change-to-the-foo-user-once-more">#</a></h3>
+<p><code>sudo su foo</code></p>
+<p><code>cd /home/foo/iceshrimp</code></p>
+<h3 id="git-commands-once-more">Git commands once more<a hidden class="anchor" aria-hidden="true" href="#git-commands-once-more">#</a></h3>
+<p>I pulled the latest repository by running the following Git commands in a Terminal:</p>
+<p><code>git fetch</code></p>
+<p><code>git reset --hard origin/dev</code></p>
+<p><code>yarn</code></p>
+<p><code>yarn build &amp;&amp; yarn migrate</code></p>
+<h3 id="return-to-the-normal-user-once-more">Return to the normal user once more<a hidden class="anchor" aria-hidden="true" href="#return-to-the-normal-user-once-more">#</a></h3>
+<p><code>exit</code></p>
+<h3 id="start-the-iceshrimp-service-once-more">Start the iceshrimp service once more<a hidden class="anchor" aria-hidden="true" href="#start-the-iceshrimp-service-once-more">#</a></h3>
+<p><code>sudo systemctl start iceshrimp</code></p>
+<p><code>sudo systemctl status iceshrimp</code></p>
+<h2 id="update-2"><strong>UPDATE 2</strong><a hidden class="anchor" aria-hidden="true" href="#update-2">#</a></h2>
+<p>Iceshrimp is moving to a .NET framework.</p>
+<p>A further comprehensive walk through can be found 
+
+
+  <a href="/posts/installing-iceshrimp-net/">here</a>
+.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/bash/">Bash</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/fediverse/">Fediverse</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/nanode/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Nanode</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/firefish-backup-and-restore/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Firefish Backup and Restore</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Apache Traffic Analysis Using GoAccess | Boffins Blog</title>
+<meta name="keywords" content="Data Visualisation, Debian, Linux, Raspberry Pi, Self Hosting, Software, Web-Servers">
+<meta name="description" content="A guide on how to implement real-time visitor traffic analysis on an Apache web server using GoAccess.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Apache Traffic Analysis Using GoAccess">
+  <meta property="og:description" content="A guide on how to implement real-time visitor traffic analysis on an Apache web server using GoAccess.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-02-02T13:53:08+00:00">
+    <meta property="article:modified_time" content="2023-02-02T13:53:08+00:00">
+    <meta property="article:tag" content="Data Visualisation">
+    <meta property="article:tag" content="Debian">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/01_Apache_Traffic_Analysis_GoAccess.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/01_Apache_Traffic_Analysis_GoAccess.webp">
+<meta name="twitter:title" content="Apache Traffic Analysis Using GoAccess">
+<meta name="twitter:description" content="A guide on how to implement real-time visitor traffic analysis on an Apache web server using GoAccess.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Apache Traffic Analysis Using GoAccess",
+      "item": "https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Apache Traffic Analysis Using GoAccess",
+  "name": "Apache Traffic Analysis Using GoAccess",
+  "description": "A guide on how to implement real-time visitor traffic analysis on an Apache web server using GoAccess.",
+  "keywords": [
+    "Data Visualisation", "Debian", "Linux", "Raspberry Pi", "Self Hosting", "Software", "Web-Servers"
+  ],
+  "articleBody": "I love graphs. I wanted to add some traffic analysis to my Pi based Apache web server and had a couple of prerequisites; real time but good looking; enter GoAccess .\nI’m already using the old school AWStats installed and configured but it’s not real-time and I wanted something funky looking.\nHowever, none of the WordPress plugins I was looking into were doing it for me.\nMost of them either send a cookie (which I am against doing, as I want visitors to have confidence that the site has zero ads) or were really basic.\nWhat is it? GoAccess is an open source real-time web log analyzer and interactive viewer that runs in a terminal in *nix systems or through your browser.\nhttps://goaccess.io/ Sounds straightforward ?\nWell, it kinda was.\nI used my dynamic DNS service to forward a new domain name to my routers IP.\n(I could have attached the traffic reports to the existing sites but I’m thinking ahead and planning a central site that is a portal to all of the analysis.)\nBack on my sever I needed somewhere to direct this traffic to.\nApache server setup Setup the new vHost sudo nano /etc/apache2/sites-available/newsite.conf\nThis is a copy / paste from an existing vHosts file that I recycled, it may have too many options enabled.\nServerAdmin admin@newsite.net DocumentRoot /var/www/html/newsite.net/ ServerName newsite.net ServerAlias newsite.net *.newsite.net CustomLog /var/log/apache2/newsite_access.log combined ErrorLog /var/log/apache2/newsite_error.log Options Indexes Includes FollowSymLinks MultiViews AllowOverride All Require all granted There are various arguments about having discrete logs per site.\nSome camps are in the ‘dump it all in one log and slice it up later’.\nI’m in the ‘slice it up now, I’ll consolidate it all later if needed’ camp.\nUpdate the hosts file sudo nano /etc/host\n192.168.0.90 newsite.net newsite Make the Apache site live sudo a2ensite newsite.conf\nThen, time to create some temporary content, just to check that the name is resolving, and Apache is responding with something.\nCreate the www directory and a holding page sudo mkdir /var/www/html/newsite.net/\nsudo nano /var/www/html/newsite.net/index.html\nnewsite blah, blah, blah\nSo far, so good, http://newsite.net seems to be a working webpage.\n(GoAccess can deal with https:// sites by passing the certificate in the reporting string but I’m keeping it simple right now.)\nI’m not particularly concerned about random people viewing the logs but I’m going to require authentication to view the page anyway.\nCreate a password In order to password protect the folder, I had to create a password file.\nsudo htpasswd -c /etc/apache2/.htpasswd foo\nGo through the usual dance of entering the password twice.\nAdd the .htaccess file sudo nano /var/www/html/newsite.net/.htaccess\nAuthType Basic AuthName \"Password Required\" Require valid-user AuthUserFile /etc/apache2/.htpasswd Finally, restart Apache sudo /etc/init.d/apache2 restart\nSo, now I have a working webpage that requires a password to view.\nThe ‘goaccess’ package is available via the package manager of my Linux distribution but it’s an older version.\nHowever, there is a Debian/Ubuntu repository containing the latest stable version.\nI fancied living on the edge, so installed by the tried and tested ‘build’ method.\nBuilding GoAccess from source sudo apt install libncursesw5-dev libgeoip-dev libtokyocabinet-dev build-essential\nwget https://tar.goaccess.io/goaccess-1.7.2.tar.gz\ntar -xzvf goaccess-1.7.2.tar.gz\ncd goaccess-1.7.2/\n./configure --enable-utf8 --enable-geoip=legacy\nmake\nsudo make install\ngoaccess --version\nConfigure GoAccess To find the config file I used:\ngoaccess --dcf\nWhich told me where mine is located (it could have been in a number of places).\nsudo /usr/local/etc/goaccess/goaccess.conf\nHowever, I did the very minimum and uncommented only the ‘Time’, ‘Date’ and ‘Log Format’ options.\n# The following time format works with any of the # Apache/NGINX's log formats below. # time-format %H:%M:%S # The following date format works with any of the # Apache/NGINX's log formats below. # date-format %d/%b/%Y # NCSA Combined Log Format log-format %h %^[%d:%t %^] \"%r\" %s %b \"%R\" \"%u\" Traffic data can be output to a terminal, a real-time webpage, a static html file or any number of output formats (including json, csv).\nApache traffic analysis Terminal reporting goaccess -f /var/log/apache2/newsite_access.log --log-format=COMBINED\nReal-time reporting The real-time reporting was where I came unstuck.\nI have to stress this was 100% my fault.\nI’d forgotten that I have a tightly locked down Debian / Apache system.\nOnly really basic ports are open with a very limited number of services allowed to connect and allow traffic through.\nSo, after several hours of banging my head on the desk, I remembered that I need to open a port on the router to allow GoAccess traffic in, and I need to open a port on the firewall to allow traffic through.\nUpdate port forwarding on the router Port 7890 is the default GoAccess port, so I sent traffic on 7890 back to 192.168.0.90 (my server IP).\nAllow access through the firewall Debian nftables is my firewall of choice so I needed to allow that traffic to pass through; however I have recently changed over to UFW and the configuration is a lot simpler.\nI added the GoAccess listening port to the list of ports that can pass traffic through the firewall.\nsudo nano /etc/nftables.conf\n# activate the following line to accept common local services tcp dport { 22, 80, 443, 7890 } ct state new accept Real-time reporting commands This takes only the latest ‘newsite_access.log‘ and sends it to ‘newsite.net/index.html‘.\ngoaccess /var/log/apache2/newsite_access.log -o /var/www/html/newsite.net/index.html --log-format=COMBINED --real-time-html\nIn order to look at all traffic, this command uses zcat to decompress every archived ‘newsite_access.log‘ files, pipe ( | ) them to goaccess where it adds in the latest uncompressed ‘newsite_access.log‘ and sends everything to ‘newsite.net/index.html‘.\nzcat -f /var/log/apache2/newsite_access.log* | goaccess /var/log/apache2/newsite_access.log -o /var/www/html/newsite.net/index.html --log-format=COMBINED --real-time-html\nStatic reporting commands A static report can be generated by removing ‘–real-time-html’ from the above command.\ncron syntax When a cron job is needed the command string is slightly different.\nThe full path to zcat and goaccess is required, also notice the ‘- -o’ in the string rather than ‘-o’.\nThis is because goaccess needs to know that you are piping data by using the extra ‘-‘.\n/usr/bin/zcat -f /var/log/apache2/newsite_access.log* | /usr/local/bin/goaccess /var/log/apache2/newsite_access.log - -o /var/www/html/newsite.net/index.html\n@reboot I wanted my logging to restart when the server reboots.\nSo I added a quick script sudo nano /etc/init.d/reboot_goaccess.sh\n#!/bin/bash # Refresh the GoAccess REAL-TIME webpage from the Apache access logs # Update newsite_access.net webpage - (Notice the - -o that cron needs) /usr/bin/zcat -f /var/log/apache2/newsite_access_access.log* | /usr/local/bin/goaccess /var/log/apache2/newsite_access.log - -o /var/www/html/newsite.net/index.html --log-format=COMBINED --real-time-html Made it executable sudo chmod +x /etc/init.d/reboot_goaccess.sh\nUpdated root cron sudo crontab -e\n# # Start the GoAccess real-time reporting webpage on boot @reboot sh /etc/init.d/reboot_goaccess.sh # Tinkering with traffic analysis using GoAccess and Apache There are a wealth of tinkering possibilities.\nEnabling / disabling the default info panels\nCustom colouring for the panels\nSlicing up the logs to include / exclude date ranges, crawlers, bots and more\nLoads more, really, lots to tinker with\nThe list seems endless.\nFinally I really like it but then I’m the target audience for these kind of things.\nIf I hadn’t bungled the port forwarding / firewall bit, the whole process would have taken about half an hour.\nApache Traffic Analysis Using GoAccess\nUpdate: I’ve been using GoAccess for Apache traffic analysis for a few months now and it has been flawless.\nAlso, I’ve recently moved all my sites over to nginx and the only change I had to make was to the path to the log files to keep everything running perfectly.\n",
+  "wordCount" : "1240",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/01_Apache_Traffic_Analysis_GoAccess.webp","datePublished": "2023-02-02T13:53:08Z",
+  "dateModified": "2023-02-02T13:53:08Z",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Apache Traffic Analysis Using GoAccess
+    </h1>
+    <div class="post-meta"><span title='2023-02-02 13:53:08 +0000 GMT'>February 2, 2023</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#i-love-graphs" aria-label="I love graphs.">I love graphs.</a></li>
+                <li>
+                    <a href="#apache-server-setup" aria-label="Apache server setup">Apache server setup</a><ul>
+                        
+                <li>
+                    <a href="#setup-the-new-vhost" aria-label="Setup the new vHost">Setup the new vHost</a></li>
+                <li>
+                    <a href="#update-the-hosts-file" aria-label="Update the hosts file">Update the hosts file</a></li>
+                <li>
+                    <a href="#make-the-apache-site-live" aria-label="Make the Apache site live">Make the Apache site live</a></li>
+                <li>
+                    <a href="#create-the-www-directory-and-a-holding-page" aria-label="Create the www directory and a holding page">Create the www directory and a holding page</a></li>
+                <li>
+                    <a href="#create-a-password" aria-label="Create a password">Create a password</a></li>
+                <li>
+                    <a href="#add-the-htaccess-file" aria-label="Add the .htaccess file">Add the .htaccess file</a></li>
+                <li>
+                    <a href="#finally-restart-apache" aria-label="Finally, restart Apache">Finally, restart Apache</a></li></ul>
+                </li>
+                <li>
+                    <a href="#building-goaccess-from-source" aria-label="Building GoAccess from source">Building GoAccess from source</a><ul>
+                        
+                <li>
+                    <a href="#configure-goaccess" aria-label="Configure GoAccess">Configure GoAccess</a></li></ul>
+                </li>
+                <li>
+                    <a href="#apache-traffic-analysis" aria-label="Apache traffic analysis">Apache traffic analysis</a><ul>
+                        
+                <li>
+                    <a href="#terminal-reporting" aria-label="Terminal reporting">Terminal reporting</a></li>
+                <li>
+                    <a href="#real-time-reporting" aria-label="Real-time reporting">Real-time reporting</a><ul>
+                        
+                <li>
+                    <a href="#update-port-forwarding-on-the-router" aria-label="Update port forwarding on the router">Update port forwarding on the router</a></li>
+                <li>
+                    <a href="#allow-access-through-the-firewall" aria-label="Allow access through the firewall">Allow access through the firewall</a></li></ul>
+                </li>
+                <li>
+                    <a href="#real-time-reporting-commands" aria-label="Real-time reporting commands">Real-time reporting commands</a></li>
+                <li>
+                    <a href="#static-reporting-commands" aria-label="Static reporting commands">Static reporting commands</a></li>
+                <li>
+                    <a href="#cron-syntax" aria-label="cron syntax">cron syntax</a></li></ul>
+                </li>
+                <li>
+                    <a href="#reboot" aria-label="@reboot">@reboot</a><ul>
+                        
+                <li>
+                    <a href="#so-i-added-a-quick-script" aria-label="So I added a quick script">So I added a quick script</a><ul>
+                        
+                <li>
+                    <a href="#made-it-executable" aria-label="Made it executable">Made it executable</a></li>
+                <li>
+                    <a href="#updated-root-cron" aria-label="Updated root cron">Updated root cron</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#tinkering-with-traffic-analysis-using-goaccess-and-apache" aria-label="Tinkering with traffic analysis using GoAccess and Apache">Tinkering with traffic analysis using GoAccess and Apache</a></li>
+                <li>
+                    <a href="#finally" aria-label="Finally">Finally</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="i-love-graphs">I love graphs.<a hidden class="anchor" aria-hidden="true" href="#i-love-graphs">#</a></h2>
+<p>I wanted to add some traffic analysis to my Pi based Apache web server and had a couple of prerequisites; real time but good looking; enter 
+
+<a href="https://goaccess.io/" target="_blank" rel="nofollow noopener noreferrer">GoAccess</a>
+.</p>
+<p>I’m already using the old school 
+
+<a href="https://awstats.sourceforge.io/" target="_blank" rel="nofollow noopener noreferrer">AWStats</a>
+ installed and configured but it’s not real-time and I wanted something funky looking.</p>
+<p>However, none of the WordPress plugins I was looking into were doing it for me.</p>
+<p>Most of them either send a cookie (which I am against doing, as I want visitors to have confidence that the site has zero ads) or were really basic.</p>
+<blockquote>
+<p>What is it? GoAccess is an open source real-time web log analyzer and interactive viewer that runs in a terminal in *nix systems or through your browser.</p>
+<p><em>
+
+<a href="https://goaccess.io/" target="_blank" rel="nofollow noopener noreferrer">https://goaccess.io/</a>
+</em></p></blockquote>
+<p>Sounds straightforward ?</p>
+<p>Well, it kinda was.</p>
+<p>I used my dynamic DNS service to forward a new domain name to my routers IP.</p>
+<p>(I could have attached the traffic reports to the existing sites but I’m thinking ahead and planning a central site that is a portal to all of the analysis.)</p>
+<p>Back on <strong>my</strong> sever I needed somewhere to direct this traffic <strong>to</strong>.</p>
+<h2 id="apache-server-setup">Apache server setup<a hidden class="anchor" aria-hidden="true" href="#apache-server-setup">#</a></h2>
+<h3 id="setup-the-new-vhost">Setup the new vHost<a hidden class="anchor" aria-hidden="true" href="#setup-the-new-vhost">#</a></h3>
+<p><code>sudo nano /etc/apache2/sites-available/newsite.conf</code></p>
+<p>This is a copy / paste from an existing vHosts file that I recycled, it may have too many options enabled.</p>
+<pre tabindex="0"><code>&lt;VirtualHost *:80&gt;
+ServerAdmin admin@newsite.net
+DocumentRoot /var/www/html/newsite.net/
+ServerName newsite.net
+ServerAlias newsite.net *.newsite.net
+
+CustomLog /var/log/apache2/newsite_access.log combined
+ErrorLog /var/log/apache2/newsite_error.log
+
+&lt;Directory /var/www/html/newsite.net&gt;
+Options Indexes Includes FollowSymLinks MultiViews
+AllowOverride All
+Require all granted
+&lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+</code></pre><p>There are various arguments about having discrete logs per site.</p>
+<p>Some camps are in the ‘dump it all in one log and slice it up later’.</p>
+<p>I’m in the ‘slice it up now, I’ll consolidate it all later if needed’ camp.</p>
+<h3 id="update-the-hosts-file">Update the hosts file<a hidden class="anchor" aria-hidden="true" href="#update-the-hosts-file">#</a></h3>
+<p><code>sudo nano /etc/host</code></p>
+<pre tabindex="0"><code>192.168.0.90     newsite.net     newsite
+</code></pre><h3 id="make-the-apache-site-live">Make the Apache site live<a hidden class="anchor" aria-hidden="true" href="#make-the-apache-site-live">#</a></h3>
+<p><code>sudo a2ensite newsite.conf</code></p>
+<p>Then, time to create some temporary content, just to check that the name is resolving, and Apache is responding with <em>something</em>.</p>
+<h3 id="create-the-www-directory-and-a-holding-page">Create the <code>www</code> directory and a holding page<a hidden class="anchor" aria-hidden="true" href="#create-the-www-directory-and-a-holding-page">#</a></h3>
+<p><code>sudo mkdir /var/www/html/newsite.net/</code></p>
+<p><code>sudo nano /var/www/html/newsite.net/index.html</code></p>
+<pre tabindex="0"><code>&lt;html&gt;
+
+&lt;head&gt;
+&lt;title&gt;newsite&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;br&gt;
+blah, blah, blah&lt;br&gt;
+&lt;br&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;
+</code></pre><p>So far, so good, 
+
+<a href="http://newsite.net" target="_blank" rel="nofollow noopener noreferrer">http://newsite.net</a>
+ seems to be a working webpage.</p>
+<p>(GoAccess <strong>can</strong> deal with https:// sites by passing the certificate in the reporting string but I’m keeping it simple right now.)</p>
+<p>I’m not particularly concerned about random people viewing the logs but I’m going to require authentication to view the page anyway.</p>
+<h3 id="create-a-password">Create a password<a hidden class="anchor" aria-hidden="true" href="#create-a-password">#</a></h3>
+<p>In order to password protect the folder, I had to create a password file.</p>
+<p><code>sudo htpasswd -c /etc/apache2/.htpasswd foo</code></p>
+<p>Go through the usual dance of entering the password twice.</p>
+<h3 id="add-the-htaccess-file">Add the <code>.htaccess</code> file<a hidden class="anchor" aria-hidden="true" href="#add-the-htaccess-file">#</a></h3>
+<p><code>sudo nano /var/www/html/newsite.net/.htaccess</code></p>
+<pre tabindex="0"><code>AuthType Basic
+AuthName &#34;Password Required&#34;
+Require valid-user
+AuthUserFile /etc/apache2/.htpasswd
+</code></pre><h3 id="finally-restart-apache">Finally, restart Apache<a hidden class="anchor" aria-hidden="true" href="#finally-restart-apache">#</a></h3>
+<p><code>sudo /etc/init.d/apache2 restart</code></p>
+<p>So, now I have a working webpage that requires a password to view.</p>
+<p>The ‘goaccess’ package <strong>is</strong> available via the package manager of my Linux distribution but it’s an older version.</p>
+<p>However, there is a Debian/Ubuntu repository containing the latest stable version.</p>
+<p>I fancied living on the edge, so installed by the tried and tested ‘build’ method.</p>
+<h2 id="building-goaccess-from-source">Building GoAccess from source<a hidden class="anchor" aria-hidden="true" href="#building-goaccess-from-source">#</a></h2>
+<p><code>sudo apt install libncursesw5-dev libgeoip-dev libtokyocabinet-dev build-essential</code></p>
+<p><code>wget https://tar.goaccess.io/goaccess-1.7.2.tar.gz</code></p>
+<p><code>tar -xzvf goaccess-1.7.2.tar.gz</code></p>
+<p><code>cd goaccess-1.7.2/</code></p>
+<p><code>./configure --enable-utf8 --enable-geoip=legacy</code></p>
+<p><code>make</code></p>
+<p><code>sudo make install</code></p>
+<p><code>goaccess --version</code></p>
+<h3 id="configure-goaccess">Configure GoAccess<a hidden class="anchor" aria-hidden="true" href="#configure-goaccess">#</a></h3>
+<p>To find the config file I used:</p>
+<p><code>goaccess --dcf</code></p>
+<p>Which told me where mine is located (it could have been in a number of places).</p>
+<p><code>sudo /usr/local/etc/goaccess/goaccess.conf</code></p>
+<p>However, I did the very minimum and uncommented only the ‘Time’, ‘Date’ and ‘Log Format’ options.</p>
+<pre tabindex="0"><code># The following time format works with any of the
+# Apache/NGINX&#39;s log formats below.
+#
+time-format %H:%M:%S
+
+# The following date format works with any of the
+# Apache/NGINX&#39;s log formats below.
+#
+date-format %d/%b/%Y
+
+# NCSA Combined Log Format
+log-format %h %^[%d:%t %^] &#34;%r&#34; %s %b &#34;%R&#34; &#34;%u&#34;
+</code></pre><p>Traffic data can be output to a terminal, a real-time webpage, a static html file or any number of output formats (including json, csv).</p>
+<h2 id="apache-traffic-analysis">Apache traffic analysis<a hidden class="anchor" aria-hidden="true" href="#apache-traffic-analysis">#</a></h2>
+<h3 id="terminal-reporting">Terminal reporting<a hidden class="anchor" aria-hidden="true" href="#terminal-reporting">#</a></h3>
+<p><code>goaccess -f /var/log/apache2/newsite_access.log --log-format=COMBINED</code></p>
+<h3 id="real-time-reporting">Real-time reporting<a hidden class="anchor" aria-hidden="true" href="#real-time-reporting">#</a></h3>
+<p>The real-time reporting was where I came unstuck.</p>
+<p>I have to stress this was 100% my fault.</p>
+<p>I’d forgotten that I have a tightly locked down Debian / Apache system.</p>
+<p>Only really basic ports are open with a very limited number of services allowed to connect and allow traffic through.</p>
+<p>So, after several hours of banging my head on the desk, I remembered that I need to open a port on the router to allow GoAccess traffic <strong>in</strong>, and I need to open a port on the firewall to allow traffic <strong>through</strong>.</p>
+<h4 id="update-port-forwarding-on-the-router">Update port forwarding on the router<a hidden class="anchor" aria-hidden="true" href="#update-port-forwarding-on-the-router">#</a></h4>
+<p>Port 7890 is the default GoAccess port, so I sent traffic on 7890 back to 192.168.0.90 (my server IP).</p>
+<h4 id="allow-access-through-the-firewall">Allow access through the firewall<a hidden class="anchor" aria-hidden="true" href="#allow-access-through-the-firewall">#</a></h4>
+<p>Debian nftables is my firewall of choice so I needed to allow that traffic to pass through; however I have recently changed over to UFW and the configuration is a <strong>lot</strong> simpler.</p>
+<p>I added the GoAccess listening port to the list of ports that can pass traffic through the firewall.</p>
+<p><code>sudo nano /etc/nftables.conf</code></p>
+<pre tabindex="0"><code># activate the following line to accept common local services
+tcp dport { 22, 80, 443, 7890 } ct state new accept
+</code></pre><h3 id="real-time-reporting-commands">Real-time reporting commands<a hidden class="anchor" aria-hidden="true" href="#real-time-reporting-commands">#</a></h3>
+<p>This takes <strong>only</strong> the latest ‘<em>newsite_access.log</em>‘ and sends it to ‘<em>newsite.net/index.html</em>‘.</p>
+<p><code>goaccess /var/log/apache2/newsite_access.log -o /var/www/html/newsite.net/index.html --log-format=COMBINED --real-time-html</code></p>
+<p>In order to look at all traffic, this command uses <strong>zcat</strong> to decompress every archived ‘<em>newsite_access.log</em>‘ files, pipe ( | ) them to goaccess where it adds in the latest uncompressed ‘<em>newsite_access.log</em>‘ and sends everything to ‘<em>newsite.net/index.html</em>‘.</p>
+<p><code>zcat -f /var/log/apache2/newsite_access.log* | goaccess /var/log/apache2/newsite_access.log -o /var/www/html/newsite.net/index.html --log-format=COMBINED --real-time-html</code></p>
+<h3 id="static-reporting-commands">Static reporting commands<a hidden class="anchor" aria-hidden="true" href="#static-reporting-commands">#</a></h3>
+<p>A static report can be generated by removing ‘–real-time-html’ from the above command.</p>
+<h3 id="cron-syntax">cron syntax<a hidden class="anchor" aria-hidden="true" href="#cron-syntax">#</a></h3>
+<p>When a cron job is needed the command string is slightly different.</p>
+<p>The full path to zcat and goaccess is required, also notice the ‘- -o’ in the string rather than ‘-o’.</p>
+<p>This is because goaccess needs to know that you are piping data by using the extra ‘-‘.</p>
+<p><code>/usr/bin/zcat -f /var/log/apache2/newsite_access.log* | /usr/local/bin/goaccess /var/log/apache2/newsite_access.log - -o /var/www/html/newsite.net/index.html</code></p>
+<h2 id="reboot">@reboot<a hidden class="anchor" aria-hidden="true" href="#reboot">#</a></h2>
+<p>I wanted my logging to restart when the server reboots.</p>
+<h3 id="so-i-added-a-quick-script">So I added a quick script<a hidden class="anchor" aria-hidden="true" href="#so-i-added-a-quick-script">#</a></h3>
+<p><code>sudo nano /etc/init.d/reboot_goaccess.sh</code></p>
+<pre tabindex="0"><code>#!/bin/bash
+
+# Refresh the GoAccess REAL-TIME webpage from the Apache access logs
+
+# Update newsite_access.net webpage - (Notice the - -o that cron needs)
+/usr/bin/zcat -f /var/log/apache2/newsite_access_access.log* | /usr/local/bin/goaccess /var/log/apache2/newsite_access.log - -o /var/www/html/newsite.net/index.html --log-format=COMBINED --real-time-html
+</code></pre><h4 id="made-it-executable">Made it executable<a hidden class="anchor" aria-hidden="true" href="#made-it-executable">#</a></h4>
+<p><code>sudo chmod +x /etc/init.d/reboot_goaccess.sh</code></p>
+<h4 id="updated-root-cron">Updated root cron<a hidden class="anchor" aria-hidden="true" href="#updated-root-cron">#</a></h4>
+<p><code>sudo crontab -e</code></p>
+<pre tabindex="0"><code>#
+# Start the GoAccess real-time reporting webpage on boot
+@reboot sh /etc/init.d/reboot_goaccess.sh
+#
+</code></pre><h2 id="tinkering-with-traffic-analysis-using-goaccess-and-apache">Tinkering with traffic analysis using GoAccess and Apache<a hidden class="anchor" aria-hidden="true" href="#tinkering-with-traffic-analysis-using-goaccess-and-apache">#</a></h2>
+<p>There are a wealth of tinkering possibilities.</p>
+<ul>
+<li>
+<p>Enabling / disabling the default info panels</p>
+</li>
+<li>
+<p>Custom colouring for the panels</p>
+</li>
+<li>
+<p>Slicing up the logs to include / exclude date ranges, crawlers, bots and more</p>
+</li>
+<li>
+<p>Loads more, really, lots to tinker with</p>
+</li>
+</ul>
+<p>The list seems endless.</p>
+<h2 id="finally">Finally<a hidden class="anchor" aria-hidden="true" href="#finally">#</a></h2>
+<p>I really like it but then I’m the target audience for these kind of things.</p>
+<p>If I hadn’t bungled the port forwarding / firewall bit, the whole process would have taken about half an hour.</p>
+<p><img alt="Screenshot of Apache Traffic Analysis Using GoAccess." loading="lazy" src="/posts/apache-traffic-analysis-using-goaccess/02_Apache_Traffic_Analysis_GoAccess.webp#center" title="Screenshot of Apache Traffic Analysis Using GoAccess.">
+<em>Apache Traffic Analysis Using GoAccess</em></p>
+<p>Update: I’ve been using GoAccess for Apache traffic analysis for a few months now and it has been flawless.</p>
+<p>Also, I’ve recently moved all my sites over to nginx and the only change I had to make was to the path to the log files to keep everything running perfectly.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/data-visualisation/">Data Visualisation</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/debian/">Debian</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/encryption-using-pgp-and-geany/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Encryption Using PGP and Geany</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/upgrading-debian-on-a-gemini-pda/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Upgrading Debian on a Gemini PDA</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

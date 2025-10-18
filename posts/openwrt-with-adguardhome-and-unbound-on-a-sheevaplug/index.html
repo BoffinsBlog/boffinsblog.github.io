@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>OpenWrt with AdGuardHome and Unbound on a SheevaPlug | Boffins Blog</title>
+<meta name="keywords" content="Hardware, Linux, OpenWrt, Self Hosting, SheevaPlug, Software, Web-Servers">
+<meta name="description" content="Take some OpenWrt with a dash of AdGuardHome, add a splash of Unbound and install it all on a SheevaPlug; will it be a recipe for disaster?">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="OpenWrt with AdGuardHome and Unbound on a SheevaPlug">
+  <meta property="og:description" content="Take some OpenWrt with a dash of AdGuardHome, add a splash of Unbound and install it all on a SheevaPlug; will it be a recipe for disaster?">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-05-18T17:36:40+01:00">
+    <meta property="article:modified_time" content="2024-05-18T17:36:40+01:00">
+    <meta property="article:tag" content="Hardware">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="OpenWrt">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="SheevaPlug">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/01_AdGuardHome_Dashboard_Screenshot.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/01_AdGuardHome_Dashboard_Screenshot.webp">
+<meta name="twitter:title" content="OpenWrt with AdGuardHome and Unbound on a SheevaPlug">
+<meta name="twitter:description" content="Take some OpenWrt with a dash of AdGuardHome, add a splash of Unbound and install it all on a SheevaPlug; will it be a recipe for disaster?">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "OpenWrt with AdGuardHome and Unbound on a SheevaPlug",
+      "item": "https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "OpenWrt with AdGuardHome and Unbound on a SheevaPlug",
+  "name": "OpenWrt with AdGuardHome and Unbound on a SheevaPlug",
+  "description": "Take some OpenWrt with a dash of AdGuardHome, add a splash of Unbound and install it all on a SheevaPlug; will it be a recipe for disaster?",
+  "keywords": [
+    "Hardware", "Linux", "OpenWrt", "Self Hosting", "SheevaPlug", "Software", "Web-Servers"
+  ],
+  "articleBody": "But will it run Crysis? Take some OpenWrt with a dash of AdGuardHome, add a splash of Unbound and install it all on a SheevaPlug; will it be a recipe for disaster?\nI have a SheevaPlug Dev Kit from 2009 (?).\nFor many years it ran a host of static and WordPress websites, booting from a multimedia card (a 32 GB MMC running Ubuntu).\nBut my SheevaPlug was retired a few years ago in favour of a RasPi4 with an solid state drive (a 1 TB SSD running Ubuntu Server).\nSo, I decided to bring the ‘Plug back to life and use it as a DNS server, VPN and for Pi-hole.\nWhat on Earth is a SheevaPlug? The SheevaPlug is a “ plug computer ” designed to allow standard computing features in as small a space as possible. It was a small embedded Linux ARM computer without a display which can be considered an early predecessor to the subsequent Raspberry Pi .\nhttps://en.wikipedia.org/wiki/SheevaPlug OpenWrt? Never heard of it The OpenWrt Project is a Linux operating system targeting embedded devices.\nhttps://openwrt.org/ Prerequisites Note:\nSome of the content below is taken directly from the source documents.\nThese commands were correct at the time this page was published.\nIf you are going to follow my notes it would be prudent to check the source documents for updates and additions.\nTFTP server Trivial File Transfer Protocol (TFTP) is a simple lockstep File Transfer Protocol which allows a client to get a file from or put a file onto a remote host .\nhttps://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol It is entirely possible to do all of the updating from USB but having done both, I find that pulling files on to the SheevaPlug from my local machine (which is acting as the TFTP server) to be the far easier route.\nA TFTP server can be installed by running the following in a Terminal:\nsudo apt install tftpd-hpa\nThen, check that it is running:\nsudo systemctl status tftpd-hpa\nThen, take ownership of the TFTP server directory:\nsudo chown -R $USER /srv/tftp\nAccordingly, any files now placed in this directory will be available to pull onto the Plug.\nA working u-boot The following process assumes that there is a working u-boot in place, and that the SheevaPlug can actually boot.\nThere is another post about how to unbrick a SheevaPlug if that needs to be done prior to following this post.\nHowever, if a new u-boot is needed, follow these steps.\nUpdating u-boot if needed First, plug in the ‘Plug and power up.\nIn Terminal 1 run the following:\nscreen /dev/ttyUSB0 115200\nThen, interrupt the boot process to get to the ‘Plug command prompt and set the ‘Plug IP:\nsetenv ipaddr 192.168.0.55\nNow, set the local machine’s IP (or the TFTP server IP):\nsetenv serverip 192.168.0.205\nThen, set the ‘Plug MAC Address:\nsetenv ethaddr 00:50:43:01:63:EA\nFinally, boot from the u-boot.kwb that was placed in the TFTP directory:\ntftpboot u-boot.kwb\nThe output should be similar to the below.\n=\u003e tftpboot u-boot.kwb Using egiga0 device TFTP from server 192.168.0.205; our IP address is 192.168.0.55 Filename 'u-boot.kwb'. Load address: 0x800000 Loading: ################################### 625 KiB/s done Bytes transferred = 502516 (7aaf4 hex) =\u003e Wipe and then Write to NAND Firstly, wipe the NAND:\nnand erase 0x0 0x100000\n=\u003e nand erase 0x0 0x100000 NAND erase: device 0 offset 0x0, size 0x100000 Erasing at 0xe0000 -- 100% complete. OK =\u003e Secondly, write the new u-boot to NAND:\nnand write 0x800000 0x0 0x100000\n=\u003e nand write 0x800000 0x0 0x100000 NAND write: device 0 offset 0x0, size 0x100000 1048576 bytes written: OK =\u003e Finally, reboot the ‘Plug:\nreset\nThen, interrupt the boot process to get to the ‘Plug command prompt.\nThe new u-boot will now need its environment variables re-setting.\nRun the following in a Terminal to set the ‘Plug IP:\nsetenv ipaddr 192.168.0.55\nThen, set the local machine’s IP (or the tftp server IP):\nsetenv serverip 192.168.0.205\nThen, set the ‘Plug MAC Address:\nsetenv ethaddr 00:50:43:01:63:EA\nFinally, save the current set of environment variables:\nsaveenv\n=\u003e saveenv Saving Environment to NAND... Erasing NAND... Erasing at 0x80000 -- 100% complete. Writing to NAND... OK OK =\u003e Install OpenWrt Resources https://downloads.openwrt.org/releases/23.05.0-rc4/targets/kirkwood/generic/ https://downloads.openwrt.org/releases/23.05.0-rc4/targets/kirkwood/generic/openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-factory.bin https://downloads.openwrt.org/releases/23.05.0-rc4/targets/kirkwood/generic/openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-sysupgrade.bin Boot the ‘Plug Interrupt the boot process to get to the ‘Plug command prompt.\nThen boot the ‘Plug from the OpenWrt .bin file:\ntftpboot openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-factory.bin\n=\u003e tftpboot openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-factory.bin Using egiga0 device TFTP from server 192.168.0.205; our IP address is 192.168.0.55 Filename 'openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-factory.bin'. Load address: 0x800000 Loading: ################################################################# ################################################################# ################################################################# ################################################################# ################################################################# ################################################################# ### 694.3 KiB/s done Bytes transferred = 5767168 (580000 hex) =\u003e Now, erase the part of NAND where OpenWrt is to be installed:\nnand erase.part ubi\n=\u003e nand erase.part ubi NAND erase.part: device 0 offset 0x100000, size 0x1ff00000 Skipping bad block at 0x169c0000 Erasing at 0x1ffe0000 -- 100% complete. OK =\u003e Then, write to those sectors:\nnand write 0x800000 ubi 0x600000\n=\u003e nand write 0x800000 ubi 0x600000 NAND write: device 0 offset 0x100000, size 0x600000 6291456 bytes written: OK =\u003e Finally, reboot the ‘Plug:\nreset\nAfter booting there should be the OpenWrt prompt.\nOpenWrt BusyBox Prompt\nPost OpenWrt Installation Find the SheevaPlug IP on the network, I use ‘ fing ‘.\nLogin via SSH ssh root@\nChange the password passwd\nUpdate the firmware cd /tmp\nwget https://downloads.openwrt.org/releases/23.05.0/targets/kirkwood/generic/openwrt-23.05.0-kirkwood-generic-globalscale_sheevaplug-squashfs-sysupgrade.bin\nsysupgrade openwrt-23.05.0-kirkwood-generic-globalscale_sheevaplug-squashfs-sysupgrade.bin\nUpdate existing packages OpenWrt uses the opkg package management system.\nOpkg is a full package manager for the root file system, including kernel modules and drivers\nhttps://openwrt.org/docs/guide-user/additional-software/opkg Run the following in a Terminal to update:\nopkg update\nThen, update all of the installed packages:\nopkg list-upgradable | cut -f 1 -d ' ' | xargs opkg upgrade\n(Might need 2 passes)\nInstall a few extra packages These are pretty much the packages that I use all the time.\nnano for editing text files\nmc or Midnight Commander for a visual file manager\nhtop for viewing running processes\nRun the following in a Terminal to update:\nopkg update\nThen, install the packages:\nopkg install nano\nopkg install mc\nopkg install htop\nSet the hostname Run the following in a Terminal to edit the config file:\nnano /etc/config/system\nThen, change:\noption hostname 'OpenWrt'\nTo:\noption hostname 'sheevaplug'\nThen, restart:\nreboot\nSet a fixed IP Run the following in a Terminal to edit the config file:\nnano /etc/config/network\nThen, change where needed / appropriate for your network:\nconfig interface 'lan' option device 'br-lan' option proto 'static' option ipaddr '192.168.0.55' option netmask '255.255.255.0' option gateway '192.168.0.1' option broadcast '192.168.0.255' list dns '8.8.8.8' /etc/init.d/network restart\nAdd a non-root user ‘foo‘ who can ‘su‘\nhttps://openwrt.org/docs/guide-user/additional-software/create-new-users Install the packages needed to create new users Run the following in a Terminal to update:\nopkg update\nThen, install the packages:\nopkg install shadow-useradd shadow-su\nCreate a new ‘foo’ user useradd -m -s /bin/ash foo\nSet a new user ‘foo’ password passwd foo\nAdd the SSH Keys and secure login https://openwrt.org/docs/guide-user/security/dropbear.public-key.auth Firstly, make a .ssh dir for ‘foo‘:\nmkdir /home/foo/.ssh\nSecondly, add the key ‘id_rsa_sheevaplug.pub‘:\nnano /home/foo/.ssh/authorized_keys\nFinally, restart the SSH service service log restart; service dropbear restart\nTest that you can connect to the ‘Plug from another machine ssh -o PasswordAuthentication=no sheevaplug\nAnd:\nssh -o PasswordAuthentication=no -o PubkeyAcceptedKeyTypes=ssh-rsa sheevaplug\nHarden security Disable password authentication uci set dropbear.@dropbear[0].PasswordAuth=\"0\"\nDisable logging in with root privileges uci set dropbear.@dropbear[0].RootPasswordAuth=\"0\"\nCommit the changes uci commit dropbear\nThen, restart service dropbear restart\nTest SSH Security Logging in as a normal user:\nssh foo@192.168.0.55\nShould fail with a message like this:\nfoo@192.168.0.55: Permission denied (publickey).\nLogging in as a root user:\nssh root@192.168.0.55\nShould fail with a message like this:\nroot@192.168.0.55: Permission denied (publickey).\nHowever, logging in using the SSH key should work:\nssh sheevaplug\nUser ‘foo‘ can then ‘su‘.\nInstall AdGuardHome AdGuard Home is a network-based solution for blocking ads and trackers.\nhttps://adguard.com/en/adguard-home/overview.html https://openwrt.org/docs/guide-user/services/dns/adguard-home AdGuardHome Dashboard Screenshot\nRun the following in a Terminal to update:\nopkg update\nThen install AdGuardHome:\nopkg install adguardhome\nMake AdGuardHome the Primary DNS After installing the opkg package, run the following commands through SSH to prepare for making AdGuard Home the primary DNS resolver.\nDNS and DHCP are a bit of a hole in my knowledge so the majority of the following commands came from:\nhttps://openwrt.org/docs/guide-user/services/dns/adguard-home Get the first IPv4 and IPv6 Address of router and store them in following variables for use during the script:\nNET_ADDR=$(/sbin/ip -o -4 addr list br-lan | awk 'NR==1{ split($4, ip_addr, \"/\"); print ip_addr[1] }')\nNET_ADDR6=$(/sbin/ip -o -6 addr list br-lan scope global | awk 'NR==1{ split($4, ip_addr, \"/\"); print ip_addr[1] }')\nSee the results of the above changes:\necho \"Router IPv4 : \"\"${NET_ADDR}\"\necho \"Router IPv6 : \"\"${NET_ADDR6}\"\nConfigure the AdGuardHome DHCP server Again, the following commands come from:\nhttps://openwrt.org/docs/guide-user/services/dns/adguard-home Enable dnsmasq to do PTR requests:\nuci set dhcp.@dnsmasq[0].noresolv=\"0\"\nReduce dnsmasq cache size as it will only provide PTR/rDNS info:\nuci set dhcp.@dnsmasq[0].cachesize=\"1000\"\nDisable rebind protection. Filtered DNS service responses from blocked domains are 0.0.0.0 which causes dnsmasq to fill the system log with possible DNS-rebind attack detected messages:\nuci set dhcp.@dnsmasq[0].rebind_protection='0'\nMove dnsmasq to port 54:\nuci set dhcp.@dnsmasq[0].port=\"54\"\nSet Ipv4 DNS advertised by option 6 DHCP:\nuci -q delete dhcp.@dnsmasq[0].server\nSet Ipv6 DNS advertised by DHCP:\nuci add_list dhcp.@dnsmasq[0].server=\"${NET_ADDR}\"\nThen delete existing configs, ready to install new options:\nuci -q delete dhcp.lan.dhcp_option\nuci -q delete dhcp.lan.dns\nMore DHCP configuration Again, the following commands come from:\nhttps://openwrt.org/docs/guide-user/services/dns/adguard-home DHCP option 6: which DNS (Domain Name Server) to include in the IP configuration for name resolution:\nuci add_list dhcp.lan.dhcp_option='6,'\"${NET_ADDR}\"\nDHCP option 3: default router or last resort gateway for this interface:\nuci add_list dhcp.lan.dhcp_option='3,'\"${NET_ADDR}\"\nSet IPv6 Announced DNS:\nfor OUTPUT in $(ip -o -6 addr list br-lan scope global | awk '{ split($4, ip_addr, \"/\"); print ip_addr[1] }') do echo \"Adding $OUTPUT to IPV6 DNS\" uci add_list dhcp.lan.dns=$OUTPUT done Commit the changes and restart:\nuci commit dhcp\n/etc/init.d/dnsmasq restart\nFinally, setup AdGuardHome AdGuard Home has it’s own web interface for configuration and management and is not managed through LuCI.\nhttps://openwrt.org/docs/guide-user/services/dns/adguard-home#web_interface AdGuardHome is accessed through the web interface.\nOn first time setup the default web interface port is TCP 3000.\nGo to http://192.168.0.55:3000/\n(This is the ‘Plug IP in my case, not the Router IP as my Router sends ALL traffic to the ‘Plug.)\nFirst, setup the Admin Web Interface to listen on all interfaces, port 8080.\nThen set the DNS server to listen on all interfaces, port 53.\nFinally, create an AdGuardHome user and choose a strong password.\nLogin to AdGuardHome Go to http://192.168.0.55:8080/\n(Again, this is the ‘Plug IP in my case.)\nFirst, setup the DHCP server.\nThen turn off DHCP on the router.\nFinally, reboot the router.\nMy SheevaPlug is now acting as my DHCP server!\nAdGuardHome DHCP Settings Screenshot\nUse Unbound and odhcpd Unbound is a validating, recursive, and caching DNS resolver.\nhttps://openwrt.org/docs/guide-user/services/dns/unbound Why use Unbound?\nDependence on the upstream resolver can be cause for concern. It is often provided by the ISP, and some users have switched to public DNS providers. Either way can result in problems due to performance, hijacking, trustworthiness, or several other reasons. Running a recursive resolver is a solution.\nhttps://openwrt.org/docs/guide-user/services/dns/unbound Remove dnsmasq and use odhcpd for both DHCP and DHCPv6 Again, the following commands come from:\nhttps://openwrt.org/docs/guide-user/base-system/dhcp_configuration#dhcp_and_dns_examples opkg update\nopkg remove dnsmasq odhcpd-ipv6only\nopkg install odhcpd\nuci -q delete dhcp.@dnsmasq[0]\nuci set dhcp.lan.dhcpv4=\"server\"\nuci set dhcp.odhcpd.maindhcp=\"1\"\nuci commit dhcp\nservice odhcpd restart\nUse Unbound for DNS Again, the following commands come from:\nhttps://openwrt.org/docs/guide-user/base-system/dhcp_configuration#dhcp_and_dns_examples opkg update\nopkg install unbound-control unbound-daemon\nuci set unbound.@unbound[0].add_local_fqdn=\"3\"\nuci set unbound.@unbound[0].add_wan_fqdn=\"1\"\nuci set unbound.@unbound[0].dhcp_link=\"odhcpd\"\nuci set unbound.@unbound[0].dhcp4_slaac6=\"1\"\nuci set unbound.@unbound[0].unbound_control=\"1\"\nuci commit unbound\nservice unbound restart\nuci set dhcp.odhcpd.leasefile=\"/var/lib/odhcpd/dhcp.leases\"\nuci set dhcp.odhcpd.leasetrigger=\"/usr/lib/unbound/odhcpd.sh\"\nuci commit dhcp\nservice odhcpd restart\nEnable DNS encryption Encrypt your DNS traffic improving security and privacy.\nPrevent DNS leaks and DNS hijacking.\nBypass regional restrictions using public DNS providers.\nEscape DNS-based content filters and internet censorship.\nhttps://openwrt.org/docs/guide-user/services/dns/dot_unbound uci set unbound.fwd_google.enabled=\"1\"\nuci set unbound.fwd_google.fallback=\"0\"\nuci commit unbound\nservice unbound restart\nUsing LuCI While OpenWrt can be managed completely using SSH and the terminal, the LuCI WebUI makes many administration tasks easier\nhttps://openwrt.org/docs/guide-user/luci/luci.essentials Unbound LuCI interface To manage the settings using the LuCI web interface, install the necessary packages:\nRun the following in a Terminal to update:\nopkg update\nThen, install the packages:\nopkg install luci-app-unbound\nservice rpcd restart\nservice odhcpd restart\nCongratulations! Yes, it’s a long winded process!\nHopefully you made it this far and now have OpenWrt with AdGuardHome and Unbound running on a SheevaPlug.\n",
+  "wordCount" : "2051",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/01_AdGuardHome_Dashboard_Screenshot.webp","datePublished": "2024-05-18T17:36:40+01:00",
+  "dateModified": "2024-05-18T17:36:40+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      OpenWrt with AdGuardHome and Unbound on a SheevaPlug
+    </h1>
+    <div class="post-meta"><span title='2024-05-18 17:36:40 +0100 BST'>May 18, 2024</span>&nbsp;·&nbsp;<span>10 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#but-will-it-run-crysis" aria-label="But will it run Crysis?">But will it run Crysis?</a></li>
+                <li>
+                    <a href="#what-on-earth-is-a-sheevaplug" aria-label="What on Earth is a SheevaPlug?">What on Earth is a SheevaPlug?</a></li>
+                <li>
+                    <a href="#openwrt-never-heard-of-it" aria-label="OpenWrt? Never heard of it">OpenWrt? Never heard of it</a></li>
+                <li>
+                    <a href="#prerequisites" aria-label="Prerequisites">Prerequisites</a><ul>
+                        
+                <li>
+                    <a href="#tftp-server" aria-label="TFTP server">TFTP server</a></li>
+                <li>
+                    <a href="#a-working-u-boot" aria-label="A working u-boot">A working u-boot</a></li>
+                <li>
+                    <a href="#updating-u-boot-if-needed" aria-label="Updating u-boot if needed">Updating u-boot if needed</a></li>
+                <li>
+                    <a href="#wipe-and-then-write-to-nand" aria-label="Wipe and then Write to NAND">Wipe and then Write to NAND</a></li></ul>
+                </li>
+                <li>
+                    <a href="#install-openwrt" aria-label="Install OpenWrt">Install OpenWrt</a><ul>
+                        
+                <li>
+                    <a href="#resources" aria-label="Resources">Resources</a></li>
+                <li>
+                    <a href="#boot-the-plug" aria-label="Boot the ‘Plug">Boot the ‘Plug</a></li></ul>
+                </li>
+                <li>
+                    <a href="#post-openwrt-installation" aria-label="Post OpenWrt Installation">Post OpenWrt Installation</a><ul>
+                        
+                <li>
+                    <a href="#login-via-ssh" aria-label="Login via SSH">Login via SSH</a><ul>
+                        
+                <li>
+                    <a href="#change-the-password" aria-label="Change the password">Change the password</a></li>
+                <li>
+                    <a href="#update-the-firmware" aria-label="Update the firmware">Update the firmware</a></li>
+                <li>
+                    <a href="#update-existing-packages" aria-label="Update existing packages">Update existing packages</a></li>
+                <li>
+                    <a href="#install-a-few-extra-packages" aria-label="Install a few extra packages">Install a few extra packages</a></li>
+                <li>
+                    <a href="#set-the-hostname" aria-label="Set the hostname">Set the hostname</a></li>
+                <li>
+                    <a href="#set-a-fixed-ip" aria-label="Set a fixed IP">Set a fixed IP</a></li>
+                <li>
+                    <a href="#install-the-packages-needed-to-create-new-users" aria-label="Install the packages needed to create new users">Install the packages needed to create new users</a><ul>
+                        
+                <li>
+                    <a href="#create-a-new-foo-user" aria-label="Create a new ‘foo’ user">Create a new ‘foo’ user</a></li>
+                <li>
+                    <a href="#set-a-new-user-foo-password" aria-label="Set a new user ‘foo’ password">Set a new user ‘foo’ password</a></li>
+                <li>
+                    <a href="#add-the-ssh-keys-and-secure-login" aria-label="Add the SSH Keys and secure login">Add the SSH Keys and secure login</a></li></ul>
+                </li>
+                <li>
+                    <a href="#finally-restart-the-ssh-service" aria-label="Finally, restart the SSH service">Finally, restart the SSH service</a></li></ul>
+                </li>
+                <li>
+                    <a href="#test-that-you-can-connect-to-the-plug-from-another-machine" aria-label="Test that you can connect to the ‘Plug from another machine">Test that you can connect to the ‘Plug from another machine</a></li>
+                <li>
+                    <a href="#harden-security" aria-label="Harden security">Harden security</a><ul>
+                        
+                <li>
+                    <a href="#disable-password-authentication" aria-label="Disable password authentication">Disable password authentication</a></li>
+                <li>
+                    <a href="#disable-logging-in-with-root-privileges" aria-label="Disable logging in with root privileges">Disable logging in with root privileges</a></li>
+                <li>
+                    <a href="#commit-the-changes" aria-label="Commit the changes">Commit the changes</a></li>
+                <li>
+                    <a href="#then-restart" aria-label="Then, restart">Then, restart</a></li></ul>
+                </li>
+                <li>
+                    <a href="#test-ssh-security" aria-label="Test SSH Security">Test SSH Security</a></li></ul>
+                </li>
+                <li>
+                    <a href="#install-adguardhome" aria-label="Install AdGuardHome">Install AdGuardHome</a><ul>
+                        
+                <li>
+                    <a href="#make-adguardhome-the-primary-dns" aria-label="Make AdGuardHome the Primary DNS">Make AdGuardHome the Primary DNS</a></li>
+                <li>
+                    <a href="#configure-the-adguardhome-dhcp-server" aria-label="Configure the AdGuardHome DHCP server">Configure the AdGuardHome DHCP server</a></li>
+                <li>
+                    <a href="#more-dhcp-configuration" aria-label="More DHCP configuration">More DHCP configuration</a></li>
+                <li>
+                    <a href="#finally-setup-adguardhome" aria-label="Finally, setup AdGuardHome">Finally, setup AdGuardHome</a></li>
+                <li>
+                    <a href="#login-to-adguardhome" aria-label="Login to AdGuardHome">Login to AdGuardHome</a></li></ul>
+                </li>
+                <li>
+                    <a href="#use-unbound-and-odhcpd" aria-label="Use Unbound and odhcpd">Use Unbound and odhcpd</a><ul>
+                        
+                <li>
+                    <a href="#remove-dnsmasq-and-use-odhcpd-for-both-dhcp-and-dhcpv6" aria-label="Remove dnsmasq and use odhcpd for both DHCP and DHCPv6">Remove dnsmasq and use odhcpd for both DHCP and DHCPv6</a></li>
+                <li>
+                    <a href="#use-unbound-for-dns" aria-label="Use Unbound for DNS">Use Unbound for DNS</a></li>
+                <li>
+                    <a href="#enable-dns-encryption" aria-label="Enable DNS encryption">Enable DNS encryption</a></li></ul>
+                </li>
+                <li>
+                    <a href="#using-luci" aria-label="Using LuCI">Using LuCI</a><ul>
+                        
+                <li>
+                    <a href="#unbound-luci-interface" aria-label="Unbound LuCI interface">Unbound LuCI interface</a></li></ul>
+                </li>
+                <li>
+                    <a href="#congratulations" aria-label="Congratulations!">Congratulations!</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="but-will-it-run-crysis">But will it run Crysis?<a hidden class="anchor" aria-hidden="true" href="#but-will-it-run-crysis">#</a></h2>
+<p>Take some OpenWrt with a dash of AdGuardHome, add a splash of Unbound and install it all on a SheevaPlug; will it be a recipe for disaster?</p>
+<p>I have a SheevaPlug Dev Kit from 2009 (?).</p>
+<p>For many years it ran a host of static and WordPress websites, booting from a multimedia card (a 32 GB MMC running Ubuntu).</p>
+<p>But my SheevaPlug was retired a few years ago in favour of a RasPi4 with an solid state drive (a 1 TB SSD running Ubuntu Server).</p>
+<p>So, I decided to bring the ‘Plug back to life and use it as a DNS server, VPN and for Pi-hole.</p>
+<h2 id="what-on-earth-is-a-sheevaplug">What on Earth is a SheevaPlug?<a hidden class="anchor" aria-hidden="true" href="#what-on-earth-is-a-sheevaplug">#</a></h2>
+<blockquote>
+<p>The <strong>SheevaPlug</strong> is a “
+
+<a href="https://en.wikipedia.org/wiki/Plug_computer" target="_blank" rel="nofollow noopener noreferrer">plug computer</a>
+” designed to allow standard computing features in as small a space as possible. It was a small embedded Linux ARM computer without a display which can be considered an early predecessor to the subsequent 
+
+<a href="https://en.wikipedia.org/wiki/Raspberry_Pi" target="_blank" rel="nofollow noopener noreferrer">Raspberry Pi</a>
+.</p>
+<p><em>
+
+<a href="https://en.wikipedia.org/wiki/SheevaPlug" target="_blank" rel="nofollow noopener noreferrer">https://en.wikipedia.org/wiki/SheevaPlug</a>
+</em></p></blockquote>
+<h2 id="openwrt-never-heard-of-it">OpenWrt? Never heard of it<a hidden class="anchor" aria-hidden="true" href="#openwrt-never-heard-of-it">#</a></h2>
+<blockquote>
+<p>The OpenWrt Project is a Linux operating system targeting embedded devices.</p>
+<p><em>
+
+<a href="https://openwrt.org/" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/</a>
+</em></p></blockquote>
+<h2 id="prerequisites">Prerequisites<a hidden class="anchor" aria-hidden="true" href="#prerequisites">#</a></h2>
+<p><strong>Note:</strong><br>
+Some of the content below is taken directly from the source documents.<br>
+These commands were correct at the time this page was published.<br>
+If you are going to follow my notes it would be prudent to check the source documents for updates and additions.</p>
+<h3 id="tftp-server">TFTP server<a hidden class="anchor" aria-hidden="true" href="#tftp-server">#</a></h3>
+<blockquote>
+<p><strong>Trivial File Transfer Protocol</strong> (<strong>TFTP</strong>) is a simple 
+
+<a href="https://en.wikipedia.org/wiki/Lockstep_%28computing%29" target="_blank" rel="nofollow noopener noreferrer">lockstep</a>
+ 
+
+<a href="https://en.wikipedia.org/wiki/File_Transfer_Protocol" target="_blank" rel="nofollow noopener noreferrer">File Transfer Protocol</a>
+ which allows a 
+
+<a href="https://en.wikipedia.org/wiki/Client_%28computing%29" target="_blank" rel="nofollow noopener noreferrer">client</a>
+ to get a file from or put a file onto a remote 
+
+<a href="https://en.wikipedia.org/wiki/Host_%28network%29" target="_blank" rel="nofollow noopener noreferrer">host</a>
+.</p>
+<p><em>
+
+<a href="https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol" target="_blank" rel="nofollow noopener noreferrer">https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol</a>
+</em></p></blockquote>
+<p>It is entirely possible to do all of the updating from USB but having done both, I find that pulling files on to the SheevaPlug from my local machine (which is acting as the TFTP server) to be the far easier route.</p>
+<p>A 
+
+<a href="https://help.ubuntu.com/community/TFTP" target="_blank" rel="nofollow noopener noreferrer">TFTP server</a>
+ can be installed by running the following in a Terminal:</p>
+<p><code>sudo apt install tftpd-hpa</code></p>
+<p>Then, check that it is running:</p>
+<p><code>sudo systemctl status tftpd-hpa</code></p>
+<p>Then, take ownership of the TFTP server directory:</p>
+<p><code>sudo chown -R $USER /srv/tftp</code></p>
+<p>Accordingly, any files now placed in this directory will be available to pull onto the Plug.</p>
+<h3 id="a-working-u-boot">A working u-boot<a hidden class="anchor" aria-hidden="true" href="#a-working-u-boot">#</a></h3>
+<p>The following process assumes that there is a working u-boot in place, and that the SheevaPlug can actually boot.</p>
+<p>There is another post about how to 
+
+
+  <a href="/posts/how-to-unbrick-a-sheevaplug/">unbrick a SheevaPlug</a>
+ if that needs to be done prior to following this post.</p>
+<p>However, if a new u-boot is needed, follow these steps.</p>
+<h3 id="updating-u-boot-if-needed">Updating u-boot if needed<a hidden class="anchor" aria-hidden="true" href="#updating-u-boot-if-needed">#</a></h3>
+<p>First, plug in the ‘Plug and power up.</p>
+<p>In <strong>Terminal 1</strong> run the following:</p>
+<p><code>screen /dev/ttyUSB0 115200</code></p>
+<p>Then, interrupt the boot process to get to the ‘Plug command prompt and set the ‘Plug IP:</p>
+<p><code>setenv ipaddr 192.168.0.55</code></p>
+<p>Now, set the local machine’s IP (or the TFTP server IP):</p>
+<p><code>setenv serverip 192.168.0.205</code></p>
+<p>Then, set the ‘Plug MAC Address:</p>
+<p><code>setenv ethaddr 00:50:43:01:63:EA</code></p>
+<p>Finally, boot from the <code>u-boot.kwb</code> that was placed in the TFTP directory:</p>
+<p><code>tftpboot u-boot.kwb</code></p>
+<p>The output should be similar to the below.</p>
+<pre tabindex="0"><code>=&gt; tftpboot u-boot.kwb             
+Using egiga0 device
+TFTP from server 192.168.0.205; our IP address is 192.168.0.55
+Filename &#39;u-boot.kwb&#39;.
+Load address: 0x800000
+Loading: ###################################
+         625 KiB/s
+done
+Bytes transferred = 502516 (7aaf4 hex)
+=&gt;
+</code></pre><h3 id="wipe-and-then-write-to-nand">Wipe and then Write to NAND<a hidden class="anchor" aria-hidden="true" href="#wipe-and-then-write-to-nand">#</a></h3>
+<p>Firstly, wipe the NAND:</p>
+<p><code>nand erase 0x0 0x100000</code></p>
+<pre tabindex="0"><code>=&gt; nand erase 0x0 0x100000
+
+NAND erase: device 0 offset 0x0, size 0x100000
+Erasing at 0xe0000 -- 100% complete.
+OK
+=&gt;
+</code></pre><p>Secondly, write the new u-boot to NAND:</p>
+<p><code>nand write 0x800000 0x0 0x100000</code></p>
+<pre tabindex="0"><code>=&gt; nand write 0x800000 0x0 0x100000
+
+NAND write: device 0 offset 0x0, size 0x100000
+ 1048576 bytes written: OK
+=&gt;
+</code></pre><p>Finally, reboot the ‘Plug:</p>
+<p><code>reset</code></p>
+<p>Then, interrupt the boot process to get to the ‘Plug command prompt.</p>
+<p>The new u-boot will now need its environment variables re-setting.</p>
+<p>Run the following in a Terminal to set the ‘Plug IP:</p>
+<p><code>setenv ipaddr 192.168.0.55</code></p>
+<p>Then, set the local machine’s IP (or the tftp server IP):</p>
+<p><code>setenv serverip 192.168.0.205</code></p>
+<p>Then, set the ‘Plug MAC Address:</p>
+<p><code>setenv ethaddr 00:50:43:01:63:EA</code></p>
+<p>Finally, save the current set of environment variables:</p>
+<p><code>saveenv</code></p>
+<pre tabindex="0"><code>=&gt; saveenv
+Saving Environment to NAND... Erasing NAND...
+Erasing at 0x80000 -- 100% complete.
+Writing to NAND... OK
+OK
+=&gt;
+</code></pre><h2 id="install-openwrt">Install OpenWrt<a hidden class="anchor" aria-hidden="true" href="#install-openwrt">#</a></h2>
+<h3 id="resources">Resources<a hidden class="anchor" aria-hidden="true" href="#resources">#</a></h3>
+<p>
+
+<a href="https://downloads.openwrt.org/releases/23.05.0-rc4/targets/kirkwood/generic/" target="_blank" rel="nofollow noopener noreferrer">https://downloads.openwrt.org/releases/23.05.0-rc4/targets/kirkwood/generic/</a>
+</p>
+<p>
+
+<a href="https://downloads.openwrt.org/releases/23.05.0-rc4/targets/kirkwood/generic/openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-factory.bin" target="_blank" rel="nofollow noopener noreferrer">https://downloads.openwrt.org/releases/23.05.0-rc4/targets/kirkwood/generic/openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-factory.bin</a>
+</p>
+<p>
+
+<a href="https://downloads.openwrt.org/releases/23.05.0-rc4/targets/kirkwood/generic/openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-sysupgrade.bin" target="_blank" rel="nofollow noopener noreferrer">https://downloads.openwrt.org/releases/23.05.0-rc4/targets/kirkwood/generic/openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-sysupgrade.bin</a>
+</p>
+<h3 id="boot-the-plug">Boot the ‘Plug<a hidden class="anchor" aria-hidden="true" href="#boot-the-plug">#</a></h3>
+<p>Interrupt the boot process to get to the ‘Plug command prompt.</p>
+<p>Then boot the ‘Plug from the OpenWrt <code>.bin</code> file:</p>
+<p><code>tftpboot openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-factory.bin</code></p>
+<pre tabindex="0"><code>=&gt; tftpboot openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-factory.bin
+Using egiga0 device
+TFTP from server 192.168.0.205; our IP address is 192.168.0.55
+Filename &#39;openwrt-23.05.0-rc4-kirkwood-generic-globalscale_sheevaplug-squashfs-factory.bin&#39;.
+Load address: 0x800000
+Loading: #################################################################
+         #################################################################
+         #################################################################
+         #################################################################
+         #################################################################
+         #################################################################
+         ###
+         694.3 KiB/s
+done
+Bytes transferred = 5767168 (580000 hex)
+=&gt;
+</code></pre><p>Now, erase the part of NAND where OpenWrt is to be installed:</p>
+<p><code>nand erase.part ubi</code></p>
+<pre tabindex="0"><code>=&gt; nand erase.part ubi
+
+NAND erase.part: device 0 offset 0x100000, size 0x1ff00000
+Skipping bad block at  0x169c0000                                          
+Erasing at 0x1ffe0000 -- 100% complete.
+OK
+=&gt;
+</code></pre><p>Then, write to those sectors:</p>
+<p><code>nand write 0x800000 ubi 0x600000</code></p>
+<pre tabindex="0"><code>=&gt; nand write 0x800000 ubi 0x600000
+
+NAND write: device 0 offset 0x100000, size 0x600000
+ 6291456 bytes written: OK
+=&gt;
+</code></pre><p>Finally, reboot the ‘Plug:</p>
+<p><code>reset</code></p>
+<p>After booting there should be the OpenWrt prompt.</p>
+<p><img alt="The OpenWrt BusyBox Prompt showing that OpenWrt has successfully been installed and is booting." loading="lazy" src="/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/03_OpenWrt_BusyBox_Prompt.webp#center" title="The OpenWrt BusyBox Prompt showing that OpenWrt has successfully been installed and is booting.">
+<em>OpenWrt BusyBox Prompt</em></p>
+<h2 id="post-openwrt-installation">Post OpenWrt Installation<a hidden class="anchor" aria-hidden="true" href="#post-openwrt-installation">#</a></h2>
+<p>Find the SheevaPlug IP on the network, I use ‘
+
+<a href="https://www.fing.com/" target="_blank" rel="nofollow noopener noreferrer">fing</a>
+‘.</p>
+<h3 id="login-via-ssh">Login via SSH<a hidden class="anchor" aria-hidden="true" href="#login-via-ssh">#</a></h3>
+<p><code>ssh root@</code></p>
+<h4 id="change-the-password">Change the password<a hidden class="anchor" aria-hidden="true" href="#change-the-password">#</a></h4>
+<p><code>passwd</code></p>
+<h4 id="update-the-firmware">Update the firmware<a hidden class="anchor" aria-hidden="true" href="#update-the-firmware">#</a></h4>
+<p><code>cd /tmp</code></p>
+<p><code>wget https://downloads.openwrt.org/releases/23.05.0/targets/kirkwood/generic/openwrt-23.05.0-kirkwood-generic-globalscale_sheevaplug-squashfs-sysupgrade.bin</code></p>
+<p><code>sysupgrade openwrt-23.05.0-kirkwood-generic-globalscale_sheevaplug-squashfs-sysupgrade.bin</code></p>
+<h4 id="update-existing-packages">Update existing packages<a hidden class="anchor" aria-hidden="true" href="#update-existing-packages">#</a></h4>
+<p>OpenWrt uses the opkg package management system.</p>
+<blockquote>
+<p>Opkg is a full package manager for the root file system, including kernel modules and drivers</p>
+<p><em>
+
+<a href="https://openwrt.org/docs/guide-user/additional-software/opkg" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/additional-software/opkg</a>
+</em></p></blockquote>
+<p>Run the following in a Terminal to update:</p>
+<p><code>opkg update</code></p>
+<p>Then, update all of the installed packages:</p>
+<p><code>opkg list-upgradable | cut -f 1 -d ' ' | xargs opkg upgrade</code></p>
+<p>(Might need 2 passes)</p>
+<h4 id="install-a-few-extra-packages">Install a few extra packages<a hidden class="anchor" aria-hidden="true" href="#install-a-few-extra-packages">#</a></h4>
+<p>These are pretty much the packages that I use all the time.</p>
+<ul>
+<li>
+<p><code>nano</code> for editing text files</p>
+</li>
+<li>
+<p><code>mc</code> or Midnight Commander for a visual file manager</p>
+</li>
+<li>
+<p><code>htop</code> for viewing running processes</p>
+</li>
+</ul>
+<p>Run the following in a Terminal to update:</p>
+<p><code>opkg update</code></p>
+<p>Then, install the packages:</p>
+<p><code>opkg install nano</code></p>
+<p><code>opkg install mc</code></p>
+<p><code>opkg install htop</code></p>
+<h4 id="set-the-hostname">Set the hostname<a hidden class="anchor" aria-hidden="true" href="#set-the-hostname">#</a></h4>
+<p>Run the following in a Terminal to edit the config file:</p>
+<p><code>nano /etc/config/system</code></p>
+<p>Then, change:</p>
+<p><code>option hostname 'OpenWrt'</code></p>
+<p>To:</p>
+<p><code>option hostname 'sheevaplug'</code></p>
+<p>Then, restart:</p>
+<p><code>reboot</code></p>
+<h4 id="set-a-fixed-ip">Set a fixed IP<a hidden class="anchor" aria-hidden="true" href="#set-a-fixed-ip">#</a></h4>
+<p>Run the following in a Terminal to edit the config file:</p>
+<p><code>nano /etc/config/network</code></p>
+<p>Then, change where needed / appropriate for your network:</p>
+<pre tabindex="0"><code>config interface &#39;lan&#39;
+option device &#39;br-lan&#39;
+option proto &#39;static&#39;
+option ipaddr &#39;192.168.0.55&#39;
+option netmask &#39;255.255.255.0&#39;
+option gateway &#39;192.168.0.1&#39;
+option broadcast &#39;192.168.0.255&#39;
+list dns &#39;8.8.8.8&#39;
+</code></pre><p><code>/etc/init.d/network restart</code></p>
+<p>Add a non-root user ‘<code>foo</code>‘ who can ‘<code>su</code>‘</p>
+<p>
+
+<a href="https://openwrt.org/docs/guide-user/additional-software/create-new-users" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/additional-software/create-new-users</a>
+</p>
+<h4 id="install-the-packages-needed-to-create-new-users">Install the packages needed to create new users<a hidden class="anchor" aria-hidden="true" href="#install-the-packages-needed-to-create-new-users">#</a></h4>
+<p>Run the following in a Terminal to update:</p>
+<p><code>opkg update</code></p>
+<p>Then, install the packages:</p>
+<p><code>opkg install shadow-useradd shadow-su</code></p>
+<h5 id="create-a-new-foo-user">Create a new ‘foo’ user<a hidden class="anchor" aria-hidden="true" href="#create-a-new-foo-user">#</a></h5>
+<p><code>useradd -m -s /bin/ash foo</code></p>
+<h5 id="set-a-new-user-foo-password">Set a new user ‘foo’ password<a hidden class="anchor" aria-hidden="true" href="#set-a-new-user-foo-password">#</a></h5>
+<p><code>passwd foo</code></p>
+<h5 id="add-the-ssh-keys-and-secure-login">Add the SSH Keys and secure login<a hidden class="anchor" aria-hidden="true" href="#add-the-ssh-keys-and-secure-login">#</a></h5>
+<p>
+
+<a href="https://openwrt.org/docs/guide-user/security/dropbear.public-key.auth" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/security/dropbear.public-key.auth</a>
+</p>
+<p>Firstly, make a <code>.ssh</code> dir for ‘<code>foo</code>‘:</p>
+<p><code>mkdir /home/foo/.ssh</code></p>
+<p>Secondly, add the key ‘<code>id_rsa_sheevaplug.pub</code>‘:</p>
+<p><code>nano /home/foo/.ssh/authorized_keys</code></p>
+<h4 id="finally-restart-the-ssh-service">Finally, restart the SSH service<a hidden class="anchor" aria-hidden="true" href="#finally-restart-the-ssh-service">#</a></h4>
+<p><code>service log restart; service dropbear restart</code></p>
+<h3 id="test-that-you-can-connect-to-the-plug-from-another-machine">Test that you can connect to the ‘Plug from another machine<a hidden class="anchor" aria-hidden="true" href="#test-that-you-can-connect-to-the-plug-from-another-machine">#</a></h3>
+<p><code>ssh -o PasswordAuthentication=no sheevaplug</code></p>
+<p>And:</p>
+<p><code>ssh -o PasswordAuthentication=no -o PubkeyAcceptedKeyTypes=ssh-rsa sheevaplug</code></p>
+<h3 id="harden-security">Harden security<a hidden class="anchor" aria-hidden="true" href="#harden-security">#</a></h3>
+<h4 id="disable-password-authentication">Disable password authentication<a hidden class="anchor" aria-hidden="true" href="#disable-password-authentication">#</a></h4>
+<p><code>uci set dropbear.@dropbear[0].PasswordAuth=&quot;0&quot;</code></p>
+<h4 id="disable-logging-in-with-root-privileges">Disable logging in with root privileges<a hidden class="anchor" aria-hidden="true" href="#disable-logging-in-with-root-privileges">#</a></h4>
+<p><code>uci set dropbear.@dropbear[0].RootPasswordAuth=&quot;0&quot;</code></p>
+<h4 id="commit-the-changes">Commit the changes<a hidden class="anchor" aria-hidden="true" href="#commit-the-changes">#</a></h4>
+<p><code>uci commit dropbear</code></p>
+<h4 id="then-restart">Then, restart<a hidden class="anchor" aria-hidden="true" href="#then-restart">#</a></h4>
+<p><code>service dropbear restart</code></p>
+<h3 id="test-ssh-security">Test SSH Security<a hidden class="anchor" aria-hidden="true" href="#test-ssh-security">#</a></h3>
+<p>Logging in as a normal user:</p>
+<p><code>ssh foo@192.168.0.55</code></p>
+<p>Should fail with a message like this:</p>
+<p><code>foo@192.168.0.55: Permission denied (publickey).</code></p>
+<p>Logging in as a root user:</p>
+<p><code>ssh root@192.168.0.55</code></p>
+<p>Should fail with a message like this:</p>
+<p><code>root@192.168.0.55: Permission denied (publickey).</code></p>
+<p>However, logging in using the SSH key should work:</p>
+<p><code>ssh sheevaplug</code></p>
+<p>User ‘<code>foo</code>‘ can then ‘<code>su</code>‘.</p>
+<h2 id="install-adguardhome">Install AdGuardHome<a hidden class="anchor" aria-hidden="true" href="#install-adguardhome">#</a></h2>
+<blockquote>
+<p>AdGuard Home is a network-based solution for blocking ads and trackers.</p>
+<p><em>
+
+<a href="https://adguard.com/en/adguard-home/overview.html" target="_blank" rel="nofollow noopener noreferrer">https://adguard.com/en/adguard-home/overview.html</a>
+</em></p></blockquote>
+<p>
+
+<a href="https://openwrt.org/docs/guide-user/services/dns/adguard-home" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/services/dns/adguard-home</a>
+</p>
+<p><img alt="OpenWrt with AdGuardHome and Unbound on a SheevaPlug: A screenshot of the AdGuardHome Dashboard. It has graphs for network traffic such as &lsquo;DNS Queries&rsquo;, the number of queries that have been &lsquo;Blocked by Filters&rsquo;, and the number of queries that were &lsquo;Blocked malware/phishing sites&rsquo;." loading="lazy" src="/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/01_AdGuardHome_Dashboard_Screenshot.webp#center" title="OpenWrt with AdGuardHome and Unbound on a SheevaPlug: A screenshot of the AdGuardHome Dashboard. It has graphs for network traffic such as &#39;DNS Queries&#39;, the number of queries that have been &#39;Blocked by Filters&#39;, and the number of queries that were &#39;Blocked malware/phishing sites&#39;.">
+<em>AdGuardHome Dashboard Screenshot</em></p>
+<p>Run the following in a Terminal to update:</p>
+<p><code>opkg update</code></p>
+<p>Then install AdGuardHome:</p>
+<p><code>opkg install adguardhome</code></p>
+<h3 id="make-adguardhome-the-primary-dns">Make AdGuardHome the Primary DNS<a hidden class="anchor" aria-hidden="true" href="#make-adguardhome-the-primary-dns">#</a></h3>
+<p>After installing the <code>opkg</code> package, run the following commands through SSH to prepare for making AdGuard Home the primary DNS resolver.</p>
+<p>DNS and DHCP are a bit of a hole in my knowledge so the majority of the following commands came from:</p>
+<p>
+
+<a href="https://openwrt.org/docs/guide-user/services/dns/adguard-home" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/services/dns/adguard-home</a>
+</p>
+<p>Get the first IPv4 and IPv6 Address of router and store them in following variables for use during the script:</p>
+<p><code>NET_ADDR=$(/sbin/ip -o -4 addr list br-lan | awk 'NR==1{ split($4, ip_addr, &quot;/&quot;); print ip_addr[1] }')</code></p>
+<p><code>NET_ADDR6=$(/sbin/ip -o -6 addr list br-lan scope global | awk 'NR==1{ split($4, ip_addr, &quot;/&quot;); print ip_addr[1] }')</code></p>
+<p>See the results of the above changes:</p>
+<p><code>echo &quot;Router IPv4 : &quot;&quot;${NET_ADDR}&quot;</code></p>
+<p><code>echo &quot;Router IPv6 : &quot;&quot;${NET_ADDR6}&quot;</code></p>
+<h3 id="configure-the-adguardhome-dhcp-server">Configure the AdGuardHome DHCP server<a hidden class="anchor" aria-hidden="true" href="#configure-the-adguardhome-dhcp-server">#</a></h3>
+<p>Again, the following commands come from:</p>
+<p>
+
+<a href="https://openwrt.org/docs/guide-user/services/dns/adguard-home" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/services/dns/adguard-home</a>
+</p>
+<p>Enable dnsmasq to do PTR requests:</p>
+<p><code>uci set dhcp.@dnsmasq[0].noresolv=&quot;0&quot;</code></p>
+<p>Reduce dnsmasq cache size as it will only provide PTR/rDNS info:</p>
+<p><code>uci set dhcp.@dnsmasq[0].cachesize=&quot;1000&quot;</code></p>
+<p>Disable rebind protection. Filtered DNS service responses from blocked domains are 0.0.0.0 which causes dnsmasq to fill the system log with possible DNS-rebind attack detected messages:</p>
+<p><code>uci set dhcp.@dnsmasq[0].rebind_protection='0'</code></p>
+<p>Move dnsmasq to port 54:</p>
+<p><code>uci set dhcp.@dnsmasq[0].port=&quot;54&quot;</code></p>
+<p>Set Ipv4 DNS advertised by option 6 DHCP:</p>
+<p><code>uci -q delete dhcp.@dnsmasq[0].server</code></p>
+<p>Set Ipv6 DNS advertised by DHCP:</p>
+<p><code>uci add_list dhcp.@dnsmasq[0].server=&quot;${NET_ADDR}&quot;</code></p>
+<p>Then delete existing configs, ready to install new options:</p>
+<p><code>uci -q delete dhcp.lan.dhcp_option</code></p>
+<p><code>uci -q delete dhcp.lan.dns</code></p>
+<h3 id="more-dhcp-configuration">More DHCP configuration<a hidden class="anchor" aria-hidden="true" href="#more-dhcp-configuration">#</a></h3>
+<p>Again, the following commands come from:</p>
+<p>
+
+<a href="https://openwrt.org/docs/guide-user/services/dns/adguard-home" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/services/dns/adguard-home</a>
+</p>
+<p>DHCP option 6: which DNS (Domain Name Server) to include in the IP configuration for name resolution:</p>
+<p><code>uci add_list dhcp.lan.dhcp_option='6,'&quot;${NET_ADDR}&quot;</code></p>
+<p>DHCP option 3: default router or last resort gateway for this interface:</p>
+<p><code>uci add_list dhcp.lan.dhcp_option='3,'&quot;${NET_ADDR}&quot;</code></p>
+<p>Set IPv6 Announced DNS:</p>
+<pre tabindex="0"><code>for OUTPUT in $(ip -o -6 addr list br-lan scope global | awk &#39;{ split($4, ip_addr, &#34;/&#34;); print ip_addr[1] }&#39;)
+do
+	echo &#34;Adding $OUTPUT to IPV6 DNS&#34;
+	uci add_list dhcp.lan.dns=$OUTPUT
+done
+</code></pre><p>Commit the changes and restart:</p>
+<p><code>uci commit dhcp</code></p>
+<p><code>/etc/init.d/dnsmasq restart</code></p>
+<h3 id="finally-setup-adguardhome">Finally, setup AdGuardHome<a hidden class="anchor" aria-hidden="true" href="#finally-setup-adguardhome">#</a></h3>
+<blockquote>
+<p>AdGuard Home has it’s own web interface for configuration and management and is not managed through LuCI.</p>
+<p><em>
+
+<a href="https://openwrt.org/docs/guide-user/services/dns/adguard-home#web_interface" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/services/dns/adguard-home#web_interface</a>
+</em></p></blockquote>
+<p>AdGuardHome is accessed through the web interface.</p>
+<p>On first time setup the default web interface port is TCP 3000.</p>
+<p>Go to <code>http://192.168.0.55:3000/</code></p>
+<p>(This is the ‘Plug IP in my case, not the Router IP as my Router sends <strong>ALL</strong> traffic to the ‘Plug.)</p>
+<p>First, setup the Admin Web Interface to listen on all interfaces, port 8080.</p>
+<p>Then set the DNS server to listen on all interfaces, port 53.</p>
+<p>Finally, create an AdGuardHome user and choose a strong password.</p>
+<h3 id="login-to-adguardhome">Login to AdGuardHome<a hidden class="anchor" aria-hidden="true" href="#login-to-adguardhome">#</a></h3>
+<p>Go to <code>http://192.168.0.55:8080/</code></p>
+<p>(Again, this is the ‘Plug IP in my case.)</p>
+<p>First, setup the DHCP server.</p>
+<p>Then turn off DHCP on the router.</p>
+<p>Finally, reboot the router.</p>
+<p>My SheevaPlug is now acting as my DHCP server!</p>
+<p><img alt="OpenWrt with AdGuardHome and Unbound on a SheevaPlug: A screenshot of the AdGuardHome DHCP settings. It shows which interface is in use, and has sections for the &lsquo;Gateway IP&rsquo;, the &lsquo;Subnet mask&rsquo;, the &lsquo;Range of IP addresses&rsquo; to be allocated and the &lsquo;DHCP lease time&rsquo;." loading="lazy" src="/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/02_AdGuardHome_DHCP_Settings_Screenshot.webp#center" title="OpenWrt with AdGuardHome and Unbound on a SheevaPlug: A screenshot of the AdGuardHome DHCP settings. It shows which interface is in use, and has sections for the &#39;Gateway IP&#39;, the &#39;Subnet mask&#39;, the &#39;Range of IP addresses&#39; to be allocated and the &#39;DHCP lease time&#39;.">
+<em>AdGuardHome DHCP Settings Screenshot</em></p>
+<h2 id="use-unbound-and-odhcpd">Use Unbound and odhcpd<a hidden class="anchor" aria-hidden="true" href="#use-unbound-and-odhcpd">#</a></h2>
+<blockquote>
+<p>
+
+<a href="https://www.unbound.net/" target="_blank" rel="nofollow noopener noreferrer">Unbound</a>
+ is a validating, recursive, and caching DNS resolver.</p>
+<p><em>
+
+<a href="https://openwrt.org/docs/guide-user/services/dns/unbound" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/services/dns/unbound</a>
+</em></p></blockquote>
+<p>Why use Unbound?</p>
+<blockquote>
+<p>Dependence on the upstream resolver can be cause for concern. It is often provided by the ISP, and some users have switched to public DNS providers. Either way can result in problems due to performance, hijacking, trustworthiness, or several other reasons. Running a recursive resolver is a solution.</p>
+<p><em>
+
+<a href="https://openwrt.org/docs/guide-user/services/dns/unbound" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/services/dns/unbound</a>
+</em></p></blockquote>
+<h3 id="remove-dnsmasq-and-use-odhcpd-for-both-dhcp-and-dhcpv6">Remove dnsmasq and use odhcpd for both DHCP and DHCPv6<a hidden class="anchor" aria-hidden="true" href="#remove-dnsmasq-and-use-odhcpd-for-both-dhcp-and-dhcpv6">#</a></h3>
+<p>Again, the following commands come from:</p>
+<p>
+
+<a href="https://openwrt.org/docs/guide-user/base-system/dhcp_configuration#dhcp_and_dns_examples" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/base-system/dhcp_configuration#dhcp_and_dns_examples</a>
+</p>
+<p><code>opkg update</code></p>
+<p><code>opkg remove dnsmasq odhcpd-ipv6only</code></p>
+<p><code>opkg install odhcpd</code></p>
+<p><code>uci -q delete dhcp.@dnsmasq[0]</code></p>
+<p><code>uci set dhcp.lan.dhcpv4=&quot;server&quot;</code></p>
+<p><code>uci set dhcp.odhcpd.maindhcp=&quot;1&quot;</code></p>
+<p><code>uci commit dhcp</code></p>
+<p><code>service odhcpd restart</code></p>
+<h3 id="use-unbound-for-dns">Use Unbound for DNS<a hidden class="anchor" aria-hidden="true" href="#use-unbound-for-dns">#</a></h3>
+<p>Again, the following commands come from:</p>
+<p>
+
+<a href="https://openwrt.org/docs/guide-user/base-system/dhcp_configuration#dhcp_and_dns_examples" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/base-system/dhcp_configuration#dhcp_and_dns_examples</a>
+</p>
+<p><code>opkg update</code></p>
+<p><code>opkg install unbound-control unbound-daemon</code></p>
+<p><code>uci set unbound.@unbound[0].add_local_fqdn=&quot;3&quot;</code></p>
+<p><code>uci set unbound.@unbound[0].add_wan_fqdn=&quot;1&quot;</code></p>
+<p><code>uci set unbound.@unbound[0].dhcp_link=&quot;odhcpd&quot;</code></p>
+<p><code>uci set unbound.@unbound[0].dhcp4_slaac6=&quot;1&quot;</code></p>
+<p><code>uci set unbound.@unbound[0].unbound_control=&quot;1&quot;</code></p>
+<p><code>uci commit unbound</code></p>
+<p><code>service unbound restart</code></p>
+<p><code>uci set dhcp.odhcpd.leasefile=&quot;/var/lib/odhcpd/dhcp.leases&quot;</code></p>
+<p><code>uci set dhcp.odhcpd.leasetrigger=&quot;/usr/lib/unbound/odhcpd.sh&quot;</code></p>
+<p><code>uci commit dhcp</code></p>
+<p><code>service odhcpd restart</code></p>
+<h3 id="enable-dns-encryption">Enable DNS encryption<a hidden class="anchor" aria-hidden="true" href="#enable-dns-encryption">#</a></h3>
+<blockquote>
+<p>Encrypt your DNS traffic improving security and privacy.</p>
+<p>Prevent DNS leaks and DNS hijacking.</p>
+<p>Bypass regional restrictions using public DNS providers.</p>
+<p>Escape DNS-based content filters and internet censorship.</p>
+<p><em>
+
+<a href="https://openwrt.org/docs/guide-user/services/dns/dot_unbound" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/services/dns/dot_unbound</a>
+</em></p></blockquote>
+<p><code>uci set unbound.fwd_google.enabled=&quot;1&quot;</code></p>
+<p><code>uci set unbound.fwd_google.fallback=&quot;0&quot;</code></p>
+<p><code>uci commit unbound</code></p>
+<p><code>service unbound restart</code></p>
+<h2 id="using-luci">Using LuCI<a hidden class="anchor" aria-hidden="true" href="#using-luci">#</a></h2>
+<blockquote>
+<p>While OpenWrt can be managed completely using SSH and the terminal, the LuCI WebUI makes many administration tasks easier</p>
+<p><em>
+
+<a href="https://openwrt.org/docs/guide-user/luci/luci.essentials" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/luci/luci.essentials</a>
+</em></p></blockquote>
+<h3 id="unbound-luci-interface">Unbound LuCI interface<a hidden class="anchor" aria-hidden="true" href="#unbound-luci-interface">#</a></h3>
+<p>To manage the settings using the LuCI web interface, install the necessary packages:</p>
+<p>Run the following in a Terminal to update:</p>
+<p><code>opkg update</code></p>
+<p>Then, install the packages:</p>
+<p><code>opkg install luci-app-unbound</code></p>
+<p><code>service rpcd restart</code></p>
+<p><code>service odhcpd restart</code></p>
+<h2 id="congratulations">Congratulations!<a hidden class="anchor" aria-hidden="true" href="#congratulations">#</a></h2>
+<p>Yes, it’s a long winded process!</p>
+<p>Hopefully you made it this far and now have OpenWrt with AdGuardHome and Unbound running on a SheevaPlug.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/hardware/">Hardware</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/openwrt/">OpenWrt</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/sheevaplug/">SheevaPlug</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Jellyfin App on a Tizen TV</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/installing-iceshrimp-net/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Installing Iceshrimp.NET</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

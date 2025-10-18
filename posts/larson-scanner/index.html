@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Larson Scanner | Boffins Blog</title>
+<meta name="keywords" content="Arduino, Hardware, Maker, Robots, Software">
+<meta name="description" content="ScrewedSculpts asked if I could create this iconic effect but for a version of Maximilian that he was building.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/larson-scanner/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/larson-scanner/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/larson-scanner/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Larson Scanner">
+  <meta property="og:description" content="ScrewedSculpts asked if I could create this iconic effect but for a version of Maximilian that he was building.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-03-26T11:08:01+00:00">
+    <meta property="article:modified_time" content="2022-03-26T11:08:01+00:00">
+    <meta property="article:tag" content="Arduino">
+    <meta property="article:tag" content="Hardware">
+    <meta property="article:tag" content="Maker">
+    <meta property="article:tag" content="Robots">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/larson-scanner/002_ArduinoMini_Larson_Breadboard.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/larson-scanner/002_ArduinoMini_Larson_Breadboard.webp">
+<meta name="twitter:title" content="Larson Scanner">
+<meta name="twitter:description" content="ScrewedSculpts asked if I could create this iconic effect but for a version of Maximilian that he was building.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Larson Scanner",
+      "item": "https://boffinsblog.github.io/posts/larson-scanner/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Larson Scanner",
+  "name": "Larson Scanner",
+  "description": "ScrewedSculpts asked if I could create this iconic effect but for a version of Maximilian that he was building.",
+  "keywords": [
+    "Arduino", "Hardware", "Maker", "Robots", "Software"
+  ],
+  "articleBody": "Not Battlestar Galactica. Most people associate a Larson Scanner with Battlestar Galactica (1978) and Knight Rider (1982) but there was an underrated sci-fi film in 1979 called The Black Hole , with a robot sidekick henchman called Maximilian .\nScrewedSculpts asked if I could create this iconic effect but for a version of Maximilian that he was building.\nFirst things first – chip choices The choice is between an Arduino Mini and an Arduino Nano.\nBoth would work and it’s a question of how to power the finished unit.\nYes these are clones, however the end product is going to live permanently in a robot shell with no future access.\nArduino Mini vs Arduino Nano\nLarson Scanner prototype These 10mm clear LEDs are crazy bright but the overall form factor could be too wide.\nArduino Mini Larson Breadboard\nLED comparison The 10mm LEDs would have a greater impact and are brighter overall but would take up too much horizontal space.\nLED Comparison\nA slight redesign So at this point it was decided to add in motion detection functionality.\nAnd then add a PIR sensor into the mix and make it responsive to nearby movement.\nThe plan being that when movement is detected it will trigger the scanner effect.\nI have zero CAD skills but I do own a pen.\nWho Needs EAGLE?\nA working PIR Using a pair of breadboards I can now trigger the scanner effect.\nThis particular PIR detector is (I think) the HC-SR505 with an effective range of 3m.\nAdded PIR Sensor\nLarson Scanner LEDs in place Now that the proof of concept is all working, time to dig out the toolbox.\nVeroBoard With LEDs\nLarson Scanner LEDs and resistors in place And then closely followed by adding all the resistors.\n(The underneath of the board has already had the appropriate tracks cut.)\nVeroBoard With LEDs And Resistors\nFinally, all wired up And then start to create a wiring loom.\nLED Board Wired\nTesting the Arduino The LED board has been wired up and liberal amounts of hot glue added to ensure that none of the wires break free.\nTesting to see that all of the LEDs still work.\nLED Board Test Rig\nTesting the Arduino and PIR Then, with a working LED board and a known working Arduino it’s time to add in the PIR module.\nThere are two sets of buttons now:\nA power button that when on, the scanner effect will run\nA sensor button that then on will only trigger the scanner effect when activated (assuming the power is on)\nLED Board Test Rig With PIR\nFinal board and all wrapped up Finally all working and wrapped up in cable tidy wrap.\nLED Board Completed With PIR All Wrapped Up\nI didn’t build the robot that this was going to live in; there is however a Facebook video of the finished piece .\nLarson Scanner Arduino sketch The scanner code came from the incredulist.blogspot .\nAlso, the PIR code attribution is in the comments.\nBoth of the above work fine in isolation, any errors after that are all mine.\nI hope this sketch also helps someone looking to do something similar.\nBack_And_Forth_3_With_Motion_Sensor.pde // // PORTDB_larsen2ways // // goes both ways: Back AND Forth :) // // 11 // 1098765432 const word dimbits[] = { 0b0000000011111100, // frame 1 0b0000000011111000, 0b0000000011110000, 0b0000000011100000, 0b0000000011000000, 0b0000000010000000, 0b0000000010000000, 0b0000000010000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000000111111000, // frame 2 0b0000000111110000, 0b0000000111100000, 0b0000000111000000, 0b0000000110000000, 0b0000000100000000, 0b0000000100000000, 0b0000000100000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000001111110000, // frame 3 0b0000001111100000, 0b0000001111000000, 0b0000001110000000, 0b0000001100000000, 0b0000001000000000, 0b0000001000000000, 0b0000001000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000011111100000, // frame 4 0b0000011111000000, 0b0000011110000000, 0b0000011100000000, 0b0000011000000000, 0b0000010000000000, 0b0000010000000000, 0b0000010000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000111111000000, // frame 5 **** 0b0000111110000000, 0b0000111100000000, 0b0000111000000000, 0b0000110000000000, 0b0000100000000000, 0b0000100000000000, 0b0000100000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000111110000000, // frame 6 0b0000111100000000, 0b0000111000000000, 0b0000110000000000, 0b0000110000000000, 0b0000010000000000, 0b0000010000000000, 0b0000010000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000111100000000, // frame 7 0b0000111000000000, 0b0000111000000000, 0b0000111000000000, 0b0000011000000000, 0b0000001000000000, 0b0000001000000000, 0b0000001000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000111100000000, // frame 8 0b0000111100000000, 0b0000111100000000, 0b0000011100000000, 0b0000001100000000, 0b0000000100000000, 0b0000000100000000, 0b0000000100000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000111110000000, // frame 9 0b0000111110000000, 0b0000011110000000, 0b0000001110000000, 0b0000000110000000, 0b0000000010000000, 0b0000000010000000, 0b0000000010000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000111111000000, // frame 10 0b0000011111000000, 0b0000001111000000, 0b0000000111000000, 0b0000000011000000, 0b0000000001000000, 0b0000000001000000, 0b0000000001000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000011111100000, // frame 11 0b0000001111100000, 0b0000000111100000, 0b0000000011100000, 0b0000000001100000, 0b0000000000100000, 0b0000000000100000, 0b0000000000100000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000001111110000, // frame 12 0b0000000111110000, 0b0000000011110000, 0b0000000001110000, 0b0000000000110000, 0b0000000000010000, 0b0000000000010000, 0b0000000000010000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000000111111000, // frame 13 0b0000000011111000, 0b0000000001111000, 0b0000000000111000, 0b0000000000011000, 0b0000000000001000, 0b0000000000001000, 0b0000000000001000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000000011111100, // frame 14 *** 0b0000000001111100, 0b0000000000111100, 0b0000000000011100, 0b0000000000001100, 0b0000000000000100, 0b0000000000000100, 0b0000000000000100, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000000001111100, // frame 15 0b0000000000111100, 0b0000000000011100, 0b0000000000001100, 0b0000000000001100, 0b0000000000001000, 0b0000000000001000, 0b0000000000001000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000000000111100, // frame 16 0b0000000000011100, 0b0000000000011100, 0b0000000000011100, 0b0000000000011000, 0b0000000000010000, 0b0000000000010000, 0b0000000000010000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000000000111100, // frame 17 0b0000000000111100, 0b0000000000111100, 0b0000000000111000, 0b0000000000110000, 0b0000000000100000, 0b0000000000100000, 0b0000000000100000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, // 1098765432 0b0000000001111100, // frame 18 0b0000000001111100, 0b0000000001111000, 0b0000000001110000, 0b0000000001100000, 0b0000000001000000, 0b0000000001000000, 0b0000000001000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000, 0b0000000000000000}; unsigned long duration = 0; unsigned long times_out = 7500; // frame's time out \"speed\" // 500 for way fast // 50000 for way slow int idx; byte framepointer = 0; /* * ////////////////////////////////////// * //making sense of the sensor's output * ////////////////////////////////////// * * Switches a LED according to the state of the sensors output pin. * Determines the beginning and end of continuous motion sequences. * * @author: Kristian Gohlke / krigoo (_) gmail (_) com / https://krx.at * @date: 3. September 2006 * * kr1 (cleft) 2006 * released under a creative commons \"Attribution-NonCommercial-ShareAlike 2.0\" license * https://creativecommons.org/licenses/by-nc-sa/2.0/de/ * * The sensor's output pin goes to HIGH if motion is present. * However, even if motion is present it goes to LOW from time to time, * which might give the impression no motion is present. * This program deals with this issue by ignoring LOW-phases shorter than a given time, * assuming continuous motion is present during these phases. * */ ///////////////////////////// //VARS //the time we give the sensor to calibrate (10-60 secs according to the datasheet) //different sensor so smaller calibration time int calibrationTime = 5; //the time when the sensor outputs a low impulse long unsigned int lowIn; //the amount of milliseconds the sensor has to be low //before we assume all motion has stopped long unsigned int pause = 5000; boolean lockLow = true; boolean takeLowTime; int radPin = 12; //the digital pin connected to the sensor's output //int ledPin = 13; ///////////////////////////// //SETUP void setup(){ //Larson //pinMode(13,OUTPUT); pinMode(2, OUTPUT); pinMode(3, OUTPUT); pinMode(4, OUTPUT); pinMode(5, OUTPUT); pinMode(6, OUTPUT); pinMode(7, OUTPUT); pinMode(8, OUTPUT); pinMode(9, OUTPUT); pinMode(10, OUTPUT); pinMode(11, OUTPUT); //PORTD \u0026= 0b00000011; Serial.begin(9600); pinMode(radPin, INPUT); //pinMode(ledPin, OUTPUT); digitalWrite(radPin, LOW); //give the sensor some time to calibrate Serial.print(\"calibrating sensor \"); for(int i = 0; i \u003c calibrationTime; i++){ Serial.print(\".\"); delay(1000); } Serial.println(\" done\"); Serial.println(\"SENSOR ACTIVE\"); delay(50); } //////////////////////////// //LOOP void loop(){ if(digitalRead(radPin) == HIGH){ //digitalWrite(ledPin, HIGH); //the led visualizes the sensors output pin state if(lockLow){ //makes sure we wait for a transition to LOW before any further output is made: lockLow = false; Serial.println(\"---\"); Serial.print(\"motion detected at \"); Serial.print(millis()/1000); Serial.println(\" sec\"); delay(50); } // Larson code for (framepointer = 0; framepointer \u003c 216; framepointer = (framepointer + 12)) // 0-11,12-33,24-35,36-47,48-59,60-71,72-83,84-95,96-107, // 108-119,120-131,132-143,144-155,156-167,168-179, // 180-191,192-203,204-215,216 { for(duration=0; duration",
+  "wordCount" : "1405",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/larson-scanner/002_ArduinoMini_Larson_Breadboard.webp","datePublished": "2022-03-26T11:08:01Z",
+  "dateModified": "2022-03-26T11:08:01Z",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/larson-scanner/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Larson Scanner
+    </h1>
+    <div class="post-meta"><span title='2022-03-26 11:08:01 +0000 GMT'>March 26, 2022</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#not-battlestar-galactica" aria-label="Not Battlestar Galactica.">Not Battlestar Galactica.</a></li>
+                <li>
+                    <a href="#first-things-first--chip-choices" aria-label="First things first – chip choices">First things first – chip choices</a></li>
+                <li>
+                    <a href="#larson-scanner-prototype" aria-label="Larson Scanner prototype">Larson Scanner prototype</a></li>
+                <li>
+                    <a href="#led-comparison" aria-label="LED comparison">LED comparison</a></li>
+                <li>
+                    <a href="#a-slight-redesign" aria-label="A slight redesign">A slight redesign</a></li>
+                <li>
+                    <a href="#a-working-pir" aria-label="A working PIR">A working PIR</a></li>
+                <li>
+                    <a href="#larson-scanner-leds-in-place" aria-label="Larson Scanner LEDs in place">Larson Scanner LEDs in place</a></li>
+                <li>
+                    <a href="#larson-scanner-leds-and-resistors-in-place" aria-label="Larson Scanner LEDs and resistors in place">Larson Scanner LEDs and resistors in place</a></li>
+                <li>
+                    <a href="#finally-all-wired-up" aria-label="Finally, all wired up">Finally, all wired up</a></li>
+                <li>
+                    <a href="#testing-the-arduino" aria-label="Testing the Arduino">Testing the Arduino</a></li>
+                <li>
+                    <a href="#testing-the-arduino-and-pir" aria-label="Testing the Arduino and PIR">Testing the Arduino and PIR</a></li>
+                <li>
+                    <a href="#final-board-and-all-wrapped-up" aria-label="Final board and all wrapped up">Final board and all wrapped up</a></li>
+                <li>
+                    <a href="#larson-scanner-arduino-sketch" aria-label="Larson Scanner Arduino sketch">Larson Scanner Arduino sketch</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="not-battlestar-galactica">Not Battlestar Galactica.<a hidden class="anchor" aria-hidden="true" href="#not-battlestar-galactica">#</a></h2>
+<p>Most people associate a Larson Scanner with Battlestar Galactica (1978) and Knight Rider (1982) but there was an underrated sci-fi film in 1979 called 
+
+<a href="https://en.wikipedia.org/wiki/The_Black_Hole_%281979_film%29" target="_blank" rel="nofollow noopener noreferrer">The Black Hole</a>
+, with a robot sidekick henchman called 
+
+<a href="https://borg.com/tag/maximilian-robot/" target="_blank" rel="nofollow noopener noreferrer">Maximilian</a>
+.</p>
+<p>ScrewedSculpts asked if I could create this iconic effect but for a version of Maximilian that he was building.</p>
+<h2 id="first-things-first--chip-choices">First things first – chip choices<a hidden class="anchor" aria-hidden="true" href="#first-things-first--chip-choices">#</a></h2>
+<p>The choice is between an Arduino Mini and an Arduino Nano.</p>
+<p>Both would work and it’s a question of how to power the finished unit.</p>
+<p>Yes these are clones, however the end product is going to live permanently in a robot shell with no future access.</p>
+<p><img alt="An Arduino Mini next to and Arduino Nano. Choosing which to use is the start of the Larson scanner build." loading="lazy" src="/posts/larson-scanner/001_ArduinoMini_ArduinoNano.webp#center" title="An Arduino Mini next to and Arduino Nano. Choosing which to use is the start of the Larson scanner build.">
+<em>Arduino Mini vs Arduino Nano</em></p>
+<h2 id="larson-scanner-prototype">Larson Scanner prototype<a hidden class="anchor" aria-hidden="true" href="#larson-scanner-prototype">#</a></h2>
+<p>These 10mm clear LEDs are crazy bright but the overall form factor could be too wide.</p>
+<p><img alt="An Arduino Mini on a breadboard with LEDs wired up. This id the first working prototype of the Larson scanner." loading="lazy" src="/posts/larson-scanner/002_ArduinoMini_Larson_Breadboard.webp#center" title="An Arduino Mini on a breadboard with LEDs wired up. This id the first working prototype of the Larson scanner.">
+<em>Arduino Mini Larson Breadboard</em></p>
+<h2 id="led-comparison">LED comparison<a hidden class="anchor" aria-hidden="true" href="#led-comparison">#</a></h2>
+<p>The 10mm LEDs would have a greater impact and are brighter overall but would take up too much horizontal space.</p>
+<p><img alt="Large clear LEDs next to smaller red LEDs. I need to decide which LEDs to use in the Larson scanner." loading="lazy" src="/posts/larson-scanner/003_LED_Comparison.webp#center" title="Large clear LEDs next to smaller red LEDs. I need to decide which LEDs to use in the Larson scanner.">
+<em>LED Comparison</em></p>
+<h2 id="a-slight-redesign">A slight redesign<a hidden class="anchor" aria-hidden="true" href="#a-slight-redesign">#</a></h2>
+<p>So at this point it was decided to add in motion detection functionality.</p>
+<p>And then add a PIR sensor into the mix and make it responsive to nearby movement.</p>
+<p>The plan being that when movement is detected it will trigger the scanner effect.</p>
+<p>I have zero CAD skills but I do own a pen.</p>
+<p><img alt="A drawing showing how the LED board will connect to the Arduino board. It is crudely done." loading="lazy" src="/posts/larson-scanner/004_Who_Needs_EAGLE.webp#center" title="A drawing showing how the LED board will connect to the Arduino board. It is crudely done.">
+<em>Who Needs EAGLE?</em></p>
+<h2 id="a-working-pir">A working PIR<a hidden class="anchor" aria-hidden="true" href="#a-working-pir">#</a></h2>
+<p>Using a pair of breadboards I can now trigger the scanner effect.</p>
+<p>This particular PIR detector is (I think) the HC-SR505 with an effective range of 3m.</p>
+<p><img alt="Two breadboards, the top one has all of the LEDs slotted in and they are lit up red. The bottom one has the Arduino and a PIR motion detector. Wires connect the two boards." loading="lazy" src="/posts/larson-scanner/005_Added_PIR.webp#center" title="Two breadboards, the top one has all of the LEDs slotted in and they are lit up red. The bottom one has the Arduino and a PIR motion detector. Wires connect the two boards.">
+<em>Added PIR Sensor</em></p>
+<h2 id="larson-scanner-leds-in-place">Larson Scanner LEDs in place<a hidden class="anchor" aria-hidden="true" href="#larson-scanner-leds-in-place">#</a></h2>
+<p>Now that the proof of concept is all working, time to dig out the toolbox.</p>
+<p><img alt="Workbench showing LEDs and resistors being put into VeroBoard. Everything is in pieces." loading="lazy" src="/posts/larson-scanner/006_VeroBoard_With_LEDs.webp#center" title="Workbench showing LEDs and resistors being put into VeroBoard. Everything is in pieces.">
+<em>VeroBoard With LEDs</em></p>
+<h2 id="larson-scanner-leds-and-resistors-in-place">Larson Scanner LEDs and resistors in place<a hidden class="anchor" aria-hidden="true" href="#larson-scanner-leds-and-resistors-in-place">#</a></h2>
+<p>And then closely followed by adding all the resistors.</p>
+<p>(The underneath of the board has already had the appropriate tracks cut.)</p>
+<p><img alt="Workbench showing LEDs and resistors being put into VeroBoard. Everything is now assembled." loading="lazy" src="/posts/larson-scanner/007_VeroBoard_With_LEDs_And_Resistors.webp#center" title="Workbench showing LEDs and resistors being put into VeroBoard. Everything is now assembled.">
+<em>VeroBoard With LEDs And Resistors</em></p>
+<h2 id="finally-all-wired-up">Finally, all wired up<a hidden class="anchor" aria-hidden="true" href="#finally-all-wired-up">#</a></h2>
+<p>And then start to create a wiring loom.</p>
+<p><img alt="The completed LED board with resistors and wire in place." loading="lazy" src="/posts/larson-scanner/008_LED_Board_Wired.webp#center" title="The completed LED board with resistors and wire in place.">
+<em>LED Board Wired</em></p>
+<h2 id="testing-the-arduino">Testing the Arduino<a hidden class="anchor" aria-hidden="true" href="#testing-the-arduino">#</a></h2>
+<p>The LED board has been wired up and liberal amounts of hot glue added to ensure that none of the wires break free.</p>
+<p>Testing to see that all of the LEDs still work.</p>
+<p><img alt="The completed LED board with resistors and wire in place connected to a breadboard and being tested using the Arduino." loading="lazy" src="/posts/larson-scanner/009_LED_Board_Test_Rig.webp#center" title="The completed LED board with resistors and wire in place connected to a breadboard and being tested using the Arduino.">
+<em>LED Board Test Rig</em></p>
+<h2 id="testing-the-arduino-and-pir">Testing the Arduino and PIR<a hidden class="anchor" aria-hidden="true" href="#testing-the-arduino-and-pir">#</a></h2>
+<p>Then, with a working LED board and a known working Arduino it’s time to add in the PIR module.</p>
+<p>There are two sets of buttons now:</p>
+<ul>
+<li>
+<p>A power button that when on, the scanner effect will run</p>
+</li>
+<li>
+<p>A sensor button that then on will only trigger the scanner effect when activated (assuming the power is on)</p>
+</li>
+</ul>
+<p><img alt="The completed Larson scanner LED board with resistors and wire in place connected to a breadboard and being tested using the Arduino and the PIR motion detector." loading="lazy" src="/posts/larson-scanner/010_LED_Board_Test_Rig_With_PIR.webp#center" title="The completed Larson scanner LED board with resistors and wire in place connected to a breadboard and being tested using the Arduino and the PIR motion detector.">
+<em>LED Board Test Rig With PIR</em></p>
+<h2 id="final-board-and-all-wrapped-up">Final board and all wrapped up<a hidden class="anchor" aria-hidden="true" href="#final-board-and-all-wrapped-up">#</a></h2>
+<p>Finally all working and wrapped up in cable tidy wrap.</p>
+<p><img alt="The completed Larson scanner board with its PIR motion detector and LED board all wrapped up neatly with cable tidy. It is powered from a battery box and switch also neatly wrapped." loading="lazy" src="/posts/larson-scanner/011_LED_Board_Completed_With_PIR_All_Wrapped_up.webp#center" title="The completed Larson scanner board with its PIR motion detector and LED board all wrapped up neatly with cable tidy. It is powered from a battery box and switch also neatly wrapped.">
+<em>LED Board Completed With PIR All Wrapped Up</em></p>
+<p>I didn’t build the robot that this was going to live in; there is however a 
+
+<a href="https://www.facebook.com/RobotSculpts/videos/471245096793257/" target="_blank" rel="nofollow noopener noreferrer">Facebook video of the finished piece</a>
+.</p>
+<h2 id="larson-scanner-arduino-sketch">Larson Scanner Arduino sketch<a hidden class="anchor" aria-hidden="true" href="#larson-scanner-arduino-sketch">#</a></h2>
+<p>The scanner code came from the 
+
+<a href="http://incredulist.blogspot.com/p/larson-scanner.html" target="_blank" rel="nofollow noopener noreferrer">incredulist.blogspot</a>
+.</p>
+<p>Also, the PIR code attribution is in the comments.</p>
+<p>Both of the above work fine in isolation, any errors after that are all mine.</p>
+<p>I hope this sketch also helps someone looking to do something similar.</p>
+<h3 id="back_">
+
+<a href="https://github.com/BoffinsBlog/Arduino/blob/main/larson-scanner/Back_And_Forth_3_With_Motion_Sensor.pde" target="_blank" rel="nofollow noopener noreferrer">Back_And_Forth_3_With_Motion_Sensor.pde</a>
+</h3>
+<pre tabindex="0"><code>//
+// PORTDB_larsen2ways
+// 
+// goes both ways: Back AND Forth  :)
+
+// 
+//                             11
+//                             1098765432    
+const word dimbits[] = { 0b0000000011111100, // frame 1
+                         0b0000000011111000,
+                         0b0000000011110000, 
+                         0b0000000011100000, 
+                         0b0000000011000000, 
+                         0b0000000010000000, 
+                         0b0000000010000000, 
+                         0b0000000010000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000000111111000, // frame 2
+                         0b0000000111110000,
+                         0b0000000111100000, 
+                         0b0000000111000000, 
+                         0b0000000110000000, 
+                         0b0000000100000000, 
+                         0b0000000100000000, 
+                         0b0000000100000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000001111110000, // frame 3
+                         0b0000001111100000,
+                         0b0000001111000000, 
+                         0b0000001110000000, 
+                         0b0000001100000000, 
+                         0b0000001000000000, 
+                         0b0000001000000000, 
+                         0b0000001000000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000011111100000, // frame 4
+                         0b0000011111000000,
+                         0b0000011110000000, 
+                         0b0000011100000000, 
+                         0b0000011000000000, 
+                         0b0000010000000000, 
+                         0b0000010000000000, 
+                         0b0000010000000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000111111000000, // frame 5 ****
+                         0b0000111110000000,
+                         0b0000111100000000, 
+                         0b0000111000000000, 
+                         0b0000110000000000, 
+                         0b0000100000000000, 
+                         0b0000100000000000, 
+                         0b0000100000000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000111110000000, // frame 6
+                         0b0000111100000000,
+                         0b0000111000000000, 
+                         0b0000110000000000, 
+                         0b0000110000000000, 
+                         0b0000010000000000, 
+                         0b0000010000000000, 
+                         0b0000010000000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000111100000000, // frame 7
+                         0b0000111000000000,
+                         0b0000111000000000, 
+                         0b0000111000000000, 
+                         0b0000011000000000, 
+                         0b0000001000000000, 
+                         0b0000001000000000, 
+                         0b0000001000000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000111100000000, // frame 8
+                         0b0000111100000000,
+                         0b0000111100000000, 
+                         0b0000011100000000, 
+                         0b0000001100000000, 
+                         0b0000000100000000, 
+                         0b0000000100000000, 
+                         0b0000000100000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000111110000000, // frame 9
+                         0b0000111110000000,
+                         0b0000011110000000, 
+                         0b0000001110000000, 
+                         0b0000000110000000, 
+                         0b0000000010000000, 
+                         0b0000000010000000, 
+                         0b0000000010000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000111111000000, // frame 10
+                         0b0000011111000000,
+                         0b0000001111000000, 
+                         0b0000000111000000, 
+                         0b0000000011000000, 
+                         0b0000000001000000, 
+                         0b0000000001000000, 
+                         0b0000000001000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                                 
+                         0b0000011111100000, // frame 11
+                         0b0000001111100000,
+                         0b0000000111100000, 
+                         0b0000000011100000, 
+                         0b0000000001100000, 
+                         0b0000000000100000, 
+                         0b0000000000100000, 
+                         0b0000000000100000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                              
+                         0b0000001111110000, // frame 12
+                         0b0000000111110000,
+                         0b0000000011110000, 
+                         0b0000000001110000, 
+                         0b0000000000110000, 
+                         0b0000000000010000, 
+                         0b0000000000010000, 
+                         0b0000000000010000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                              
+                         0b0000000111111000, // frame 13
+                         0b0000000011111000,
+                         0b0000000001111000, 
+                         0b0000000000111000, 
+                         0b0000000000011000, 
+                         0b0000000000001000, 
+                         0b0000000000001000, 
+                         0b0000000000001000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                              
+                         0b0000000011111100, // frame 14 ***
+                         0b0000000001111100,
+                         0b0000000000111100, 
+                         0b0000000000011100, 
+                         0b0000000000001100, 
+                         0b0000000000000100, 
+                         0b0000000000000100, 
+                         0b0000000000000100, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000, 
+//                             1098765432                              
+                         0b0000000001111100, // frame 15
+                         0b0000000000111100,
+                         0b0000000000011100, 
+                         0b0000000000001100, 
+                         0b0000000000001100, 
+                         0b0000000000001000, 
+                         0b0000000000001000, 
+                         0b0000000000001000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000, 
+//                             1098765432                              
+                         0b0000000000111100, // frame 16
+                         0b0000000000011100,
+                         0b0000000000011100, 
+                         0b0000000000011100, 
+                         0b0000000000011000, 
+                         0b0000000000010000, 
+                         0b0000000000010000, 
+                         0b0000000000010000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                              
+                         0b0000000000111100, // frame 17
+                         0b0000000000111100,
+                         0b0000000000111100, 
+                         0b0000000000111000, 
+                         0b0000000000110000, 
+                         0b0000000000100000, 
+                         0b0000000000100000, 
+                         0b0000000000100000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+//                             1098765432                              
+                         0b0000000001111100, // frame 18
+                         0b0000000001111100,
+                         0b0000000001111000, 
+                         0b0000000001110000, 
+                         0b0000000001100000, 
+                         0b0000000001000000, 
+                         0b0000000001000000, 
+                         0b0000000001000000, 
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000,
+                         0b0000000000000000};                         
+                         
+unsigned long duration = 0;
+unsigned long times_out = 7500;  // frame&#39;s time out &#34;speed&#34;
+                                 // 500 for way fast
+                                 // 50000 for way slow
+                        
+int idx;
+byte framepointer = 0;
+
+/* 
+ * //////////////////////////////////////
+ * //making sense of the sensor&#39;s output
+ * //////////////////////////////////////
+ *
+ * Switches a LED according to the state of the sensors output pin.
+ * Determines the beginning and end of continuous motion sequences.
+ *
+ * @author: Kristian Gohlke / krigoo (_) gmail (_) com / https://krx.at
+ * @date:   3. September 2006 
+ *
+ * kr1 (cleft) 2006 
+ * released under a creative commons &#34;Attribution-NonCommercial-ShareAlike 2.0&#34; license
+ * https://creativecommons.org/licenses/by-nc-sa/2.0/de/
+ *
+ * The sensor&#39;s output pin goes to HIGH if motion is present.
+ * However, even if motion is present it goes to LOW from time to time, 
+ * which might give the impression no motion is present. 
+ * This program deals with this issue by ignoring LOW-phases shorter than a given time, 
+ * assuming continuous motion is present during these phases.
+ *  
+ */
+
+/////////////////////////////
+//VARS
+//the time we give the sensor to calibrate (10-60 secs according to the datasheet)
+//different sensor so smaller calibration time
+int calibrationTime = 5;        
+
+//the time when the sensor outputs a low impulse
+long unsigned int lowIn;        
+
+//the amount of milliseconds the sensor has to be low 
+//before we assume all motion has stopped
+long unsigned int pause = 5000;  
+
+boolean lockLow = true;
+boolean takeLowTime;  
+
+int radPin = 12;    //the digital pin connected to the sensor&#39;s output
+//int ledPin = 13;
+
+/////////////////////////////
+//SETUP
+void setup(){
+
+//Larson
+  //pinMode(13,OUTPUT);
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  //PORTD &amp;= 0b00000011;
+
+  Serial.begin(9600);
+  pinMode(radPin, INPUT);
+  //pinMode(ledPin, OUTPUT);
+  digitalWrite(radPin, LOW);
+
+  //give the sensor some time to calibrate
+  Serial.print(&#34;calibrating sensor &#34;);
+    for(int i = 0; i &lt; calibrationTime; i++){
+      Serial.print(&#34;.&#34;);
+      delay(1000);
+      }
+    Serial.println(&#34; done&#34;);
+    Serial.println(&#34;SENSOR ACTIVE&#34;);
+    delay(50);
+  }
+
+////////////////////////////
+//LOOP
+void loop(){
+
+     if(digitalRead(radPin) == HIGH){
+       //digitalWrite(ledPin, HIGH);   //the led visualizes the sensors output pin state
+       if(lockLow){  
+         //makes sure we wait for a transition to LOW before any further output is made:
+         lockLow = false;            
+         Serial.println(&#34;---&#34;);
+         Serial.print(&#34;motion detected at &#34;);
+         Serial.print(millis()/1000);
+         Serial.println(&#34; sec&#34;); 
+         delay(50);
+         }
+
+// Larson code
+  for (framepointer = 0; framepointer &lt; 216; framepointer = (framepointer + 12))
+  // 0-11,12-33,24-35,36-47,48-59,60-71,72-83,84-95,96-107,
+  // 108-119,120-131,132-143,144-155,156-167,168-179,
+  // 180-191,192-203,204-215,216
+  {
+    for(duration=0; duration&lt;times_out; duration++)
+    // times_out is the number of
+    // frame repetitions
+    {
+      for(idx = framepointer; idx &lt; (framepointer + 12); idx++)
+      {
+        commitPORTs();
+      }
+    }
+  }
+  framepointer = 0;
+  //delay(500);
+             
+         takeLowTime = true;
+       }
+
+     if(digitalRead(radPin) == LOW){       
+       //digitalWrite(ledPin, LOW);  //the led visualizes the sensors output pin state
+
+       if(takeLowTime){
+        lowIn = millis();          //save the time of the transition from high to LOW
+        takeLowTime = false;       //make sure this is only done at the start of a LOW phase
+        }
+       //if the sensor is low for more than the given pause, 
+       //we assume that no more motion is going to happen
+       if(!lockLow &amp;&amp; millis() - lowIn &gt; pause){  
+           //makes sure this block of code is only executed again after 
+           //a new motion sequence has been detected
+           lockLow = true;                        
+           Serial.print(&#34;motion ended at &#34;);      //output
+           Serial.print((millis() - pause)/1000);
+           Serial.println(&#34; sec&#34;);
+           delay(50);
+           }
+       }
+  }
+
+// Larson array
+void commitPORTs ()
+{
+  PORTD = dimbits[idx];
+  PORTB = dimbits[idx]/256;
+}
+</code></pre><p>All of the Arduino code examples can also be found 
+
+<a href="https://github.com/BoffinsBlog/Arduino/" target="_blank" rel="nofollow noopener noreferrer">here</a>
+.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/arduino/">Arduino</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/hardware/">Hardware</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/maker/">Maker</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/robots/">Robots</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/upgrading-debian-on-a-gemini-pda/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Upgrading Debian on a Gemini PDA</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Robot Pan / Tilt Hat CCTV</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

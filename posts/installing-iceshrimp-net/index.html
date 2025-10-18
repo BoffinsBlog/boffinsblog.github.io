@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Installing Iceshrimp.NET | Boffins Blog</title>
+<meta name="keywords" content="Fediverse, Linux, Raspberry Pi, Self Hosting, Web-Servers">
+<meta name="description" content="How I moved from IceshrimpJS to Iceshrimp.NET, a guide to migrating the database and installing.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/installing-iceshrimp-net/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/installing-iceshrimp-net/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/installing-iceshrimp-net/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Installing Iceshrimp.NET">
+  <meta property="og:description" content="How I moved from IceshrimpJS to Iceshrimp.NET, a guide to migrating the database and installing.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-04-28T13:17:30+01:00">
+    <meta property="article:modified_time" content="2024-04-28T13:17:30+01:00">
+    <meta property="article:tag" content="Fediverse">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="Web-Servers">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/installing-iceshrimp-net/01_shrimpNET_Login.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/installing-iceshrimp-net/01_shrimpNET_Login.webp">
+<meta name="twitter:title" content="Installing Iceshrimp.NET">
+<meta name="twitter:description" content="How I moved from IceshrimpJS to Iceshrimp.NET, a guide to migrating the database and installing.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Installing Iceshrimp.NET",
+      "item": "https://boffinsblog.github.io/posts/installing-iceshrimp-net/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Installing Iceshrimp.NET",
+  "name": "Installing Iceshrimp.NET",
+  "description": "How I moved from IceshrimpJS to Iceshrimp.NET, a guide to migrating the database and installing.",
+  "keywords": [
+    "Fediverse", "Linux", "Raspberry Pi", "Self Hosting", "Web-Servers"
+  ],
+  "articleBody": "Better than it was before Better, Stronger, Faster\nMore Fediverse adventures, this time with installing Iceshrimp.NET\nWhy? Iceshrimp JS (as I’ll call the current version) is a hard fork of FireFish which is in itself was a rebranding of Calckey which was a fork of Misskey.\nIceshrimp.NET is a complete rewrite of the code-base.\nAll of it.\nBoth front and back end.\nAlthough this doesn’t answer why I want to migrate.\nThat answer to that is simple, I like tinkering.\nBefore I begin Firstly, I have to say a big ‘thank you’ to the Iceshrimp Dev team.\nAlso, the pace of development is ridiculously rapid considering the small amount of people involved, and is testament to their skills.\nAdd to that, they are open and approachable and always willing to help an idiot like me when I bungle something.\nKudos!\nBefore YOU begin If you are thinking of installing Iceshrimp.NET, please read the documentation .\nPreparations https://kb.iceshrimp.dev/s/docs/doc/production-readiness-Bs0HK2ZXO8 Obligatory Warning I\nNote This is alpha (soon to be beta!) software. While the Mastodon client API is relatively complete, the frontend is not. It is therefore not advisable to upgrade existing Iceshrimp instances at present. Setting up staging instances to help us with testing is very appreciated, however, and will help us ensure eventual upgrades go as smoothly as possible.\nhttps://iceshrimp.dev/iceshrimp/Iceshrimp.NET Obligatory Warning II\nThe following steps were completed on a Raspberry Pi 4 4GB running Ubuntu Server 22.04.4 LTS\nObviously, the usual caveats apply:\nDon’t simply copy and paste lines of code that you find on the Internet\nAlso, I am not responsible if any of this breaks your machine\nAs I was coming from a previously installed version of Iceshrimp a few of the pieces of this jigsaw were already in place.\nUpdate everything The following may be a bit of overkill but I run this command quite frequently:\nsudo apt update \u0026\u0026 sudo apt upgrade \u0026\u0026 sudo apt remove \u0026\u0026 sudo apt clean \u0026\u0026 sudo apt autoremove \u0026\u0026 sudo apt autoclean\nOr if you prefer a shorter version, run the following in a Terminal:\nsudo apt update \u0026\u0026 sudo apt upgrade\nInstall PostgreSQL PostgreSQL was already in place and I covered how to install in my previously published Installing Iceshrimp post.\nFull installation instructions are also on the PostgreSQL website .\ntl:dr\napt install postgresql\nStep by Step Create a ‘foo’ user I prefer to run a dedicated processes with a dedicated user.\nFirst, to add a new user, run the following in a Terminal:\nsudo adduser foo\nThen password protect it:\nsudo passwd foo\nInstall the .net SDK https://dotnet.microsoft.com/en-us/download/dotnet/8.0 Whilst as the foo user and in the $HOME directory, run the following in a Terminal:\nsu foo\ncd $HOME\nFirstly, download the installation script:\nwget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh\nThen change the file permissions to enable execution:\nchmod +x ./dotnet-install.sh\nFinally install:\n./dotnet-install.sh --version latest\nAdd the .net variables https://learn.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#set-environment-variables-system-wide The variables are volatile i.e. they do not persist between Terminal sessions.\nFor using in the current Terminal session only:\nexport DOTNET_ROOT=$HOME/.dotnet\nexport PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools\nOr, to make the variables persistent and usable between Terminal sessions, execute the following in a Terminal:\nnano $HOME/.bashrc\nThen, add at the bottom:\n# Add the dotnet variables export DOTNET_ROOT=$HOME/.dotnet export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools After doing either of the above, check:\ndotnet --list-sdks\nThe output should be something like:\n8.0.204 [/home/foo/.dotnet/sdk]\nInstall the WebAssembly tools This step is not entirely necessary but is needed if the build is to include the wasm-tools.\nWebAssembly is a type of code that can be run in modern web browsers — it is a low-level assembly-like language with a compact binary format that runs with near-native performance and provides languages such as C/C++, C# and Rust with a compilation target so that they can run on the web.\nhttps://developer.mozilla.org/en-US/docs/WebAssembly I installed with:\ndotnet workload install wasm-tools\nClone Iceshrimp.NET from git https://kb.iceshrimp.dev/s/docs/doc/installation-guide-cjqv6iTgnS Whilst as the foo user and in the $HOME directory, run the following in a Terminal:\ngit clone https://iceshrimp.dev/iceshrimp/iceshrimp.net\ncd iceshrimp.net/Iceshrimp.Backend\nBuild the project in release configuration dotnet build -c Release\nNOTE: To build with NativeAOT enabled, the wasm-tools workload needs to have been installed:\ndotnet build -c Release -p:EnableAOT=true\nCreate an Iceshrimp.Storage directory Iceshrimp.NET needs somewhere to store media and the installation will fail if a path is not put into the configuration.ini file.\nAny storage directory can be created as long as it is writable by the foo user.\nI chose the following:\nmkdir /$HOME/iceshrimp.net/Iceshrimp.Storage/\nObject Storage is also an option however, I don’t use any third party provider for that:\nhttps://kb.iceshrimp.dev/s/docs/doc/object-storage-k2nxHYOocd Configure Very little needs to be configured (the database name and domain can be set here even if they don’t exist yet).\nnano $HOME/iceshrimp.net/Iceshrimp.Backend/configuration.ini\nChange:\nWebDomain = shrimp.example.org AccountDomain = example.org Database = iceshrimp Username = iceshrimp Password = iceshrimp This is the path to the Iceshrimp.Storage that was created earlier.\nPath = /path/to/media/location Set up certbot To only get a certificate before editing the nginx conf file:\nsudo certbot certonly\nThen put in the domain name e.g. shrimp.example.org\nThis will create a certificate and the local files to be used in the iceshrimp.nginx.conf file.\nMake a note of their path, it will be needed in the next step.\nSet up nginx https://kb.iceshrimp.dev/s/docs/doc/post-install-guide-caco15miOE I recycled an iceshrimp.nginx.conf from a previous installation.\nIt goes in /etc/nginx/sites-available/\nThe iceshrimp.nginx.conf changes are quite straightforward.\nChange:\nserver_name example.com;\nTo:\nserver_name shrimp.example.org;\n! In two (2) places !\nChange the path of the:\nssl_certificate\nssl_certificate_key\nTo the path that certbot provided.\nCreate the symlink:\nsudo ln -s /etc/nginx/sites-available/iceshrimp.nginx.conf /etc/nginx/sites-enabled/\nCheck the configuration and reload the nginx server:\nsudo nginx -t \u0026\u0026 sudo systemctl reload nginx\nSplit Domain setup https://kb.iceshrimp.dev/doc/split-domain-setup-jHgCAvRar2 https://webfinger.net The following snippet GOES IN THE ROOT DOMAIN.\n(It took me far to long to realise this and as a result webfinger never worked properly for me.)\n# Webfinger location /.well-known/webfinger { rewrite ^.*$ https://shrimp.example.org/.well-known/webfinger permanent; } location /.well-known/host-meta { rewrite ^.*$ https://shrimp.example.org/.well-known/host-meta permanent; } location /.well-known/nodeinfo { rewrite ^.*$ https://shrimp.example.org/.well-known/nodeinfo permanent; } Check the configuration and reload the nginx server:\nsudo nginx -t \u0026\u0026 sudo systemctl restart nginx\nCreate a new PostgreSQL user (if needed) Irrespective of whether to migrate an existing database or create a fresh one, a PostgreSQL User will need to be exist (if it doesn’t already).\nLog into PostgreSQL:\nsudo -u postgres psql\nCREATE a new User:\nCREATE USER \"iceshrimp\" WITH ENCRYPTED PASSWORD 'super-long-password';\nTo DROP a User:\nDROP USER \"iceshrimp\";\nDatabase choices I have both migrated an existing iceshrimp database and started with a clean slate.\nMigration is not recommended yet unless you know what you are doing; have read the disclaimers .\nhttps://kb.iceshrimp.dev/s/docs/doc/migration-guide-XRdCqvbu31 I’ll cover how to do both.\nTo create a new iceshrimp database Log into PostgreSQL:\nsudo -u postgres psql\nTo LIST the current databases:\n\\l\nThen, to CREATE an empty database:\nCREATE DATABASE \"iceshrimp\" WITH ENCODING = 'UTF8';\nNow take ownership:\nALTER DATABASE \"iceshrimp\" OWNER TO \"iceshrimp\";\nTo DROP a database:\nDROP DATABASE \"iceshrimp_net\";\nTo migrate an existing iceshrimp database Stop any running iceshrimp.service that is using the database to be duplicated:\nsudo systemctl stop iceshrimp.service\nsudo systemctl status iceshrimp.service\nLog into PostgreSQL:\nsudo -u postgres psql\nTo LIST the current databases:\n\\l\nThis next bit is extremely important!\nChange to the iceshrimp user:\nSET role iceshrimp;\nCheck you are the correct User:\nSELECT current_user, session_user;\nApply the migrations from:\nhttps://kb.iceshrimp.dev/s/docs/doc/migration-guide-XRdCqvbu31 I’m not going to replicate the script here as it may change.\nLast step! Finally, whether creating a new database or migrating an existing one, the last step is to VACUUM and ANALYZE the migrated database.\nAs the postgres user, run a VACUUM FULL ANALYZE;\nSET ROLE postgres;\nCheck you are the correct User:\nSELECT current_user, session_user;\nVACUUM FULL ANALYZE;\nTo quit:\n\\q\nRunning Iceshrimp.NET using systemd I prefer to use systemd to launch a service rather than starting one manually.\nThis approach has the added benefit of enabling a restart after a reboot if desired.\nsudo nano /etc/systemd/system/iceshrimp.net.service\n[Unit] Description=Iceshrimp.net daemon [Service] Type=simple User=foo WorkingDirectory=/home/foo/iceshrimp.net/Iceshrimp.Backend ExecStart=/home/foo/.dotnet/dotnet run --migrate-and-start [Install] WantedBy=multi-user.target A copy is also here .\nReload the systemd service:\nsudo systemctl daemon-reload\nAnd to make the systemd service restart after a reboot, enable it:\nsudo systemctl enable iceshrimp.service\nStart the systemd service sudo systemctl start iceshrimp.service\nsudo systemctl status iceshrimp.service\nCongratulations! Iceshrimp.NET should now be up and running.\nIf all has gone to plan you should see the above when going to the homepage.\nIceshrimp.NET Login Screenshot\nWhen using a new database, it will be empty and a new User will need creating.\nCreate a new Iceshrimp.NET user Firstly, turn Registrations ON:\nnano iceshrimp.net/Iceshrimp.Backend/configuration.ini\n;; Whether to allow instance registrations ;; Options: [Closed, Invite, Open] Registrations = Open Then send a PUT request e.g.:\ncurl -X PUT -H \"Content-Type: application/json\" http://localhost:3000/api/iceshrimp/auth -d' { \"username\" : \"MyNewUsername\", \"password\" : \"super-long-password\" }'\nFinally, turn Registrations OFF:\nnano iceshrimp.net/Iceshrimp.Backend/configuration.ini\n;; Whether to allow instance registrations ;; Options: [Closed, Invite, Open] Registrations = Closed Updating Iceshrimp.NET Stop the iceshrimp.net.service\nsudo systemctl stop iceshrimp.net.service\nChange to the foo user and go to the iceshrimp.net directory:\nsu foo\ncd $HOME/iceshrimp.net\nThen:\ngit pull\nPGTune https://kb.iceshrimp.dev/s/docs/doc/database-maintenance-pibqfnr2he PGTune provides recommendations for PostgreSQL configuration based on your hardware specs and intended database workload.\nThere are a couple of Python based scripts on the Internet but I prefer to edit config files manually.\nPut in a couple of details about your system in the web form and generate the amendments to be made to /etc/postgresql/16/main/postgresql.conf\nhttps://pgtune.leopard.in.ua I highly recommended doing this.\nServer Load Just a couple of graphs showing the difference in server load between IceshrimpJS and Iceshrimp.NET\nIt’s generally lighter and runs faster.\nFirstly, the server load whilst running IceshrimpJS:\nIceshrimpJS Server Load Screenshot\nSecondly, the server load whilst running Iceshrimp.NET:\nIceshrimp.NET Server Load Screenshot\nUpdating the Blocklist There was a previous post about how to update the Blocklist when running Iceshrimp.\nThese scripts have also been updated / added to.\nClients Given that Iceshrimp.NET currently does not have a front-end, the only way to access an account is by using a third party application.\nWeb Elk Phanpy Mobile Tusky Finally (I did mention this in a prior post but it bears repeating.)\nFor anyone interested in getting into the SQL side, pgAdmin is a useful tool.\nI installed it using:\ncurl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg\nsudo sh -c 'echo \"deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/jammy pgadmin4 main\" \u003e /etc/apt/sources.list.d/pgadmin4.list \u0026\u0026 apt update'\nsudo apt update\nsudo apt install pgadmin4\npgAdmin Screenshot\nHowever you Fediverse, Enjoy!\n",
+  "wordCount" : "1741",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/installing-iceshrimp-net/01_shrimpNET_Login.webp","datePublished": "2024-04-28T13:17:30+01:00",
+  "dateModified": "2024-04-28T13:17:30+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/installing-iceshrimp-net/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Installing Iceshrimp.NET
+    </h1>
+    <div class="post-meta"><span title='2024-04-28 13:17:30 +0100 BST'>April 28, 2024</span>&nbsp;·&nbsp;<span>9 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#better-than-it-was-before" aria-label="Better than it was before">Better than it was before</a></li>
+                <li>
+                    <a href="#why" aria-label="Why?">Why?</a></li>
+                <li>
+                    <a href="#before-i-begin" aria-label="Before I begin">Before I begin</a></li>
+                <li>
+                    <a href="#before-you-begin" aria-label="Before YOU begin">Before YOU begin</a></li>
+                <li>
+                    <a href="#preparations" aria-label="Preparations">Preparations</a><ul>
+                        
+                <li>
+                    <a href="#update-everything" aria-label="Update everything">Update everything</a></li>
+                <li>
+                    <a href="#install-postgresql" aria-label="Install PostgreSQL">Install PostgreSQL</a></li></ul>
+                </li>
+                <li>
+                    <a href="#step-by-step" aria-label="Step by Step">Step by Step</a><ul>
+                        
+                <li>
+                    <a href="#create-a-foo-user" aria-label="Create a ‘foo’ user">Create a ‘foo’ user</a></li>
+                <li>
+                    <a href="#install-the-net-sdk" aria-label="Install the .net SDK">Install the .net SDK</a></li>
+                <li>
+                    <a href="#add-the-net-variables" aria-label="Add the .net variables">Add the .net variables</a></li>
+                <li>
+                    <a href="#install-the-webassembly-tools" aria-label="Install the WebAssembly tools">Install the WebAssembly tools</a></li>
+                <li>
+                    <a href="#clone-iceshrimpnet-from-git" aria-label="Clone Iceshrimp.NET from git">Clone Iceshrimp.NET from git</a></li>
+                <li>
+                    <a href="#build-the-project-in-release-configuration" aria-label="Build the project in release configuration">Build the project in release configuration</a></li>
+                <li>
+                    <a href="#create-an-iceshrimpstorage-directory" aria-label="Create an Iceshrimp.Storage directory">Create an Iceshrimp.Storage directory</a></li>
+                <li>
+                    <a href="#configure" aria-label="Configure">Configure</a></li>
+                <li>
+                    <a href="#set-up-certbot" aria-label="Set up certbot">Set up certbot</a></li>
+                <li>
+                    <a href="#set-up-nginx" aria-label="Set up nginx">Set up nginx</a></li>
+                <li>
+                    <a href="#split-domain-setup" aria-label="Split Domain setup">Split Domain setup</a></li>
+                <li>
+                    <a href="#create-a-new-postgresql-user-if-needed" aria-label="Create a new PostgreSQL user (if needed)">Create a new PostgreSQL user (if needed)</a></li>
+                <li>
+                    <a href="#database-choices" aria-label="Database choices">Database choices</a><ul>
+                        
+                <li>
+                    <a href="#to-create-a-new-iceshrimp-database" aria-label="To create a new iceshrimp database">To create a new iceshrimp database</a></li>
+                <li>
+                    <a href="#to-migrate-an-existing-iceshrimp-database" aria-label="To migrate an existing iceshrimp database">To migrate an existing iceshrimp database</a></li>
+                <li>
+                    <a href="#last-step" aria-label="Last step!">Last step!</a></li></ul>
+                </li>
+                <li>
+                    <a href="#running-iceshrimpnet-using-systemd" aria-label="Running Iceshrimp.NET using systemd">Running Iceshrimp.NET using systemd</a></li>
+                <li>
+                    <a href="#start-the-systemd-service" aria-label="Start the systemd service">Start the systemd service</a></li></ul>
+                </li>
+                <li>
+                    <a href="#congratulations" aria-label="Congratulations!">Congratulations!</a><ul>
+                        
+                <li>
+                    <a href="#create-a-new-iceshrimpnet-user" aria-label="Create a new Iceshrimp.NET user">Create a new Iceshrimp.NET user</a></li></ul>
+                </li>
+                <li>
+                    <a href="#updating-iceshrimpnet" aria-label="Updating Iceshrimp.NET">Updating Iceshrimp.NET</a></li>
+                <li>
+                    <a href="#pgtune" aria-label="PGTune">PGTune</a></li>
+                <li>
+                    <a href="#server-load" aria-label="Server Load">Server Load</a></li>
+                <li>
+                    <a href="#updating-the-blocklist" aria-label="Updating the Blocklist">Updating the Blocklist</a></li>
+                <li>
+                    <a href="#clients" aria-label="Clients">Clients</a><ul>
+                        
+                <li>
+                    <a href="#web" aria-label="Web">Web</a></li>
+                <li>
+                    <a href="#mobile" aria-label="Mobile">Mobile</a></li></ul>
+                </li>
+                <li>
+                    <a href="#finally" aria-label="Finally">Finally</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="better-than-it-was-before">Better than it was before<a hidden class="anchor" aria-hidden="true" href="#better-than-it-was-before">#</a></h2>
+<p>Better, Stronger, Faster</p>
+<p>More Fediverse adventures, this time with installing Iceshrimp.NET</p>
+<h2 id="why">Why?<a hidden class="anchor" aria-hidden="true" href="#why">#</a></h2>
+<p>
+
+
+  <a href="/posts/installing-iceshrimp/">Iceshrimp JS</a>
+ (as I’ll call the current version) is a hard fork of 
+
+
+  <a href="/posts/firefish-backup-and-restore/">FireFish</a>
+ which is in itself was a rebranding of 
+
+
+  <a href="/posts/calckey-fediverse-server/">Calckey</a>
+ which was a fork of Misskey.</p>
+<p>
+
+<a href="https://iceshrimp.dev/iceshrimp/Iceshrimp.NET" target="_blank" rel="nofollow noopener noreferrer">Iceshrimp.NET</a>
+ is a complete rewrite of the code-base.</p>
+<p>All of it.</p>
+<p>Both front and back end.</p>
+<p>Although this doesn’t answer why I want to migrate.</p>
+<p>That answer to that is simple, I like tinkering.</p>
+<h2 id="before-i-begin">Before I begin<a hidden class="anchor" aria-hidden="true" href="#before-i-begin">#</a></h2>
+<p>Firstly, I have to say a big ‘thank you’ to the Iceshrimp Dev team.</p>
+<p>Also, the pace of development is ridiculously rapid considering the small amount of people involved, and is testament to their skills.</p>
+<p>Add to that, they are open and approachable and always willing to help an idiot like me when I bungle something.</p>
+<p>Kudos!</p>
+<h2 id="before-you-begin">Before YOU begin<a hidden class="anchor" aria-hidden="true" href="#before-you-begin">#</a></h2>
+<p>If you are thinking of installing Iceshrimp.NET, please read the 
+
+<a href="https://kb.iceshrimp.dev/s/docs" target="_blank" rel="nofollow noopener noreferrer">documentation</a>
+.</p>
+<h2 id="preparations">Preparations<a hidden class="anchor" aria-hidden="true" href="#preparations">#</a></h2>
+<p>
+
+<a href="https://kb.iceshrimp.dev/s/docs/doc/production-readiness-Bs0HK2ZXO8" target="_blank" rel="nofollow noopener noreferrer">https://kb.iceshrimp.dev/s/docs/doc/production-readiness-Bs0HK2ZXO8</a>
+</p>
+<blockquote>
+<p><strong>Obligatory Warning I</strong></p>
+<p><strong>Note</strong> This is alpha (soon to be beta!) software. While the Mastodon client API is relatively complete, the frontend is not. It is therefore not advisable to upgrade existing Iceshrimp instances at present. Setting up staging instances to help us with testing is very appreciated, however, and will help us ensure eventual upgrades go as smoothly as possible.</p>
+<p><em>
+
+<a href="https://iceshrimp.dev/iceshrimp/Iceshrimp.NET" target="_blank" rel="nofollow noopener noreferrer">https://iceshrimp.dev/iceshrimp/Iceshrimp.NET</a>
+</em></p></blockquote>
+<blockquote>
+<p><strong>Obligatory Warning II</strong></p>
+<p>The following steps were completed on a Raspberry Pi 4 4GB running Ubuntu Server 22.04.4 LTS</p>
+<p>Obviously, the usual caveats apply:</p>
+<ul>
+<li>
+<p>Don’t simply copy and paste lines of code that you find on the Internet</p>
+</li>
+<li>
+<p>Also, I am not responsible if any of this breaks <strong>your</strong> machine</p>
+</li>
+</ul></blockquote>
+<p>As I was coming from a previously installed version of Iceshrimp a few of the pieces of this jigsaw were already in place.</p>
+<h3 id="update-everything">Update everything<a hidden class="anchor" aria-hidden="true" href="#update-everything">#</a></h3>
+<p>The following may be a bit of overkill but I run this command quite frequently:</p>
+<p><code>sudo apt update &amp;&amp; sudo apt upgrade &amp;&amp; sudo apt remove &amp;&amp; sudo apt clean &amp;&amp; sudo apt autoremove &amp;&amp; sudo apt autoclean</code></p>
+<p>Or if you prefer a shorter version, run the following in a Terminal:</p>
+<p><code>sudo apt update &amp;&amp; sudo apt upgrade</code></p>
+<h3 id="install-postgresql">Install PostgreSQL<a hidden class="anchor" aria-hidden="true" href="#install-postgresql">#</a></h3>
+<p>PostgreSQL was already in place and I covered how to install in my previously published 
+
+
+  <a href="/posts/installing-iceshrimp/">Installing Iceshrimp</a>
+ post.</p>
+<p>Full installation instructions are also on the 
+
+<a href="https://www.postgresql.org/download/linux/ubuntu/" target="_blank" rel="nofollow noopener noreferrer">PostgreSQL website</a>
+.</p>
+<p><strong>tl:dr</strong></p>
+<p><code>apt install postgresql</code></p>
+<h2 id="step-by-step">Step by Step<a hidden class="anchor" aria-hidden="true" href="#step-by-step">#</a></h2>
+<h3 id="create-a-foo-user">Create a ‘foo’ user<a hidden class="anchor" aria-hidden="true" href="#create-a-foo-user">#</a></h3>
+<p>I prefer to run a dedicated processes with a dedicated user.</p>
+<p>First, to add a new user, run the following in a Terminal:</p>
+<p><code>sudo adduser foo</code></p>
+<p>Then password protect it:</p>
+<p><code>sudo passwd foo</code></p>
+<h3 id="install-the-net-sdk">Install the .net SDK<a hidden class="anchor" aria-hidden="true" href="#install-the-net-sdk">#</a></h3>
+<p>
+
+<a href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0" target="_blank" rel="nofollow noopener noreferrer">https://dotnet.microsoft.com/en-us/download/dotnet/8.0</a>
+</p>
+<p>Whilst as the foo user and in the $HOME directory, run the following in a Terminal:</p>
+<p><code>su foo</code></p>
+<p><code>cd $HOME</code></p>
+<p>Firstly, download the installation script:</p>
+<p><code>wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh</code></p>
+<p>Then change the file permissions to enable execution:</p>
+<p><code>chmod +x ./dotnet-install.sh</code></p>
+<p>Finally install:</p>
+<p><code>./dotnet-install.sh --version latest</code></p>
+<h3 id="add-the-net-variables">Add the .net variables<a hidden class="anchor" aria-hidden="true" href="#add-the-net-variables">#</a></h3>
+<p>
+
+<a href="https://learn.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#set-environment-variables-system-wide" target="_blank" rel="nofollow noopener noreferrer">https://learn.microsoft.com/en-us/dotnet/core/install/linux-scripted-manual#set-environment-variables-system-wide</a>
+</p>
+<p>The variables are volatile i.e. they do not persist between Terminal sessions.</p>
+<p>For using in the current Terminal session only:</p>
+<p><code>export DOTNET_ROOT=$HOME/.dotnet</code></p>
+<p><code>export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools</code></p>
+<p>Or, to make the variables persistent and usable between Terminal sessions, execute the following in a Terminal:</p>
+<p><code>nano $HOME/.bashrc</code></p>
+<p>Then, add at the bottom:</p>
+<pre tabindex="0"><code># Add the dotnet variables
+export DOTNET_ROOT=$HOME/.dotnet
+export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+</code></pre><p>After doing either of the above, check:</p>
+<p><code>dotnet --list-sdks</code></p>
+<p>The output should be something like:</p>
+<p><code>8.0.204 [/home/foo/.dotnet/sdk]</code></p>
+<h3 id="install-the-webassembly-tools">Install the WebAssembly tools<a hidden class="anchor" aria-hidden="true" href="#install-the-webassembly-tools">#</a></h3>
+<p>This step is not entirely necessary but is needed if the build is to include the <code>wasm-tools</code>.</p>
+<blockquote>
+<p>WebAssembly is a type of code that can be run in modern web browsers — it is a low-level assembly-like language with a compact binary format that runs with near-native performance and provides languages such as C/C++, C# and Rust with a compilation target so that they can run on the web.</p>
+<p><em>
+
+<a href="https://developer.mozilla.org/en-US/docs/WebAssembly" target="_blank" rel="nofollow noopener noreferrer">https://developer.mozilla.org/en-US/docs/WebAssembly</a>
+</em></p></blockquote>
+<p>I installed with:</p>
+<p><code>dotnet workload install wasm-tools</code></p>
+<h3 id="clone-iceshrimpnet-from-git">Clone Iceshrimp.NET from git<a hidden class="anchor" aria-hidden="true" href="#clone-iceshrimpnet-from-git">#</a></h3>
+<p>
+
+<a href="https://kb.iceshrimp.dev/s/docs/doc/installation-guide-cjqv6iTgnS" target="_blank" rel="nofollow noopener noreferrer">https://kb.iceshrimp.dev/s/docs/doc/installation-guide-cjqv6iTgnS</a>
+</p>
+<p>Whilst as the foo user and in the $HOME directory, run the following in a Terminal:</p>
+<p><code>git clone https://iceshrimp.dev/iceshrimp/iceshrimp.net</code></p>
+<p><code>cd iceshrimp.net/Iceshrimp.Backend</code></p>
+<h3 id="build-the-project-in-release-configuration">Build the project in release configuration<a hidden class="anchor" aria-hidden="true" href="#build-the-project-in-release-configuration">#</a></h3>
+<p><code>dotnet build -c Release</code></p>
+<p><strong>NOTE:</strong> To build with NativeAOT enabled, the <code>wasm-tools</code> workload needs to have been installed:</p>
+<p><code>dotnet build -c Release -p:EnableAOT=true</code></p>
+<h3 id="create-an-iceshrimpstorage-directory">Create an Iceshrimp.Storage directory<a hidden class="anchor" aria-hidden="true" href="#create-an-iceshrimpstorage-directory">#</a></h3>
+<p>Iceshrimp.NET needs somewhere to store media and the installation will fail if a path is not put into the <code>configuration.ini</code> file.</p>
+<p>Any storage directory can be created as long as it is writable by the foo user.</p>
+<p>I chose the following:</p>
+<p><code>mkdir /$HOME/iceshrimp.net/Iceshrimp.Storage/</code></p>
+<p>Object Storage is also an option however, I don’t use any third party provider for that:</p>
+<p>
+
+<a href="https://kb.iceshrimp.dev/s/docs/doc/object-storage-k2nxHYOocd" target="_blank" rel="nofollow noopener noreferrer">https://kb.iceshrimp.dev/s/docs/doc/object-storage-k2nxHYOocd</a>
+</p>
+<h3 id="configure">Configure<a hidden class="anchor" aria-hidden="true" href="#configure">#</a></h3>
+<p>Very little needs to be configured (the database name and domain can be set here even if they don’t exist yet).</p>
+<p><code>nano $HOME/iceshrimp.net/Iceshrimp.Backend/configuration.ini</code></p>
+<p>Change:</p>
+<pre tabindex="0"><code>WebDomain = shrimp.example.org
+AccountDomain = example.org
+</code></pre><pre tabindex="0"><code>Database = iceshrimp
+Username = iceshrimp
+Password = iceshrimp
+</code></pre><p>This is the path to the Iceshrimp.Storage that was created earlier.</p>
+<pre tabindex="0"><code>Path = /path/to/media/location
+</code></pre><h3 id="set-up-certbot">Set up certbot<a hidden class="anchor" aria-hidden="true" href="#set-up-certbot">#</a></h3>
+<p>To only get a certificate <em>before</em> editing the nginx conf file:</p>
+<p><code>sudo certbot certonly</code></p>
+<p>Then put in the domain name e.g. shrimp.example.org</p>
+<p>This will create a certificate and the local files to be used in the iceshrimp.nginx.conf file.</p>
+<p>Make a note of their path, it will be needed in the next step.</p>
+<h3 id="set-up-nginx">Set up nginx<a hidden class="anchor" aria-hidden="true" href="#set-up-nginx">#</a></h3>
+<p>
+
+<a href="https://kb.iceshrimp.dev/s/docs/doc/post-install-guide-caco15miOE" target="_blank" rel="nofollow noopener noreferrer">https://kb.iceshrimp.dev/s/docs/doc/post-install-guide-caco15miOE</a>
+</p>
+<p>I recycled an 
+
+<a href="https://iceshrimp.dev/iceshrimp/iceshrimp/src/branch/dev/docs/examples/iceshrimp.nginx.conf" target="_blank" rel="nofollow noopener noreferrer">iceshrimp.nginx.conf</a>
+ from a previous installation.</p>
+<p>It goes in /etc/nginx/sites-available/</p>
+<p>The iceshrimp.nginx.conf changes are quite straightforward.</p>
+<p>Change:</p>
+<p><code>server_name example.com;</code></p>
+<p>To:</p>
+<p><code>server_name shrimp.example.org;</code></p>
+<p><strong>! In two (2) places !</strong></p>
+<p>Change the path of the:</p>
+<ul>
+<li>
+<p>ssl_certificate</p>
+</li>
+<li>
+<p>ssl_certificate_key</p>
+</li>
+</ul>
+<p>To the path that certbot provided.</p>
+<p>Create the symlink:</p>
+<p><code>sudo ln -s /etc/nginx/sites-available/iceshrimp.nginx.conf /etc/nginx/sites-enabled/</code></p>
+<p>Check the configuration and reload the nginx server:</p>
+<p><code>sudo nginx -t &amp;&amp; sudo systemctl reload nginx</code></p>
+<h3 id="split-domain-setup">Split Domain setup<a hidden class="anchor" aria-hidden="true" href="#split-domain-setup">#</a></h3>
+<p>
+
+<a href="https://kb.iceshrimp.dev/doc/split-domain-setup-jHgCAvRar2" target="_blank" rel="nofollow noopener noreferrer">https://kb.iceshrimp.dev/doc/split-domain-setup-jHgCAvRar2</a>
+</p>
+<p>
+
+<a href="https://webfinger.net" target="_blank" rel="nofollow noopener noreferrer">https://webfinger.net</a>
+</p>
+<p>The following snippet <strong>GOES IN THE ROOT DOMAIN</strong>.</p>
+<p>(It took me far to long to realise this and as a result webfinger never worked properly for me.)</p>
+<pre tabindex="0"><code># Webfinger
+location /.well-known/webfinger {
+    rewrite ^.*$ https://shrimp.example.org/.well-known/webfinger permanent;
+}
+
+location /.well-known/host-meta {
+    rewrite ^.*$ https://shrimp.example.org/.well-known/host-meta permanent;
+}
+
+location /.well-known/nodeinfo {
+    rewrite ^.*$ https://shrimp.example.org/.well-known/nodeinfo permanent;
+}
+</code></pre><p>Check the configuration and reload the nginx server:</p>
+<p><code>sudo nginx -t &amp;&amp; sudo systemctl restart nginx</code></p>
+<h3 id="create-a-new-postgresql-user-if-needed">Create a new PostgreSQL user (if needed)<a hidden class="anchor" aria-hidden="true" href="#create-a-new-postgresql-user-if-needed">#</a></h3>
+<p>Irrespective of whether to migrate an existing database or create a fresh one, a PostgreSQL User will need to be exist (if it doesn’t already).</p>
+<p>Log into PostgreSQL:</p>
+<p><code>sudo -u postgres psql</code></p>
+<p><strong>CREATE</strong> a new User:</p>
+<p><code>CREATE USER &quot;iceshrimp&quot; WITH ENCRYPTED PASSWORD 'super-long-password';</code></p>
+<p>To <strong>DROP</strong> a User:</p>
+<p><code>DROP USER &quot;iceshrimp&quot;;</code></p>
+<h3 id="database-choices">Database choices<a hidden class="anchor" aria-hidden="true" href="#database-choices">#</a></h3>
+<p>I have both migrated an existing iceshrimp database and started with a clean slate.</p>
+<blockquote>
+<p>Migration is not recommended yet unless you know what you are doing; have read 
+
+<a href="https://kb.iceshrimp.dev/doc/production-readiness-Bs0HK2ZXO8#h-should-i-migrate-my-iceshrimp-js-instance" target="_blank" rel="nofollow noopener noreferrer">the disclaimers</a>
+.</p>
+<p><em>
+
+<a href="https://kb.iceshrimp.dev/s/docs/doc/migration-guide-XRdCqvbu31" target="_blank" rel="nofollow noopener noreferrer">https://kb.iceshrimp.dev/s/docs/doc/migration-guide-XRdCqvbu31</a>
+</em></p></blockquote>
+<p>I’ll cover how to do both.</p>
+<h4 id="to-create-a-new-iceshrimp-database">To create a new iceshrimp database<a hidden class="anchor" aria-hidden="true" href="#to-create-a-new-iceshrimp-database">#</a></h4>
+<p>Log into PostgreSQL:</p>
+<p><code>sudo -u postgres psql</code></p>
+<p>To <strong>LIST</strong> the current databases:</p>
+<p><code>\l</code></p>
+<p>Then, to <strong>CREATE</strong> an empty database:</p>
+<p><code>CREATE DATABASE &quot;iceshrimp&quot; WITH ENCODING = 'UTF8';</code></p>
+<p>Now take ownership:</p>
+<p><code>ALTER DATABASE &quot;iceshrimp&quot; OWNER TO &quot;iceshrimp&quot;;</code></p>
+<p>To <strong>DROP</strong> a database:</p>
+<p><code>DROP DATABASE &quot;iceshrimp_net&quot;;</code></p>
+<h4 id="to-migrate-an-existing-iceshrimp-database">To migrate an existing iceshrimp database<a hidden class="anchor" aria-hidden="true" href="#to-migrate-an-existing-iceshrimp-database">#</a></h4>
+<p>Stop any running <code>iceshrimp.service</code> that is using the database to be duplicated:</p>
+<p><code>sudo systemctl stop iceshrimp.service</code></p>
+<p><code>sudo systemctl status iceshrimp.service</code></p>
+<p>Log into PostgreSQL:</p>
+<p><code>sudo -u postgres psql</code></p>
+<p>To <strong>LIST</strong> the current databases:</p>
+<p><code>\l</code></p>
+<p><strong>This next bit is extremely important!</strong></p>
+<p>Change to the <code>iceshrimp</code> user:</p>
+<p><code>SET role iceshrimp;</code></p>
+<p>Check you are the correct User:</p>
+<p><code>SELECT current_user, session_user;</code></p>
+<p>Apply the migrations from:</p>
+<p>
+
+<a href="https://kb.iceshrimp.dev/s/docs/doc/migration-guide-XRdCqvbu31" target="_blank" rel="nofollow noopener noreferrer">https://kb.iceshrimp.dev/s/docs/doc/migration-guide-XRdCqvbu31</a>
+</p>
+<p>I’m not going to replicate the script here as it may change.</p>
+<h4 id="last-step">Last step!<a hidden class="anchor" aria-hidden="true" href="#last-step">#</a></h4>
+<p>Finally, whether creating a new database or migrating an existing one, the last step is to <code>VACUUM</code> and <code>ANALYZE</code> the migrated database.</p>
+<p>As the postgres user, run a <code>VACUUM FULL ANALYZE;</code></p>
+<p><code>SET ROLE postgres;</code></p>
+<p>Check you are the correct User:</p>
+<p><code>SELECT current_user, session_user;</code></p>
+<p><code>VACUUM FULL ANALYZE;</code></p>
+<p>To quit:</p>
+<p><code>\q</code></p>
+<h3 id="running-iceshrimpnet-using-systemd">Running Iceshrimp.NET using systemd<a hidden class="anchor" aria-hidden="true" href="#running-iceshrimpnet-using-systemd">#</a></h3>
+<p>I prefer to use systemd to launch a service rather than starting one manually.</p>
+<p>This approach has the added benefit of enabling a restart after a reboot if desired.</p>
+<p><code>sudo nano /etc/systemd/system/iceshrimp.net.service</code></p>
+<pre tabindex="0"><code>[Unit]
+Description=Iceshrimp.net daemon
+
+[Service]
+Type=simple
+User=foo
+WorkingDirectory=/home/foo/iceshrimp.net/Iceshrimp.Backend
+ExecStart=/home/foo/.dotnet/dotnet run --migrate-and-start
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><p>A copy is also 
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/blob/main/configs/iceshrimp.net.service" target="_blank" rel="nofollow noopener noreferrer">here</a>
+.</p>
+<p>Reload the systemd service:</p>
+<p><code>sudo systemctl daemon-reload</code></p>
+<p>And to make the systemd service restart after a reboot, enable it:</p>
+<p><code>sudo systemctl enable iceshrimp.service</code></p>
+<h3 id="start-the-systemd-service">Start the systemd service<a hidden class="anchor" aria-hidden="true" href="#start-the-systemd-service">#</a></h3>
+<p><code>sudo systemctl start iceshrimp.service</code></p>
+<p><code>sudo systemctl status iceshrimp.service</code></p>
+<h2 id="congratulations">Congratulations!<a hidden class="anchor" aria-hidden="true" href="#congratulations">#</a></h2>
+<p>Iceshrimp.NET should now be up and running.</p>
+<p>If all has gone to plan you should see the above when going to the homepage.</p>
+<p><img alt="Screenshot of the initial Login screen post installing Iceshrimp NET." loading="lazy" src="/posts/installing-iceshrimp-net/01_shrimpNET_Login.webp#center" title="Screenshot of the initial Login screen post installing Iceshrimp NET.">
+<em>Iceshrimp.NET Login Screenshot</em></p>
+<p>When using a new database, it will be empty and a new User will need creating.</p>
+<h3 id="create-a-new-iceshrimpnet-user">Create a new Iceshrimp.NET user<a hidden class="anchor" aria-hidden="true" href="#create-a-new-iceshrimpnet-user">#</a></h3>
+<p>Firstly, turn Registrations <strong>ON</strong>:</p>
+<p><code>nano iceshrimp.net/Iceshrimp.Backend/configuration.ini</code></p>
+<pre tabindex="0"><code>;; Whether to allow instance registrations
+;; Options: [Closed, Invite, Open]
+Registrations = Open
+</code></pre><p>Then send a <strong>PUT</strong> request e.g.:</p>
+<p><code>curl -X PUT -H &quot;Content-Type: application/json&quot; http://localhost:3000/api/iceshrimp/auth -d' { &quot;username&quot; : &quot;MyNewUsername&quot;, &quot;password&quot; : &quot;super-long-password&quot; }'</code></p>
+<p>Finally, turn Registrations <strong>OFF</strong>:</p>
+<p><code>nano iceshrimp.net/Iceshrimp.Backend/configuration.ini</code></p>
+<pre tabindex="0"><code>;; Whether to allow instance registrations
+;; Options: [Closed, Invite, Open]
+Registrations = Closed
+</code></pre><h2 id="updating-iceshrimpnet">Updating Iceshrimp.NET<a hidden class="anchor" aria-hidden="true" href="#updating-iceshrimpnet">#</a></h2>
+<p>Stop the iceshrimp.net.service</p>
+<p><code>sudo systemctl stop iceshrimp.net.service</code></p>
+<p>Change to the foo user and go to the iceshrimp.net directory:</p>
+<p><code>su foo</code></p>
+<p><code>cd $HOME/iceshrimp.net</code></p>
+<p>Then:</p>
+<p><code>git pull</code></p>
+<h2 id="pgtune">PGTune<a hidden class="anchor" aria-hidden="true" href="#pgtune">#</a></h2>
+<p>
+
+<a href="https://kb.iceshrimp.dev/s/docs/doc/database-maintenance-pibqfnr2he" target="_blank" rel="nofollow noopener noreferrer">https://kb.iceshrimp.dev/s/docs/doc/database-maintenance-pibqfnr2he</a>
+</p>
+<p>PGTune provides recommendations for PostgreSQL configuration based on your hardware specs and intended database workload.</p>
+<p>There are a couple of Python based scripts on the Internet but I prefer to edit config files manually.</p>
+<p>Put in a couple of details about your system in the web form and generate the amendments to be made to <code>/etc/postgresql/16/main/postgresql.conf</code></p>
+<p>
+
+<a href="https://pgtune.leopard.in.ua" target="_blank" rel="nofollow noopener noreferrer">https://pgtune.leopard.in.ua</a>
+</p>
+<p>I highly recommended doing this.</p>
+<h2 id="server-load">Server Load<a hidden class="anchor" aria-hidden="true" href="#server-load">#</a></h2>
+<p>Just a couple of graphs showing the difference in server load between IceshrimpJS and Iceshrimp.NET</p>
+<p>It’s generally lighter and runs faster.</p>
+<p>Firstly, the server load whilst running IceshrimpJS:</p>
+<p><img alt="A screenshot of the server load when running Iceshrimp JS." loading="lazy" src="/posts/installing-iceshrimp-net/02_shrimpJS_Load.webp#center" title="A screenshot of the server load when running Iceshrimp JS.">
+<em>IceshrimpJS Server Load Screenshot</em></p>
+<p>Secondly, the server load whilst running Iceshrimp.NET:</p>
+<p><img alt="A screenshot of the server load when running Iceshrimp NET." loading="lazy" src="/posts/installing-iceshrimp-net/02_shrimpNET_Load.webp#center" title="A screenshot of the server load when running Iceshrimp NET.">
+<em>Iceshrimp.NET Server Load Screenshot</em></p>
+<h2 id="updating-the-blocklist">Updating the Blocklist<a hidden class="anchor" aria-hidden="true" href="#updating-the-blocklist">#</a></h2>
+<p>There was a 
+
+
+  <a href="/posts/updating-the-iceshrimp-blocklist/">previous post</a>
+ about how to update the Blocklist when running Iceshrimp.</p>
+<p>These scripts have also been 
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/update_iceshrimp_net_blocklist/" target="_blank" rel="nofollow noopener noreferrer">updated / added</a>
+ to.</p>
+<h2 id="clients">Clients<a hidden class="anchor" aria-hidden="true" href="#clients">#</a></h2>
+<p>Given that Iceshrimp.NET currently does not have a front-end, the only way to access an account is by using a third party application.</p>
+<h3 id="web">Web<a hidden class="anchor" aria-hidden="true" href="#web">#</a></h3>
+<ul>
+<li>
+<p>
+
+<a href="https://main.elk.zone/" target="_blank" rel="nofollow noopener noreferrer">Elk</a>
+</p>
+</li>
+<li>
+<p>
+
+<a href="https://phanpy.social/" target="_blank" rel="nofollow noopener noreferrer">Phanpy</a>
+</p>
+</li>
+</ul>
+<h3 id="mobile">Mobile<a hidden class="anchor" aria-hidden="true" href="#mobile">#</a></h3>
+<ul>
+<li>
+
+<a href="https://tusky.app/" target="_blank" rel="nofollow noopener noreferrer">Tusky</a>
+</li>
+</ul>
+<h2 id="finally">Finally<a hidden class="anchor" aria-hidden="true" href="#finally">#</a></h2>
+<p>(I did mention this in a 
+
+
+  <a href="/posts/calckey-fediverse-server/">prior post</a>
+ but it bears repeating.)</p>
+<p>For anyone interested in getting into the SQL side, pgAdmin is a useful tool.</p>
+<p>I installed it using:</p>
+<p><code>curl -fsS https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/packages-pgadmin-org.gpg</code></p>
+<p><code>sudo sh -c 'echo &quot;deb [signed-by=/usr/share/keyrings/packages-pgadmin-org.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/jammy pgadmin4 main&quot; &gt; /etc/apt/sources.list.d/pgadmin4.list &amp;&amp; apt update'</code></p>
+<p><code>sudo apt update</code></p>
+<p><code>sudo apt install pgadmin4</code></p>
+<p><img alt="A screenshot of the Linux application pgAdmin, used to administer PostgreSQL databases. The Calckey Fediverse Server uses PostgreSQL as its back end database engine." loading="lazy" src="/posts/installing-iceshrimp-net/01_pgAdmin_Screenshot.webp#center" title="A screenshot of the Linux application pgAdmin, used to administer PostgreSQL databases. The Calckey Fediverse Server uses PostgreSQL as its back end database engine.">
+<em>pgAdmin Screenshot</em></p>
+<p>However you Fediverse, Enjoy!</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/fediverse/">Fediverse</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>OpenWrt with AdGuardHome and Unbound on a SheevaPlug</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/fuck-techbros/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Fuck Techbros</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

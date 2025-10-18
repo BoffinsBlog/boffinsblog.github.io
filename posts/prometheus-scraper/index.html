@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Prometheus Scraper | Boffins Blog</title>
+<meta name="keywords" content="Linux, Raspberry Pi, Self Hosting, Software, Web-Servers">
+<meta name="description" content="Moar data, Grafana needs feeding.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/prometheus-scraper/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/prometheus-scraper/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/prometheus-scraper/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Prometheus Scraper">
+  <meta property="og:description" content="Moar data, Grafana needs feeding.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-02-11T17:23:14+01:00">
+    <meta property="article:modified_time" content="2025-02-11T17:23:14+01:00">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="Software">
+    <meta property="article:tag" content="Web-Servers">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/prometheus-scraper/01_Iceshrimp_NET_Grafana_Dashboard_Screenshot_b&amp;w.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/prometheus-scraper/01_Iceshrimp_NET_Grafana_Dashboard_Screenshot_b&amp;w.webp">
+<meta name="twitter:title" content="Prometheus Scraper">
+<meta name="twitter:description" content="Moar data, Grafana needs feeding.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Prometheus Scraper",
+      "item": "https://boffinsblog.github.io/posts/prometheus-scraper/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Prometheus Scraper",
+  "name": "Prometheus Scraper",
+  "description": "Moar data, Grafana needs feeding.",
+  "keywords": [
+    "Linux", "Raspberry Pi", "Self Hosting", "Software", "Web-Servers"
+  ],
+  "articleBody": "Concepts Grafana is a dashboard application; it displays data in a visual way, i.e. graphs and interactive charts.\nPrometheus Scraper sits underneath Grafana and ‘scrapes’ the data from various inputs; making these ‘scrapes’ available to Grafana.\nYou can think of Prometheus as a sort of butler; collecting data and presenting it.\nNode-Exporter is one such input Prometheus collects and makes available to Grafana.\nWhat is Grafana? Grafana is a multi-platform open source analytics and interactive visualization web application.\nhttps://grafana.com/ I’ve already covered how to set up a Grafana dashboard for collecting my iceshrimp.NET metrics .\nThis post is about expanding on the data available to Grafana.\nWhat is Prometheus? Prometheus is a system for collecting and storing metrics as time series data, with a query language and alerting features.\nhttps://prometheus.io/docs/introduction/overview/ Prometheus collects metrics from targets by scraping metrics HTTP endpoints.\nhttps://prometheus.io/docs/prometheus/latest/getting_started/ I’ve already written about how to get a usable Grafana Dashboard .\nPrometheus extends the Dashboard by bringing in extra data sources from e.g. nginx.\nWhat is Node Exporter? The Prometheus Node Exporter exposes a wide variety of hardware- and kernel-related metrics.\nhttps://prometheus.io/docs/guides/node-exporter/ Install Prometheus Resources https://prometheus.io/docs/prometheus/latest/installation/ https://devopscube.com/install-configure-prometheus-linux/ Create a prometheus account I prefer to have separate accounts for distinct processes.\nIn a Terminal:\nsudo useradd --no-create-home --shell /bin/false prometheus\nCreate directories Prometheus needs a place to live.\nTo create and take ownership execute the following in a Terminal:\nsudo mkdir /etc/prometheus\nsudo chown prometheus:prometheus /etc/prometheus\nsudo mkdir /var/lib/prometheus\nsudo chown prometheus:prometheus /var/lib/prometheus\nDownload and Install cd ~\nwget https://github.com/prometheus/prometheus/releases/download/v2.53.1/prometheus-2.53.1.linux-armv7.tar.gz\nExtract and rename tar xfz prometheus-2.53.1.linux-armv7.tar.gz\nmv prometheus-2.53.1.linux-armv7/ prometheus/\nrm prometheus-2.53.1.linux-armv7.tar.gz\nCopy files to the correct location In a Terminal:\nsudo cp prometheus/prometheus /usr/local/bin/\nsudo chown prometheus:prometheus /usr/local/bin/prometheus\nThen:\nsudo cp prometheus/promtool /usr/local/bin/\nsudo chown prometheus:prometheus /usr/local/bin/promtool\nThen:\nsudo cp -r prometheus/consoles /etc/prometheus\nsudo chown -R prometheus:prometheus /etc/prometheus/consoles\nThen:\nsudo cp -r prometheus/console_libraries /etc/prometheus\nsudo chown -R prometheus:prometheus /etc/prometheus/console_libraries\nThen:\nsudo cp prometheus/prometheus.yml /etc/prometheus/prometheus.yml\nsudo chown prometheus:prometheus /etc/prometheus/prometheus.yml\nTidy up cd ~\nsudo rm -R prometheus\nConfigure ufw I am only interested in the prometheus metrics and dashboards being visible from inside my network.\nTo see the current list of applications allowed through the firewall, in a Terminal:\nsudo ufw verbose\nThen:\nsudo ufw allow from server.ip/24 to any port 9090 comment \"Prometheus traffic from LAN only\"\nCreate a prometheus service file under systemd In a Terminal:\nsudo nano /etc/systemd/system/prometheus.service\n[Unit] Description=Prometheus Wants=network-online.target After=network-online.target [Service] User=prometheus Group=prometheus Type=simple ExecStart=/usr/local/bin/prometheus \\ --config.file /etc/prometheus/prometheus.yml \\ --storage.tsdb.path /var/lib/prometheus/ \\ --web.console.templates=/etc/prometheus/consoles \\ --web.console.libraries=/etc/prometheus/console_libraries \\ --web.enable-admin-api [Install] WantedBy=multi-user.target Reload the systemd daemon:\nsudo systemctl daemon-reload\nStart:\nsudo systemctl start prometheus\nEnable the daemon to restart after a reboot:\nsudo systemctl enable prometheus\nCheck its status:\nsudo systemctl status prometheus\nView To view the Prometheus homepage and start to interact go to:\nserver.ip:9090\nThe server needs to have Node Exporter installed to collect all the system metrics and make it available for Prometheus to scrape it.\nAdmin Notes To remove (annoying) old jobs in the Grafana drop-down:\nhttps://stackoverflow.com/questions/54704117/how-can-i-delete-old-jobs-from-prometheus https://prometheus.io/docs/prometheus/latest/querying/api/#delete-series Prometheus API needs enabling in the prometheus.service:\n' --web.enable-admin-api'\n(Already added to the live version and the example above)\nTo return existing jobs:\ncurl http://localhost:9090/api/v1/label/job/values\nExample result:\n{\"status\":\"success\",\"data\":[\"node\",\"node_explorer_ServerName\",\"node_exporter_ServerName\",\"prometheus\"]}\nTo remove redundant jobs:\ncurl -X POST -g 'http://localhost:9090/api/v1/admin/tsdb/delete_series?match[]={job=\"node\"}'\ncurl -X POST -g 'http://localhost:9090/api/v1/admin/tsdb/delete_series?match[]={job=\"node_explorer_ServerName\"}'\nThen finish deleting entirely:\ncurl -X POST 'http://localhost:9090/api/v1/admin/tsdb/clean_tombstones'\nTo restart:\nsudo systemctl restart prometheus\nCheck its status:\nsudo systemctl status prometheus\nTo check:\ncurl http://localhost:9090/api/v1/label/job/values\nAdd Prometheus Node Exporter Prometheus exporter for hardware and OS metrics exposed by *NIX kernels, written in Go with pluggable metric collectors.\nhttps://github.com/prometheus/node_exporter Resources https://prometheus.io/docs/guides/node-exporter/ https://devopscube.com/monitor-linux-servers-prometheus-node-exporter/ https://blog.devops.dev/a-step-by-step-guide-to-installing-prometheus-and-grafana-201c66f88b73 https://pimylifeup.com/raspberry-pi-prometheus/ Create a node_exporter account I’ve already said that I prefer to have separate accounts for distinct processes.\nIn a Terminal:\nsudo useradd -rs /bin/false node_exporter\nDownload cd ~\nsudo wget -O node_exporter.tar.gz https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-armv7.tar.gz\nExtract, copy and chown tar xvf node_exporter.tar.gz\nsudo mv node_exporter-1.8.2.linux-armv7/node_exporter /usr/local/bin/\nsudo chown node_exporter:node_exporter /usr/local/bin/node_exporter\nTidy up sudo rm -R node_exporter-1.8.2.linux-armv7\nsudo rm node_exporter.tar.gz\nConfigure ufw Allow access to ’node_exporter’ from LAN only.\nTo see the current list of applications allowed through the firewall, in a Terminal:\nsudo ufw verbose\nThen:\nsudo ufw allow from server.ip/24 to any port 9100 comment \"node_exporter traffic from LAN only\"\nCreate a node_exporter service file under systemd In a Terminal:\nsudo nano /etc/systemd/system/node_exporter.service\n[Unit] Description=Node Exporter After=network.target [Service] User=node_exporter Group=node_exporter Type=simple ExecStart=/usr/local/bin/node_exporter [Install] WantedBy=multi-user.target Reload the systemd daemon:\nsudo systemctl daemon-reload\nStart:\nsudo systemctl start node_exporter\nEnable the daemon to restart after a reboot:\nsudo systemctl enable node_exporter\nCheck its status:\nsudo systemctl status node_exporter\nTo view the metrics homepage go to:\nserver.ip:9100/metrics\nInclude the node_exporter stats in the Prometheus data Spacing is ! important !\nIn a Terminal:\nsudo nano /etc/prometheus/prometheus.yml\n# ServerName node_exporter job - job_name: \"node_exporter_ServerName\" static_configs: - targets: ['localhost:9100'] Restart Prometheus To restart:\nsudo systemctl restart prometheus\nCheck its status:\nsudo systemctl status prometheus\nTo see the new endpoint ’node_exporter_ServerName’ in the targets homepage go to:\nserver.ip:9090/targets\nCreate the node_exporter dashboard Resources:\nhttps://devopscube.com/integrate-visualize-prometheus-grafana/ https://grafana.com/grafana/dashboards/?dataSource=prometheus https://grafana.com/grafana/dashboards/1860-node-exporter-full/ Add Prometheus as a datasource: Steps:\nConnection\nPrometheus server URL\nlocalhost:9090\nImport a dashboard A pre-made dashboard already exists.\nIt can be imported and tinkered with.\nSteps:\nDashboards\nNew\nImport\nhttps://grafana.com/grafana/dashboards/1860-node-exporter-full Load\nSelect datasource\nImport\nSave\nAdd nginx stub_status The ngx_http_stub_status_module module provides access to basic status information.\nThis module is not built by default, it should be enabled with the --with-http_stub_status_module configuration parameter.\nhttps://nginx.org/en/docs/http/ngx_http_stub_status_module.html Resources: https://github.com/nginxinc/nginx-prometheus-exporter?tab=readme-ov-file#prerequisites Add the stub_status module:\nIn a Terminal:\nsudo nano /etc/nginx/conf.d/stub_status.conf\nserver { listen 8080; # Optionally: allow access only from localhost listen localhost:8080; location /stub_status { stub_status; } } Check and Reload nginx To check the config syntax and restart:\nsudo nginx -t \u0026\u0026 sudo systemctl restart nginx\nConfigure ufw Allow access to stub_status from LAN only.\nTo see the current list of applications allowed through the firewall, in a Terminal:\nsudo ufw verbose\nThen:\nsudo ufw allow from server.ip/24 to any port 8080 comment \"stub_status traffic from LAN only\"\nTo view the stub_status homepage go to:\nserver.ip:8080/stub_status\nAdd nginx-prometheus-exporter NGINX Prometheus exporter makes it possible to monitor NGINX or NGINX Plus using Prometheus.\nhttps://github.com/nginx/nginx-prometheus-exporter Create an nginx_exporter account I’ve already said that I prefer to have separate accounts for distinct processes.\nIn a Terminal:\nsudo useradd -rs /bin/false nginx_exporter\nDownload cd ~\nwget https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v1.3.0/nginx-prometheus-exporter_1.3.0_linux_armv7.tar.gz\nExtract, copy and chown tar xvf nginx-prometheus-exporter_1.3.0_linux_armv7.tar.gz\nsudo mv nginx-prometheus-exporter /usr/local/bin/nginx_prometheus_exporter\nsudo chown nginx_exporter:nginx_exporter /usr/local/bin/nginx_prometheus_exporter\nTidy up rm nginx-prometheus-exporter_1.3.0_linux_armv7.tar.gz\nrm -R manpages\nrm -R completions\nrm LICENSE\nrm README.md\nConfigure ufw Allow access to ’nginx_exporter’ from LAN only\nTo see the current list of applications allowed through the firewall, in a Terminal:\nsudo ufw verbose\nThen:\nsudo ufw allow from server.ip/24 to any port 9113 comment \"nginx_exporter traffic from LAN only\"\nCreate an nginx_exporter service file under systemd In a Terminal:\nsudo nano /etc/systemd/system/nginx_exporter.service\n[Unit] Description=Nginx Exporter Wants=network-online.target After=network-online.target StartLimitIntervalSec=0 [Service] User=nginx_exporter Group=nginx_exporter Type=simple Restart=on-failure RestartSec=5s ExecStart=/usr/local/bin/nginx_prometheus_exporter \\ -nginx.scrape-uri=http://localhost:8080/stub_status [Install] WantedBy=multi-user.target Reload the systemd daemon:\nsudo systemctl daemon-reload\nStart:\nsudo systemctl start nginx_exporter\nEnable the daemon to restart after a reboot:\nsudo systemctl enable nginx_exporter\nCheck its status:\nsudo systemctl status nginx_exporter\nUpdate the Prometheus yaml Spacing is ! important !\nIn a Terminal:\nsudo nano /etc/prometheus/prometheus.yml\n# ServerName nginx_exporter job - job_name: \"nginx_exporter_ServerName\" static_configs: - targets: ['localhost:9113'] Restart Prometheus To restart:\nsudo systemctl restart prometheus\nCheck its status:\nsudo systemctl status prometheus\nTo view the targets homepage go to:\nserver.ip:9090/targets\nTo see then new endpoint nginx_exporter_ServerName\nCreate an nginx_exporter dashboard Official dashboard for NGINX Prometheus exporter for https://github.com/nginxinc/nginx-prometheus-exporter https://grafana.com/grafana/dashboards/12708-nginx/ Resources https://github.com/nginxinc/nginx-prometheus-exporter/blob/main/grafana/dashboard.json https://github.com/nginxinc/nginx-prometheus-exporter/blob/main/grafana/README.md#installing-the-dashboard Use the New Dashboard button and click Import.\nUpload dashboard.json or copy and paste the contents of the file in the textbox and click Load.\nSet the Prometheus datasource and click Import.\nThe dashboard will appear.\nNote how you can filter the instance label just below the dashboard title (top left corner).\nThis allows you to filter metrics per instance.\nBy default, all instances are selected.\n",
+  "wordCount" : "1298",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/prometheus-scraper/01_Iceshrimp_NET_Grafana_Dashboard_Screenshot_b\u0026w.webp","datePublished": "2025-02-11T17:23:14+01:00",
+  "dateModified": "2025-02-11T17:23:14+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/prometheus-scraper/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Prometheus Scraper
+    </h1>
+    <div class="post-meta"><span title='2025-02-11 17:23:14 +0100 +0100'>February 11, 2025</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#concepts" aria-label="Concepts">Concepts</a><ul>
+                        
+                <li>
+                    <a href="#what-is-grafana" aria-label="What is Grafana?">What is Grafana?</a></li>
+                <li>
+                    <a href="#what-is-prometheus" aria-label="What is Prometheus?">What is Prometheus?</a></li>
+                <li>
+                    <a href="#what-is-node-exporter" aria-label="What is Node Exporter?">What is Node Exporter?</a></li></ul>
+                </li>
+                <li>
+                    <a href="#install-prometheus" aria-label="Install Prometheus">Install Prometheus</a><ul>
+                        
+                <li>
+                    <a href="#resources" aria-label="Resources">Resources</a></li>
+                <li>
+                    <a href="#create-a-prometheus-account" aria-label="Create a prometheus account">Create a prometheus account</a></li>
+                <li>
+                    <a href="#create-directories" aria-label="Create directories">Create directories</a></li>
+                <li>
+                    <a href="#download-and-install" aria-label="Download and Install">Download and Install</a></li>
+                <li>
+                    <a href="#extract-and-rename" aria-label="Extract and rename">Extract and rename</a></li>
+                <li>
+                    <a href="#copy-files-to-the-correct-location" aria-label="Copy files to the correct location">Copy files to the correct location</a></li>
+                <li>
+                    <a href="#tidy-up" aria-label="Tidy up">Tidy up</a></li>
+                <li>
+                    <a href="#configure-ufw" aria-label="Configure ufw">Configure ufw</a></li>
+                <li>
+                    <a href="#create-a-prometheus-service-file-under-systemd" aria-label="Create a prometheus service file under systemd">Create a prometheus service file under systemd</a></li>
+                <li>
+                    <a href="#view" aria-label="View">View</a></li>
+                <li>
+                    <a href="#admin-notes" aria-label="Admin Notes">Admin Notes</a></li></ul>
+                </li>
+                <li>
+                    <a href="#add-prometheus-node-exporter" aria-label="Add Prometheus Node Exporter">Add Prometheus Node Exporter</a><ul>
+                        
+                <li>
+                    <a href="#resources-1" aria-label="Resources">Resources</a></li>
+                <li>
+                    <a href="#create-a-node_exporter-account" aria-label="Create a node_exporter account">Create a node_exporter account</a></li>
+                <li>
+                    <a href="#download" aria-label="Download">Download</a></li>
+                <li>
+                    <a href="#extract-copy-and-chown" aria-label="Extract, copy and chown">Extract, copy and chown</a></li>
+                <li>
+                    <a href="#tidy-up-1" aria-label="Tidy up">Tidy up</a></li>
+                <li>
+                    <a href="#configure-ufw-1" aria-label="Configure ufw">Configure ufw</a></li>
+                <li>
+                    <a href="#create-a-node_exporter-service-file-under-systemd" aria-label="Create a node_exporter service file under systemd">Create a node_exporter service file under systemd</a></li>
+                <li>
+                    <a href="#include-the-node_exporter-stats-in-the-prometheus-data" aria-label="Include the node_exporter stats in the Prometheus data">Include the node_exporter stats in the Prometheus data</a></li>
+                <li>
+                    <a href="#restart-prometheus" aria-label="Restart Prometheus">Restart Prometheus</a></li>
+                <li>
+                    <a href="#create-the-node_exporter-dashboard" aria-label="Create the node_exporter dashboard">Create the node_exporter dashboard</a></li>
+                <li>
+                    <a href="#add-prometheus-as-a-datasource" aria-label="Add Prometheus as a datasource:">Add Prometheus as a datasource:</a></li>
+                <li>
+                    <a href="#import-a-dashboard" aria-label="Import a dashboard">Import a dashboard</a></li></ul>
+                </li>
+                <li>
+                    <a href="#add-nginx-stub_status" aria-label="Add nginx stub_status">Add nginx stub_status</a><ul>
+                        
+                <li>
+                    <a href="#resources-2" aria-label="Resources:">Resources:</a></li>
+                <li>
+                    <a href="#check-and-reload-nginx" aria-label="Check and Reload nginx">Check and Reload nginx</a></li>
+                <li>
+                    <a href="#configure-ufw-2" aria-label="Configure ufw">Configure ufw</a></li></ul>
+                </li>
+                <li>
+                    <a href="#add-nginx-prometheus-exporter" aria-label="Add nginx-prometheus-exporter">Add nginx-prometheus-exporter</a><ul>
+                        
+                <li>
+                    <a href="#create-an-nginx_exporter-account" aria-label="Create an nginx_exporter account">Create an nginx_exporter account</a></li>
+                <li>
+                    <a href="#download-1" aria-label="Download">Download</a></li>
+                <li>
+                    <a href="#extract-copy-and-chown-1" aria-label="Extract, copy and chown">Extract, copy and chown</a></li>
+                <li>
+                    <a href="#tidy-up-2" aria-label="Tidy up">Tidy up</a></li>
+                <li>
+                    <a href="#configure-ufw-3" aria-label="Configure ufw">Configure ufw</a></li>
+                <li>
+                    <a href="#create-an-nginx_exporter-service-file-under-systemd" aria-label="Create an nginx_exporter service file under systemd">Create an nginx_exporter service file under systemd</a></li>
+                <li>
+                    <a href="#update-the-prometheus-yaml" aria-label="Update the Prometheus yaml">Update the Prometheus yaml</a></li>
+                <li>
+                    <a href="#restart-prometheus-1" aria-label="Restart Prometheus">Restart Prometheus</a></li></ul>
+                </li>
+                <li>
+                    <a href="#create-an-nginx_exporter-dashboard" aria-label="Create an nginx_exporter dashboard">Create an nginx_exporter dashboard</a><ul>
+                        
+                <li>
+                    <a href="#resources-3" aria-label="Resources">Resources</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="concepts">Concepts<a hidden class="anchor" aria-hidden="true" href="#concepts">#</a></h2>
+<p>Grafana is a dashboard application; it displays data in a visual way, i.e. graphs and interactive charts.</p>
+<p>Prometheus Scraper sits underneath Grafana and &lsquo;scrapes&rsquo; the data from various inputs; making these &lsquo;scrapes&rsquo; available to Grafana.</p>
+<p>You can think of Prometheus as a sort of butler; collecting data and presenting it.</p>
+<p>Node-Exporter is one such input Prometheus collects and makes available to Grafana.</p>
+<h3 id="what-is-grafana">What is Grafana?<a hidden class="anchor" aria-hidden="true" href="#what-is-grafana">#</a></h3>
+<blockquote>
+<p>Grafana is a multi-platform open source analytics and interactive visualization web application.</p>
+<p><em>
+
+<a href="https://grafana.com/" target="_blank" rel="nofollow noopener noreferrer">https://grafana.com/</a>
+</em></p></blockquote>
+<p>I&rsquo;ve already covered how to set up a 
+
+
+  <a href="/posts/iceshrimp-net-grafana-dashboard/">Grafana dashboard for collecting my iceshrimp.NET metrics</a>
+.</p>
+<p>This post is about expanding on the data available to Grafana.</p>
+<h3 id="what-is-prometheus">What is Prometheus?<a hidden class="anchor" aria-hidden="true" href="#what-is-prometheus">#</a></h3>
+<blockquote>
+<p>Prometheus is a system for collecting and storing metrics as time series data, with a query language and alerting features.</p>
+<p>
+
+<a href="https://prometheus.io/docs/introduction/overview/" target="_blank" rel="nofollow noopener noreferrer">https://prometheus.io/docs/introduction/overview/</a>
+</p></blockquote>
+<blockquote>
+<p>Prometheus collects metrics from <em>targets</em> by scraping metrics HTTP endpoints.</p>
+<p><em>
+
+<a href="https://prometheus.io/docs/prometheus/latest/getting_started/" target="_blank" rel="nofollow noopener noreferrer">https://prometheus.io/docs/prometheus/latest/getting_started/</a>
+</em></p></blockquote>
+<p>I&rsquo;ve already written about how to get a 
+
+
+  <a href="/posts/iceshrimp-net-grafana-dashboard/">usable Grafana Dashboard</a>
+.</p>
+<p>Prometheus extends the Dashboard by bringing in extra data sources from e.g. nginx.</p>
+<h3 id="what-is-node-exporter">What is Node Exporter?<a hidden class="anchor" aria-hidden="true" href="#what-is-node-exporter">#</a></h3>
+<blockquote>
+<p>The Prometheus Node Exporter exposes a wide variety of hardware- and kernel-related metrics.</p>
+<p><em>
+
+<a href="https://prometheus.io/docs/guides/node-exporter/" target="_blank" rel="nofollow noopener noreferrer">https://prometheus.io/docs/guides/node-exporter/</a>
+</em></p></blockquote>
+<h2 id="install-prometheus">Install Prometheus<a hidden class="anchor" aria-hidden="true" href="#install-prometheus">#</a></h2>
+<h3 id="resources">Resources<a hidden class="anchor" aria-hidden="true" href="#resources">#</a></h3>
+<p>
+
+<a href="https://prometheus.io/docs/prometheus/latest/installation/" target="_blank" rel="nofollow noopener noreferrer">https://prometheus.io/docs/prometheus/latest/installation/</a>
+</p>
+<p>
+
+<a href="https://devopscube.com/install-configure-prometheus-linux/" target="_blank" rel="nofollow noopener noreferrer">https://devopscube.com/install-configure-prometheus-linux/</a>
+</p>
+<h3 id="create-a-prometheus-account">Create a prometheus account<a hidden class="anchor" aria-hidden="true" href="#create-a-prometheus-account">#</a></h3>
+<p>I prefer to have separate accounts for distinct processes.</p>
+<p>In a Terminal:</p>
+<p><code>sudo useradd --no-create-home --shell /bin/false prometheus</code></p>
+<h3 id="create-directories">Create directories<a hidden class="anchor" aria-hidden="true" href="#create-directories">#</a></h3>
+<p>Prometheus needs a place to live.</p>
+<p>To create and take ownership execute the following in a Terminal:</p>
+<p><code>sudo mkdir /etc/prometheus</code></p>
+<p><code>sudo chown prometheus:prometheus /etc/prometheus</code></p>
+<p><code>sudo mkdir /var/lib/prometheus</code></p>
+<p><code>sudo chown prometheus:prometheus /var/lib/prometheus</code></p>
+<h3 id="download-and-install">Download and Install<a hidden class="anchor" aria-hidden="true" href="#download-and-install">#</a></h3>
+<p><code>cd ~</code></p>
+<p><code>wget https://github.com/prometheus/prometheus/releases/download/v2.53.1/prometheus-2.53.1.linux-armv7.tar.gz</code></p>
+<h3 id="extract-and-rename">Extract and rename<a hidden class="anchor" aria-hidden="true" href="#extract-and-rename">#</a></h3>
+<p><code>tar xfz prometheus-2.53.1.linux-armv7.tar.gz</code></p>
+<p><code>mv prometheus-2.53.1.linux-armv7/ prometheus/</code></p>
+<p><code>rm prometheus-2.53.1.linux-armv7.tar.gz</code></p>
+<h3 id="copy-files-to-the-correct-location">Copy files to the correct location<a hidden class="anchor" aria-hidden="true" href="#copy-files-to-the-correct-location">#</a></h3>
+<p>In a Terminal:</p>
+<p><code>sudo cp prometheus/prometheus /usr/local/bin/</code></p>
+<p><code>sudo chown prometheus:prometheus /usr/local/bin/prometheus</code></p>
+<p>Then:</p>
+<p><code>sudo cp prometheus/promtool /usr/local/bin/</code></p>
+<p><code>sudo chown prometheus:prometheus /usr/local/bin/promtool</code></p>
+<p>Then:</p>
+<p><code>sudo cp -r prometheus/consoles /etc/prometheus</code></p>
+<p><code>sudo chown -R prometheus:prometheus /etc/prometheus/consoles</code></p>
+<p>Then:</p>
+<p><code>sudo cp -r prometheus/console_libraries /etc/prometheus</code></p>
+<p><code>sudo chown -R prometheus:prometheus /etc/prometheus/console_libraries</code></p>
+<p>Then:</p>
+<p><code>sudo cp prometheus/prometheus.yml /etc/prometheus/prometheus.yml</code></p>
+<p><code>sudo chown prometheus:prometheus /etc/prometheus/prometheus.yml</code></p>
+<h3 id="tidy-up">Tidy up<a hidden class="anchor" aria-hidden="true" href="#tidy-up">#</a></h3>
+<p><code>cd ~</code></p>
+<p><code>sudo rm -R prometheus</code></p>
+<h3 id="configure-ufw">Configure ufw<a hidden class="anchor" aria-hidden="true" href="#configure-ufw">#</a></h3>
+<p>I am only interested in the prometheus metrics and dashboards being visible from <em>inside</em> my network.</p>
+<p>To see the current list of applications allowed through the firewall, in a Terminal:</p>
+<p><code>sudo ufw verbose</code></p>
+<p>Then:</p>
+<p><code>sudo ufw allow from server.ip/24 to any port 9090 comment &quot;Prometheus traffic from LAN only&quot;</code></p>
+<h3 id="create-a-prometheus-service-file-under-systemd">Create a prometheus service file under systemd<a hidden class="anchor" aria-hidden="true" href="#create-a-prometheus-service-file-under-systemd">#</a></h3>
+<p>In a Terminal:</p>
+<p><code>sudo nano /etc/systemd/system/prometheus.service</code></p>
+<pre tabindex="0"><code>[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus \
+    --config.file /etc/prometheus/prometheus.yml \
+    --storage.tsdb.path /var/lib/prometheus/ \
+    --web.console.templates=/etc/prometheus/consoles \
+    --web.console.libraries=/etc/prometheus/console_libraries \
+    --web.enable-admin-api
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><p>Reload the systemd daemon:</p>
+<p><code>sudo systemctl daemon-reload</code></p>
+<p>Start:</p>
+<p><code>sudo systemctl start prometheus</code></p>
+<p>Enable the daemon to restart after a reboot:</p>
+<p><code>sudo systemctl enable prometheus</code></p>
+<p>Check its status:</p>
+<p><code>sudo systemctl status prometheus</code></p>
+<h3 id="view">View<a hidden class="anchor" aria-hidden="true" href="#view">#</a></h3>
+<p>To view the Prometheus homepage and start to interact go to:</p>
+<p>server.ip:9090</p>
+<p>The server needs to have Node Exporter installed to collect all the system metrics and make it available for Prometheus to scrape it.</p>
+<h3 id="admin-notes">Admin Notes<a hidden class="anchor" aria-hidden="true" href="#admin-notes">#</a></h3>
+<p>To remove (annoying) old jobs in the Grafana drop-down:</p>
+<p>
+
+<a href="https://stackoverflow.com/questions/54704117/how-can-i-delete-old-jobs-from-prometheus" target="_blank" rel="nofollow noopener noreferrer">https://stackoverflow.com/questions/54704117/how-can-i-delete-old-jobs-from-prometheus</a>
+</p>
+<p>
+
+<a href="https://prometheus.io/docs/prometheus/latest/querying/api/#delete-series" target="_blank" rel="nofollow noopener noreferrer">https://prometheus.io/docs/prometheus/latest/querying/api/#delete-series</a>
+</p>
+<p>Prometheus API needs enabling in the <code>prometheus.service</code>:</p>
+<p><code>'    --web.enable-admin-api'</code></p>
+<p>(Already added to the live version and the example above)</p>
+<p>To return existing jobs:</p>
+<p><code>curl http://localhost:9090/api/v1/label/job/values</code></p>
+<p>Example result:</p>
+<p><code>{&quot;status&quot;:&quot;success&quot;,&quot;data&quot;:[&quot;node&quot;,&quot;node_explorer_ServerName&quot;,&quot;node_exporter_ServerName&quot;,&quot;prometheus&quot;]}</code></p>
+<p>To remove redundant jobs:</p>
+<p><code>curl -X POST -g 'http://localhost:9090/api/v1/admin/tsdb/delete_series?match[]={job=&quot;node&quot;}'</code></p>
+<p><code>curl -X POST -g 'http://localhost:9090/api/v1/admin/tsdb/delete_series?match[]={job=&quot;node_explorer_ServerName&quot;}'</code></p>
+<p>Then finish deleting entirely:</p>
+<p><code>curl -X POST 'http://localhost:9090/api/v1/admin/tsdb/clean_tombstones'</code></p>
+<p>To restart:</p>
+<p><code>sudo systemctl restart prometheus</code></p>
+<p>Check its status:</p>
+<p><code>sudo systemctl status prometheus</code></p>
+<p>To check:</p>
+<p><code>curl http://localhost:9090/api/v1/label/job/values</code></p>
+<h2 id="add-prometheus-node-exporter">Add Prometheus Node Exporter<a hidden class="anchor" aria-hidden="true" href="#add-prometheus-node-exporter">#</a></h2>
+<blockquote>
+<p>Prometheus exporter for hardware and OS metrics exposed by *NIX kernels, written in Go with pluggable metric collectors.</p>
+<p><em>
+
+<a href="https://github.com/prometheus/node_exporter" target="_blank" rel="nofollow noopener noreferrer">https://github.com/prometheus/node_exporter</a>
+</em></p></blockquote>
+<h3 id="resources-1">Resources<a hidden class="anchor" aria-hidden="true" href="#resources-1">#</a></h3>
+<p>
+
+<a href="https://prometheus.io/docs/guides/node-exporter/" target="_blank" rel="nofollow noopener noreferrer">https://prometheus.io/docs/guides/node-exporter/</a>
+</p>
+<p>
+
+<a href="https://devopscube.com/monitor-linux-servers-prometheus-node-exporter/" target="_blank" rel="nofollow noopener noreferrer">https://devopscube.com/monitor-linux-servers-prometheus-node-exporter/</a>
+</p>
+<p>
+
+<a href="https://blog.devops.dev/a-step-by-step-guide-to-installing-prometheus-and-grafana-201c66f88b73" target="_blank" rel="nofollow noopener noreferrer">https://blog.devops.dev/a-step-by-step-guide-to-installing-prometheus-and-grafana-201c66f88b73</a>
+</p>
+<p>
+
+<a href="https://pimylifeup.com/raspberry-pi-prometheus/" target="_blank" rel="nofollow noopener noreferrer">https://pimylifeup.com/raspberry-pi-prometheus/</a>
+</p>
+<h3 id="create-a-node_exporter-account">Create a node_exporter account<a hidden class="anchor" aria-hidden="true" href="#create-a-node_exporter-account">#</a></h3>
+<p>I&rsquo;ve already said that I prefer to have separate accounts for distinct processes.</p>
+<p>In a Terminal:</p>
+<p><code>sudo useradd -rs /bin/false node_exporter</code></p>
+<h3 id="download">Download<a hidden class="anchor" aria-hidden="true" href="#download">#</a></h3>
+<p><code>cd ~</code></p>
+<p><code>sudo wget -O node_exporter.tar.gz https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-armv7.tar.gz</code></p>
+<h3 id="extract-copy-and-chown">Extract, copy and chown<a hidden class="anchor" aria-hidden="true" href="#extract-copy-and-chown">#</a></h3>
+<p><code>tar xvf node_exporter.tar.gz</code></p>
+<p><code>sudo mv node_exporter-1.8.2.linux-armv7/node_exporter /usr/local/bin/</code></p>
+<p><code>sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter</code></p>
+<h3 id="tidy-up-1">Tidy up<a hidden class="anchor" aria-hidden="true" href="#tidy-up-1">#</a></h3>
+<p><code>sudo rm -R node_exporter-1.8.2.linux-armv7</code></p>
+<p><code>sudo rm node_exporter.tar.gz</code></p>
+<h3 id="configure-ufw-1">Configure ufw<a hidden class="anchor" aria-hidden="true" href="#configure-ufw-1">#</a></h3>
+<p>Allow access to &rsquo;node_exporter&rsquo; from LAN only.</p>
+<p>To see the current list of applications allowed through the firewall, in a Terminal:</p>
+<p><code>sudo ufw verbose</code></p>
+<p>Then:</p>
+<p><code>sudo ufw allow from server.ip/24 to any port 9100 comment &quot;node_exporter traffic from LAN only&quot;</code></p>
+<h3 id="create-a-node_exporter-service-file-under-systemd">Create a node_exporter service file under systemd<a hidden class="anchor" aria-hidden="true" href="#create-a-node_exporter-service-file-under-systemd">#</a></h3>
+<p>In a Terminal:</p>
+<p><code>sudo nano /etc/systemd/system/node_exporter.service</code></p>
+<pre tabindex="0"><code>[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><p>Reload the systemd daemon:</p>
+<p><code>sudo systemctl daemon-reload</code></p>
+<p>Start:</p>
+<p><code>sudo systemctl start node_exporter</code></p>
+<p>Enable the daemon to restart after a reboot:</p>
+<p><code>sudo systemctl enable node_exporter</code></p>
+<p>Check its status:</p>
+<p><code>sudo systemctl status node_exporter</code></p>
+<p>To view the <code>metrics</code> homepage go to:</p>
+<p>server.ip:9100/metrics</p>
+<h3 id="include-the-node_exporter-stats-in-the-prometheus-data">Include the node_exporter stats in the Prometheus data<a hidden class="anchor" aria-hidden="true" href="#include-the-node_exporter-stats-in-the-prometheus-data">#</a></h3>
+<p>Spacing is ! important !</p>
+<p>In a Terminal:</p>
+<p><code>sudo nano /etc/prometheus/prometheus.yml</code></p>
+<pre tabindex="0"><code>
+    # ServerName node_exporter job
+    - job_name: &#34;node_exporter_ServerName&#34;
+        static_configs:
+        - targets: [&#39;localhost:9100&#39;]
+</code></pre><h3 id="restart-prometheus">Restart Prometheus<a hidden class="anchor" aria-hidden="true" href="#restart-prometheus">#</a></h3>
+<p>To restart:</p>
+<p><code>sudo systemctl restart prometheus</code></p>
+<p>Check its status:</p>
+<p><code>sudo systemctl status prometheus</code></p>
+<p>To see the new endpoint &rsquo;node_exporter_ServerName&rsquo; in the <code>targets</code> homepage go to:</p>
+<p>server.ip:9090/targets</p>
+<h3 id="create-the-node_exporter-dashboard">Create the node_exporter dashboard<a hidden class="anchor" aria-hidden="true" href="#create-the-node_exporter-dashboard">#</a></h3>
+<p>Resources:</p>
+<p>
+
+<a href="https://devopscube.com/integrate-visualize-prometheus-grafana/" target="_blank" rel="nofollow noopener noreferrer">https://devopscube.com/integrate-visualize-prometheus-grafana/</a>
+</p>
+<p>
+
+<a href="https://grafana.com/grafana/dashboards/?dataSource=prometheus" target="_blank" rel="nofollow noopener noreferrer">https://grafana.com/grafana/dashboards/?dataSource=prometheus</a>
+</p>
+<p>
+
+<a href="https://grafana.com/grafana/dashboards/1860-node-exporter-full/" target="_blank" rel="nofollow noopener noreferrer">https://grafana.com/grafana/dashboards/1860-node-exporter-full/</a>
+</p>
+<h3 id="add-prometheus-as-a-datasource">Add Prometheus as a datasource:<a hidden class="anchor" aria-hidden="true" href="#add-prometheus-as-a-datasource">#</a></h3>
+<p>Steps:</p>
+<blockquote>
+<p>Connection</p>
+<p>Prometheus server URL</p>
+<p>localhost:9090</p></blockquote>
+<h3 id="import-a-dashboard">Import a dashboard<a hidden class="anchor" aria-hidden="true" href="#import-a-dashboard">#</a></h3>
+<p>A pre-made dashboard already exists.</p>
+<p>It can be imported and tinkered with.</p>
+<p>Steps:</p>
+<blockquote>
+<p>Dashboards</p>
+<p>New</p>
+<p>Import</p>
+<p>
+
+<a href="https://grafana.com/grafana/dashboards/1860-node-exporter-full" target="_blank" rel="nofollow noopener noreferrer">https://grafana.com/grafana/dashboards/1860-node-exporter-full</a>
+</p>
+<p>Load</p>
+<p>Select datasource</p>
+<p>Import</p>
+<p>Save</p></blockquote>
+<h2 id="add-nginx-stub_status">Add nginx stub_status<a hidden class="anchor" aria-hidden="true" href="#add-nginx-stub_status">#</a></h2>
+<blockquote>
+<p>The ngx_http_stub_status_module module provides access to basic status information.</p>
+<p>This module is not built by default, it should be enabled with the <code>--with-http_stub_status_module</code> configuration parameter.</p>
+<p><em>
+
+<a href="https://nginx.org/en/docs/http/ngx_http_stub_status_module.html" target="_blank" rel="nofollow noopener noreferrer">https://nginx.org/en/docs/http/ngx_http_stub_status_module.html</a>
+</em></p></blockquote>
+<h3 id="resources-2">Resources:<a hidden class="anchor" aria-hidden="true" href="#resources-2">#</a></h3>
+<p>
+
+<a href="https://github.com/nginxinc/nginx-prometheus-exporter?tab=readme-ov-file#prerequisites" target="_blank" rel="nofollow noopener noreferrer">https://github.com/nginxinc/nginx-prometheus-exporter?tab=readme-ov-file#prerequisites</a>
+</p>
+<p>Add the <code>stub_status</code> module:</p>
+<p>In a Terminal:</p>
+<p><code>sudo nano /etc/nginx/conf.d/stub_status.conf</code></p>
+<pre tabindex="0"><code>server {
+    listen 8080;
+
+    # Optionally: allow access only from localhost
+    listen localhost:8080;
+
+    location /stub_status {
+        stub_status;
+    }
+}
+</code></pre><h3 id="check-and-reload-nginx">Check and Reload nginx<a hidden class="anchor" aria-hidden="true" href="#check-and-reload-nginx">#</a></h3>
+<p>To check the config syntax and restart:</p>
+<p><code>sudo nginx -t &amp;&amp; sudo systemctl restart nginx</code></p>
+<h3 id="configure-ufw-2">Configure ufw<a hidden class="anchor" aria-hidden="true" href="#configure-ufw-2">#</a></h3>
+<p>Allow access to stub_status from LAN only.</p>
+<p>To see the current list of applications allowed through the firewall, in a Terminal:</p>
+<p><code>sudo ufw verbose</code></p>
+<p>Then:</p>
+<p><code>sudo ufw allow from server.ip/24 to any port 8080 comment &quot;stub_status traffic from LAN only&quot;</code></p>
+<p>To view the stub_status homepage go to:</p>
+<p>server.ip:8080/stub_status</p>
+<h2 id="add-nginx-prometheus-exporter">Add nginx-prometheus-exporter<a hidden class="anchor" aria-hidden="true" href="#add-nginx-prometheus-exporter">#</a></h2>
+<blockquote>
+<p>NGINX Prometheus exporter makes it possible to monitor NGINX or NGINX Plus using Prometheus.</p>
+<p><em>
+
+<a href="https://github.com/nginx/nginx-prometheus-exporter" target="_blank" rel="nofollow noopener noreferrer">https://github.com/nginx/nginx-prometheus-exporter</a>
+</em></p></blockquote>
+<h3 id="create-an-nginx_exporter-account">Create an nginx_exporter account<a hidden class="anchor" aria-hidden="true" href="#create-an-nginx_exporter-account">#</a></h3>
+<p>I&rsquo;ve already said that I prefer to have separate accounts for distinct processes.</p>
+<p>In a Terminal:</p>
+<p><code>sudo useradd -rs /bin/false nginx_exporter</code></p>
+<h3 id="download-1">Download<a hidden class="anchor" aria-hidden="true" href="#download-1">#</a></h3>
+<p><code>cd ~</code></p>
+<p><code>wget https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v1.3.0/nginx-prometheus-exporter_1.3.0_linux_armv7.tar.gz</code></p>
+<h3 id="extract-copy-and-chown-1">Extract, copy and chown<a hidden class="anchor" aria-hidden="true" href="#extract-copy-and-chown-1">#</a></h3>
+<p><code>tar xvf nginx-prometheus-exporter_1.3.0_linux_armv7.tar.gz</code></p>
+<p><code>sudo mv nginx-prometheus-exporter /usr/local/bin/nginx_prometheus_exporter</code></p>
+<p><code>sudo chown nginx_exporter:nginx_exporter /usr/local/bin/nginx_prometheus_exporter</code></p>
+<h3 id="tidy-up-2">Tidy up<a hidden class="anchor" aria-hidden="true" href="#tidy-up-2">#</a></h3>
+<p><code>rm nginx-prometheus-exporter_1.3.0_linux_armv7.tar.gz</code></p>
+<p><code>rm -R manpages</code></p>
+<p><code>rm -R completions</code></p>
+<p><code>rm LICENSE</code></p>
+<p><code>rm README.md</code></p>
+<h3 id="configure-ufw-3">Configure ufw<a hidden class="anchor" aria-hidden="true" href="#configure-ufw-3">#</a></h3>
+<p>Allow access to &rsquo;nginx_exporter&rsquo; from LAN only</p>
+<p>To see the current list of applications allowed through the firewall, in a Terminal:</p>
+<p><code>sudo ufw verbose</code></p>
+<p>Then:</p>
+<p><code>sudo ufw allow from server.ip/24 to any port 9113 comment &quot;nginx_exporter traffic from LAN only&quot;</code></p>
+<h3 id="create-an-nginx_exporter-service-file-under-systemd">Create an nginx_exporter service file under systemd<a hidden class="anchor" aria-hidden="true" href="#create-an-nginx_exporter-service-file-under-systemd">#</a></h3>
+<p>In a Terminal:</p>
+<p><code>sudo nano /etc/systemd/system/nginx_exporter.service</code></p>
+<pre tabindex="0"><code>[Unit]
+Description=Nginx Exporter
+Wants=network-online.target
+After=network-online.target
+
+StartLimitIntervalSec=0
+
+[Service]
+User=nginx_exporter
+Group=nginx_exporter
+Type=simple
+Restart=on-failure
+RestartSec=5s
+
+ExecStart=/usr/local/bin/nginx_prometheus_exporter \
+    -nginx.scrape-uri=http://localhost:8080/stub_status
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><p>Reload the systemd daemon:</p>
+<p><code>sudo systemctl daemon-reload</code></p>
+<p>Start:</p>
+<p><code>sudo systemctl start nginx_exporter</code></p>
+<p>Enable the daemon to restart after a reboot:</p>
+<p><code>sudo systemctl enable nginx_exporter</code></p>
+<p>Check its status:</p>
+<p><code>sudo systemctl status nginx_exporter</code></p>
+<h3 id="update-the-prometheus-yaml">Update the Prometheus yaml<a hidden class="anchor" aria-hidden="true" href="#update-the-prometheus-yaml">#</a></h3>
+<p>Spacing is ! important !</p>
+<p>In a Terminal:</p>
+<p><code>sudo nano /etc/prometheus/prometheus.yml</code></p>
+<pre tabindex="0"><code>    # ServerName nginx_exporter job
+    - job_name: &#34;nginx_exporter_ServerName&#34;
+        static_configs:
+        - targets: [&#39;localhost:9113&#39;]
+</code></pre><h3 id="restart-prometheus-1">Restart Prometheus<a hidden class="anchor" aria-hidden="true" href="#restart-prometheus-1">#</a></h3>
+<p>To restart:</p>
+<p><code>sudo systemctl restart prometheus</code></p>
+<p>Check its status:</p>
+<p><code>sudo systemctl status prometheus</code></p>
+<p>To view the targets homepage go to:</p>
+<p>server.ip:9090/targets</p>
+<p>To see then new endpoint nginx_exporter_ServerName</p>
+<h2 id="create-an-nginx_exporter-dashboard">Create an nginx_exporter dashboard<a hidden class="anchor" aria-hidden="true" href="#create-an-nginx_exporter-dashboard">#</a></h2>
+<blockquote>
+<p>Official dashboard for NGINX Prometheus exporter for 
+
+<a href="https://github.com/nginxinc/nginx-prometheus-exporter" target="_blank" rel="nofollow noopener noreferrer">https://github.com/nginxinc/nginx-prometheus-exporter</a>
+</p>
+<p><em>
+
+<a href="https://grafana.com/grafana/dashboards/12708-nginx/" target="_blank" rel="nofollow noopener noreferrer">https://grafana.com/grafana/dashboards/12708-nginx/</a>
+</em></p></blockquote>
+<h3 id="resources-3">Resources<a hidden class="anchor" aria-hidden="true" href="#resources-3">#</a></h3>
+<p>
+
+<a href="https://github.com/nginxinc/nginx-prometheus-exporter/blob/main/grafana/dashboard.json" target="_blank" rel="nofollow noopener noreferrer">https://github.com/nginxinc/nginx-prometheus-exporter/blob/main/grafana/dashboard.json</a>
+</p>
+<p>
+
+<a href="https://github.com/nginxinc/nginx-prometheus-exporter/blob/main/grafana/README.md#installing-the-dashboard" target="_blank" rel="nofollow noopener noreferrer">https://github.com/nginxinc/nginx-prometheus-exporter/blob/main/grafana/README.md#installing-the-dashboard</a>
+</p>
+<p>Use the <strong>New Dashboard</strong> button and click <strong>Import</strong>.</p>
+<p>Upload dashboard.json or copy and paste the contents of the file in the textbox and click <strong>Load</strong>.</p>
+<p>Set the Prometheus datasource and click <strong>Import</strong>.</p>
+<p>The dashboard will appear.</p>
+<p>Note how you can filter the instance label just below the dashboard title (top left corner).</p>
+<p>This allows you to filter metrics per instance.</p>
+<p>By default, all instances are selected.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/reducing-my-digital-footprint/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Reducing My Digital Footprint</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/moving-to-gotosocial/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Moving to GoToSocial</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

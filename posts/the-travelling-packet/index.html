@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>The Travelling Packet | Boffins Blog</title>
+<meta name="keywords" content="Self Hosting, Software">
+<meta name="description" content="A very high level description of how information flows from a web server to a browser.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/the-travelling-packet/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/the-travelling-packet/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/the-travelling-packet/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="The Travelling Packet">
+  <meta property="og:description" content="A very high level description of how information flows from a web server to a browser.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-12-01T11:09:39+01:00">
+    <meta property="article:modified_time" content="2024-12-01T11:09:39+01:00">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/the-travelling-packet/01_Switch_With_Cat_Cables.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/the-travelling-packet/01_Switch_With_Cat_Cables.webp">
+<meta name="twitter:title" content="The Travelling Packet">
+<meta name="twitter:description" content="A very high level description of how information flows from a web server to a browser.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "The Travelling Packet",
+      "item": "https://boffinsblog.github.io/posts/the-travelling-packet/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "The Travelling Packet",
+  "name": "The Travelling Packet",
+  "description": "A very high level description of how information flows from a web server to a browser.",
+  "keywords": [
+    "Self Hosting", "Software"
+  ],
+  "articleBody": "Why? I’ve seen a few people lately eager to start self-hosting something and are unsure how the jigsaw pieces fit together.\nThis is not intended to be a ‘how do I configure blah blah?’ piece; think of it more like the picture on the front of the jigsaw box.\nHopefully this will go some way to deciphering some of the technical terms and make starting the self-hosting puzzle a bit easier.\nTerminology I’ll try and keep this bit brief but unfortunately invariably there are acronyms and a bit of technical language ahead.\nWhat are ‘Packets’? Essentially someone using a web browser ‘requests’ a web page.\nThis web page is then ‘served’ by a web server back to the web browser that requested it.\nThe web page is broken into chunks, or ‘packets’ and sent back to the web browser that requested it.\nIt is these packets that flow through the pipes that connect the internet together.\nPackets know a couple of things, most importantly:\nwhere they came from (the web browser that requested the content)\nwhere they are going to (the web server where the content is hosted)\nAside: Some packets know about the the packets that are ahead and behind them but that’s not really relevant to cover here.\nThe following will hopefully describe the hoops that the packets have to jump through.\nWhat is ‘DNS’? So, you want to look at https://google.com/ ?\nThe first thing to do is turn the human readable bit ‘google.com’ into an IP address .\nAn IP address is a unique identifying number assigned to every device connected to the internet (including your router).\nIn this case the IP address of https://google.com/ is ‘142.250.187.238’.\n(You can check this by putting ‘142.250.187.238’ in a browser’s address bar.)\nThis is called Domain Name Resolution or DNS and normally the ISP of whoever is requesting the web page does this.\nCertbot Back in the olden days, having an ‘S’ at the end of the HTTP bit of your web address was fancy and reserved for sites doing financial stuff.\nIt was also expensive.\nYou had to buy a Certificate from a Certificate Authority, and then renew it annually.\nCertbot is run by the Electronic Frontier Foundation ( EFF ) and gives Certs away for free.\n(It also handles the renewal process, so once you have grabbed a Cert for your site, that’s it, that’s everything you need to do).\nThe Request All of the above is lovely to know but what about when someone using a browser wants to look at your website.\nThe first thing you have to do is buy a Domain and set the IP address of that Domain as your router’s IP address with the Domain registrar.\nThis is called setting the ‘A record’.\n‘A records’, known as Address records are used to store IP address information for a Domain name.\nNow, their browser request will resolve your Domain name to your router’s IP address.\nTheir browser will send a packet requesting the content from your website.\nThis packet’s first stop will be your router.\nThe Router So, the packet has now reached your router.\nWeb traffic happens on Port 80 (HTTP) and Port 443 (HTTPS).\nThose Ports need to be opened on the router, and the packet traffic directed to the IP address of your web server.\nThis will be the internal network IP address of the machine where your web server lives, probably 192.168.0.something.\nThe Firewall So, now the packet has traversed the router and been directed towards the web server.\nFirst it has to get through the firewall (you are running a firewall aren’t you?).\nIf it’s a Debian or Ubuntu server it’s probably using Uncomplicated Firewall or UFW.\nAgain, Ports 80 and 443 need to be opened on the firewall to allow traffic to get to and from the web server.\n(No-one really uses HTTP on Port 80 anymore but requests may come in via that Port, which your web server will turn into a HTTPS request.)\nIf you want to connect to your server using the Secure Shell (SSH) Protocol, Port 22 will need to be opened on the firewall too.\nIf SSH traffic has been allowed through both the router and the firewall, you will need to look into installing Fail2Ban ; this will limit the exposure of Port 22 to the wider Internet.\nMore complex applications (e.g. Fediverse software) may require different Ports to be opened.\nThis is beyond the scope of this piece.\nThe Web Server So, the packet has now traversed the router, been allowed through the firewall and has finally gotten to the web server.\nWhere does it go now?\nWhat if there are multiple websites on the web server?\nWell, the web server directs traffic packets to the appropriate folder where the content lives.\nSay you have two sites ‘FantasticWebsite.com’ and ‘EvenMoreFantasticWebsite.com’.\nThere will be two web server folders with content:\n/var/www/FantasticWebsite.com And\n/var/www/EvenMoreFantasticWebsite.com The web server sends the requesting packets to the corresponding folder.\nRemember how I said right at the beginning that packets know two things; ‘where they came from’ and ‘where they are going to’?\nWell now that they have reached your web server the ‘where they are going to’ bit has been completed.\nYour web server now does the ‘where they came from’ bit and sends the content back to the requesting web browser.\nDon’t Run Before You Can Walk If I were thinking of starting to self-host stuff, I would start small, something like:\nBuy a Domain, say, ‘MyNewWebsite.com’.\nPoint the Domain’s Address record to my router’s IP address.\nFigure out how to log into the router to open Ports 80 and 443.\nInstall a web server, say, nginx.\nCreate a directory at /var/www/MyNewWebsite.com\nCreate a simple ‘index.html` file to go in the above folder, something like:\n\u003c!DOCTYPE html\u003e My First Webpage My First Webpage Run certbot to grab a HTTPS certificate.\nUse a web browser to look at ‘MyNewWebsite.com’ to make sure that it all works.\nOK, Now You Can Run! Now that you understand how a packet travels from a distant web browser, across the Internet, through your router and firewall, is handled by your web server and sends a response, you’ll probably want to install some more interesting services.\nThis is a great place to spend some time browsing general self-hosting applications:\nhttps://awesome-selfhosted.net/ For an ActivityPub (Fediverse) oriented list see here:\nhttps://github.com/sguzman/delightful-fediverse-apps Shameless Self Promotion For a music streaming server, Navidrome is an easy one to recommend.\nFor Fediverse Socials, GoToSocial has excellent documentation and is fairly uncomplicated to setup (there is a bit of tinkering with config files, nothing scarier than that).\nBoth of the above are written in the Go language and unlike a traditional Linux installation, (which requires the installation of other files called Dependencies) they are self contained units.\nYou download the relevant Go binary, put it in a folder and run it.\nThis approach has both positives and negatives.\nPositive: If the binary runs and works, well, that’s it, forget about it, that’s all you have to do.\nNegative: You’ll never know when an update is available and if you care about updates will have to keep an eye on their GitHub page or Socials.\nObviously there are a whole host of other services you can self-host; spend some time browsing and reading about what other people are doing.\nTech Stacks Finally, some advice you can choose to disregard.\nAll-in-One, point and click packages have been around for ages.\nBack in the ‘90’s LAMP (Linux, Apache, MySQL and PHP) were all the rage.\nI avoided them, preferring to stack the pieces myself.\nI feel you gain a better understanding of how everything sits together and interacts if you have installed it yourself.\n(You are also far more likely to find online help if you are running a vanilla installation, rather than one that has been fucked about with in unknown ways.)\nAnyway, YMMV, it’s your journey; you do you!\nMore Reading https://awesome-selfhosted.net/ https://github.com/sguzman/delightful-fediverse-apps https://www.digitalocean.com/community/conceptual-articles/introduction-to-web-servers https://certbot.eff.org/ https://www.digitalocean.com/community/tutorials/how-fail2ban-works-to-protect-services-on-a-linux-server ",
+  "wordCount" : "1344",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/the-travelling-packet/01_Switch_With_Cat_Cables.webp","datePublished": "2024-12-01T11:09:39+01:00",
+  "dateModified": "2024-12-01T11:09:39+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/the-travelling-packet/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      The Travelling Packet
+    </h1>
+    <div class="post-meta"><span title='2024-12-01 11:09:39 +0100 +0100'>December 1, 2024</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#why" aria-label="Why?">Why?</a></li>
+                <li>
+                    <a href="#terminology" aria-label="Terminology">Terminology</a><ul>
+                        
+                <li>
+                    <a href="#what-are-packets" aria-label="What are &lsquo;Packets&rsquo;?">What are &lsquo;Packets&rsquo;?</a></li>
+                <li>
+                    <a href="#what-is-dns" aria-label="What is &lsquo;DNS&rsquo;?">What is &lsquo;DNS&rsquo;?</a></li>
+                <li>
+                    <a href="#certbot" aria-label="Certbot">Certbot</a></li></ul>
+                </li>
+                <li>
+                    <a href="#the-request" aria-label="The Request">The Request</a></li>
+                <li>
+                    <a href="#the-router" aria-label="The Router">The Router</a></li>
+                <li>
+                    <a href="#the-firewall" aria-label="The Firewall">The Firewall</a></li>
+                <li>
+                    <a href="#the-web-server" aria-label="The Web Server">The Web Server</a></li>
+                <li>
+                    <a href="#dont-run-before-you-can-walk" aria-label="Don&rsquo;t Run Before You Can Walk">Don&rsquo;t Run Before You Can Walk</a></li>
+                <li>
+                    <a href="#ok-now-you-can-run" aria-label="OK, Now You Can Run!">OK, Now You Can Run!</a></li>
+                <li>
+                    <a href="#shameless-self-promotion" aria-label="Shameless Self Promotion">Shameless Self Promotion</a></li>
+                <li>
+                    <a href="#tech-stacks" aria-label="Tech Stacks">Tech Stacks</a></li>
+                <li>
+                    <a href="#more-reading" aria-label="More Reading">More Reading</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="why">Why?<a hidden class="anchor" aria-hidden="true" href="#why">#</a></h2>
+<p>I&rsquo;ve seen a few people lately eager to start self-hosting <em>something</em> and are unsure how the jigsaw pieces fit together.</p>
+<p>This is not intended to be a &lsquo;how do I configure blah blah?&rsquo; piece; think of it more like the picture on the front of the jigsaw box.</p>
+<p>Hopefully this will go some way to deciphering some of the technical terms and make starting the self-hosting puzzle a bit easier.</p>
+<h2 id="terminology">Terminology<a hidden class="anchor" aria-hidden="true" href="#terminology">#</a></h2>
+<p>I&rsquo;ll try and keep this bit brief but <del>unfortunately</del> invariably there are acronyms and a bit of technical language ahead.</p>
+<h3 id="what-are-packets">What are &lsquo;Packets&rsquo;?<a hidden class="anchor" aria-hidden="true" href="#what-are-packets">#</a></h3>
+<p>Essentially someone using a web browser &lsquo;requests&rsquo; a web page.</p>
+<p>This web page is then &lsquo;served&rsquo; by a web server back to the web browser that requested it.</p>
+<p>The web page is broken into chunks, or &lsquo;packets&rsquo; and sent back to the web browser that requested it.</p>
+<p>It is these packets that flow through the pipes that connect the internet together.</p>
+<p>Packets know a couple of things, most importantly:</p>
+<ul>
+<li>
+<p>where they came from (the web browser that requested the content)</p>
+</li>
+<li>
+<p>where they are going to (the web server where the content is hosted)</p>
+</li>
+</ul>
+<p>Aside: Some packets know about the the packets that are ahead and behind them but that&rsquo;s not really relevant to cover here.</p>
+<p>The following will hopefully describe the hoops that the packets have to jump through.</p>
+<h3 id="what-is-dns">What is &lsquo;DNS&rsquo;?<a hidden class="anchor" aria-hidden="true" href="#what-is-dns">#</a></h3>
+<p>So, you want to look at 
+
+<a href="https://google.com/" target="_blank" rel="nofollow noopener noreferrer">https://google.com/</a>
+?</p>
+<p>The first thing to do is turn the human readable bit &lsquo;google.com&rsquo; into an 
+
+<a href="https://www.fortinet.com/resources/cyberglossary/what-is-ip-address" target="_blank" rel="nofollow noopener noreferrer">IP address</a>
+.</p>
+<p>An IP address is a unique identifying number assigned to every device connected to the internet (including <em>your</em> router).</p>
+<p>In this case the IP address of 
+
+<a href="https://google.com/" target="_blank" rel="nofollow noopener noreferrer">https://google.com/</a>
+ is &lsquo;142.250.187.238&rsquo;.</p>
+<p>(You can check this by putting &lsquo;142.250.187.238&rsquo; in a browser&rsquo;s address bar.)</p>
+<p>This is called Domain Name Resolution or DNS and normally the ISP of whoever is requesting the web page does this.</p>
+<h3 id="certbot">Certbot<a hidden class="anchor" aria-hidden="true" href="#certbot">#</a></h3>
+<p>Back in the olden days, having an &lsquo;S&rsquo; at the end of the HTTP bit of your web address was fancy and reserved for sites doing financial stuff.</p>
+<p>It was also expensive.</p>
+<p>You had to buy a Certificate from a Certificate Authority, and then renew it annually.</p>
+<p>
+
+<a href="https://certbot.eff.org/" target="_blank" rel="nofollow noopener noreferrer">Certbot</a>
+ is run by the Electronic Frontier Foundation (
+
+<a href="https://www.eff.org/" target="_blank" rel="nofollow noopener noreferrer">EFF</a>
+) and gives Certs away for free.</p>
+<p>(It also handles the renewal process, so once you have grabbed a Cert for your site, that&rsquo;s it, that&rsquo;s everything you need to do).</p>
+<h2 id="the-request">The Request<a hidden class="anchor" aria-hidden="true" href="#the-request">#</a></h2>
+<p>All of the above is lovely to know but what about when someone using a browser wants to look at <em>your</em> website.</p>
+<p>The first thing <em>you</em> have to do is buy a Domain and set the IP address of that Domain as <em>your</em> router&rsquo;s IP address with the Domain registrar.</p>
+<p>This is called setting the &lsquo;A record&rsquo;.</p>
+<p>&lsquo;A records&rsquo;, known as Address records are used to store IP address information for a Domain name.</p>
+<p>Now, their browser request will resolve <em>your</em> Domain name to <em>your</em> router&rsquo;s IP address.</p>
+<p>Their browser will send a packet requesting the content from your website.</p>
+<p>This packet&rsquo;s first stop will be your router.</p>
+<h2 id="the-router">The Router<a hidden class="anchor" aria-hidden="true" href="#the-router">#</a></h2>
+<p>So, the packet has now reached your router.</p>
+<p>Web traffic happens on Port 80 (HTTP) and Port 443 (HTTPS).</p>
+<p>Those Ports need to be opened on the router, and the packet traffic directed to the IP address of your web server.</p>
+<p>This will be the internal network IP address of the machine where your web server lives, probably 192.168.0.something.</p>
+<h2 id="the-firewall">The Firewall<a hidden class="anchor" aria-hidden="true" href="#the-firewall">#</a></h2>
+<p>So, now the packet has traversed the router and been directed towards the web server.</p>
+<p>First it has to get through the firewall (you are running a firewall aren&rsquo;t you?).</p>
+<p>If it&rsquo;s a Debian or Ubuntu server it&rsquo;s probably using 
+
+<a href="https://help.ubuntu.com/community/UFW" target="_blank" rel="nofollow noopener noreferrer">Uncomplicated Firewall</a>
+ or UFW.</p>
+<p>Again, Ports 80 and 443 need to be opened on the firewall to allow traffic to get to and from the web server.</p>
+<p>(No-one really uses HTTP on Port 80 anymore but requests <strong>may</strong> come in via that Port, which your web server will turn into a HTTPS request.)</p>
+<p>If you want to connect to your server using the Secure Shell (SSH) Protocol, Port 22 will need to be opened on the firewall too.</p>
+<p><strong>If</strong> SSH traffic has been allowed through both the router and the firewall, you will need to look into installing 
+
+<a href="https://en.wikipedia.org/wiki/Fail2ban" target="_blank" rel="nofollow noopener noreferrer">Fail2Ban</a>
+; this will limit the exposure of Port 22 to the wider Internet.</p>
+<p>More complex applications (e.g. Fediverse software) may require different Ports to be opened.</p>
+<p>This is beyond the scope of this piece.</p>
+<h2 id="the-web-server">The Web Server<a hidden class="anchor" aria-hidden="true" href="#the-web-server">#</a></h2>
+<p>So, the packet has now traversed the router, been allowed through the firewall and has finally gotten to the web server.</p>
+<p>Where does it go now?</p>
+<p>What if there are multiple websites on the web server?</p>
+<p>Well, the web server directs traffic packets to the appropriate folder where the content lives.</p>
+<p>Say you have two sites &lsquo;FantasticWebsite.com&rsquo; and &lsquo;EvenMoreFantasticWebsite.com&rsquo;.</p>
+<p>There will be two web server folders with content:</p>
+<pre tabindex="0"><code>/var/www/FantasticWebsite.com
+</code></pre><p>And</p>
+<pre tabindex="0"><code>/var/www/EvenMoreFantasticWebsite.com
+</code></pre><p>The web server sends the requesting packets to the corresponding folder.</p>
+<p>Remember how I said right at the beginning that packets know two things; &lsquo;where they came from&rsquo; and &lsquo;where they are going to&rsquo;?</p>
+<p>Well now that they have reached your web server the &lsquo;where they are going to&rsquo; bit has been completed.</p>
+<p><em>Your</em> web server now does the &lsquo;where they came from&rsquo; bit and sends the content back to the requesting web browser.</p>
+<h2 id="dont-run-before-you-can-walk">Don&rsquo;t Run Before You Can Walk<a hidden class="anchor" aria-hidden="true" href="#dont-run-before-you-can-walk">#</a></h2>
+<p>If I were thinking of starting to self-host stuff, I would start small, something like:</p>
+<p>Buy a Domain, say, &lsquo;MyNewWebsite.com&rsquo;.</p>
+<p>Point the Domain&rsquo;s Address record to my router&rsquo;s IP address.</p>
+<p>Figure out how to log into the router to open Ports 80 and 443.</p>
+<p>Install a web server, say, <code>nginx</code>.</p>
+<p>Create a directory at <code>/var/www/MyNewWebsite.com</code></p>
+<p>Create a simple &lsquo;index.html` file to go in the above folder, something like:</p>
+<pre tabindex="0"><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;My First Webpage&lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+
+        &lt;h1&gt;My First Webpage&lt;/h1&gt;
+
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>Run <code>certbot</code> to grab a HTTPS certificate.</p>
+<p>Use a web browser to look at &lsquo;MyNewWebsite.com&rsquo; to make sure that it all works.</p>
+<h2 id="ok-now-you-can-run">OK, Now You Can Run!<a hidden class="anchor" aria-hidden="true" href="#ok-now-you-can-run">#</a></h2>
+<p>Now that you understand how a packet travels from a distant web browser, across the Internet, through your router and firewall, is handled by your web server and sends a response, you&rsquo;ll probably want to install some more interesting services.</p>
+<p>This is a great place to spend some time browsing general self-hosting applications:</p>
+<p>
+
+<a href="https://awesome-selfhosted.net/" target="_blank" rel="nofollow noopener noreferrer">https://awesome-selfhosted.net/</a>
+</p>
+<p>For an ActivityPub (Fediverse) oriented list see here:</p>
+<p>
+
+<a href="https://github.com/sguzman/delightful-fediverse-apps" target="_blank" rel="nofollow noopener noreferrer">https://github.com/sguzman/delightful-fediverse-apps</a>
+</p>
+<h2 id="shameless-self-promotion">Shameless Self Promotion<a hidden class="anchor" aria-hidden="true" href="#shameless-self-promotion">#</a></h2>
+<p>For a music streaming server, 
+
+
+  <a href="/posts/navidrome-streaming/">Navidrome</a>
+ is an easy one to recommend.</p>
+<p>For Fediverse Socials, 
+
+<a href="https://gotosocial.org/" target="_blank" rel="nofollow noopener noreferrer">GoToSocial</a>
+ has excellent documentation and is <em>fairly</em> uncomplicated to setup (there is a bit of tinkering with config files, nothing scarier than that).</p>
+<p>Both of the above are written in the Go language and unlike a traditional Linux installation, (which requires the installation of other files called Dependencies) they are self contained units.</p>
+<p>You download the relevant Go binary, put it in a folder and run it.</p>
+<p>This approach has both positives and negatives.</p>
+<p>Positive: If the binary runs and works, well, that&rsquo;s it, forget about it, that&rsquo;s all you have to do.</p>
+<p>Negative: You&rsquo;ll never know when an update is available and if you care about updates will have to keep an eye on their GitHub page or Socials.</p>
+<p>Obviously there are a whole host of other services you can self-host; spend some time browsing and reading about what other people are doing.</p>
+<h2 id="tech-stacks">Tech Stacks<a hidden class="anchor" aria-hidden="true" href="#tech-stacks">#</a></h2>
+<p>Finally, some advice you can choose to disregard.</p>
+<p>All-in-One, point and click packages have been around for ages.</p>
+<p>Back in the &lsquo;90&rsquo;s LAMP (Linux, Apache, MySQL and PHP) were all the rage.</p>
+<p>I avoided them, preferring to stack the pieces myself.</p>
+<p>I feel you gain a better understanding of how everything sits together and interacts if you have installed it yourself.</p>
+<p>(You are also <strong>far</strong> more likely to find online help if you are running a vanilla installation, rather than one that has been fucked about with in unknown ways.)</p>
+<p>Anyway, YMMV, it&rsquo;s <em>your</em> journey; you do you!</p>
+<h2 id="more-reading">More Reading<a hidden class="anchor" aria-hidden="true" href="#more-reading">#</a></h2>
+<p>
+
+<a href="https://awesome-selfhosted.net/" target="_blank" rel="nofollow noopener noreferrer">https://awesome-selfhosted.net/</a>
+</p>
+<p>
+
+<a href="https://github.com/sguzman/delightful-fediverse-apps" target="_blank" rel="nofollow noopener noreferrer">https://github.com/sguzman/delightful-fediverse-apps</a>
+</p>
+<p>
+
+<a href="https://www.digitalocean.com/community/conceptual-articles/introduction-to-web-servers" target="_blank" rel="nofollow noopener noreferrer">https://www.digitalocean.com/community/conceptual-articles/introduction-to-web-servers</a>
+</p>
+<p>
+
+<a href="https://certbot.eff.org/" target="_blank" rel="nofollow noopener noreferrer">https://certbot.eff.org/</a>
+</p>
+<p>
+
+<a href="https://www.digitalocean.com/community/tutorials/how-fail2ban-works-to-protect-services-on-a-linux-server" target="_blank" rel="nofollow noopener noreferrer">https://www.digitalocean.com/community/tutorials/how-fail2ban-works-to-protect-services-on-a-linux-server</a>
+</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/moving-to-gotosocial/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Moving to GoToSocial</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/moving-to-hugo-from-wordpress/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Moving to Hugo from WordPress</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
