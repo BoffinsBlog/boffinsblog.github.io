@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Jellyfin App on a Tizen TV | Boffins Blog</title>
+<meta name="keywords" content="Hardware, Linux, Raspberry Pi, Self Hosting, Software">
+<meta name="description" content="Jellyfin has a supported app, however it hasn’t made it into the Samsung store. This is about how to install the Jellyfin app on a Tizen TV.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Jellyfin App on a Tizen TV">
+  <meta property="og:description" content="Jellyfin has a supported app, however it hasn’t made it into the Samsung store. This is about how to install the Jellyfin app on a Tizen TV.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-06-12T19:58:39+01:00">
+    <meta property="article:modified_time" content="2024-06-12T19:58:39+01:00">
+    <meta property="article:tag" content="Hardware">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/05_Tizen_Certificate_Manager_2.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/05_Tizen_Certificate_Manager_2.webp">
+<meta name="twitter:title" content="Jellyfin App on a Tizen TV">
+<meta name="twitter:description" content="Jellyfin has a supported app, however it hasn’t made it into the Samsung store. This is about how to install the Jellyfin app on a Tizen TV.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Jellyfin App on a Tizen TV",
+      "item": "https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Jellyfin App on a Tizen TV",
+  "name": "Jellyfin App on a Tizen TV",
+  "description": "Jellyfin has a supported app, however it hasn’t made it into the Samsung store. This is about how to install the Jellyfin app on a Tizen TV.",
+  "keywords": [
+    "Hardware", "Linux", "Raspberry Pi", "Self Hosting", "Software"
+  ],
+  "articleBody": "I ‘Fin-ally did it ! Jellyfin has a supported app, however it hasn’t made it into the Samsung store. This is about how to install the Jellyfin app on a Tizen TV.\nThere are a multitude of posts in the Interwebs about ‘How to install Jellyfin’; this is not another one of those.\nDownload the Tizen Studio First, download the appropriate version from:\nhttps://developer.tizen.org/development/tizen-studio/download Then, install, I used the ‘Tizen Studio 5.6 with IDE installer’ for Ubuntu.\nInstall Tizen Studio Resources:\nhttps://docs.tizen.org/application/tizen-studio/setup/install-sdk First, create an installation location:\nmkdir /home/foo/Tizen/\nThen, make the download executable:\ncd /home/foo/Downloads/\nsudo chmod a+x web-ide_Tizen_Studio_5.6_ubuntu-64.bin\nFinally, install:\n./web-ide_Tizen_Studio_5.6_ubuntu-64.bin\nSince the installation process prompts for the SDK and data location.\nI set my SDK location to:\n/home/foo/Tizen\nThen I set my Data location to:\n/home/foo/Tizen/tizen-studio-data\nA warning:\n“This process can take some time…” and has multiple su password prompts.\nWait while the Tizen Studio is installed.\nThen, launch the ‘Package Manager’.\nAnother warning:\n“This process can take some time…” and has multiple su password prompts.\nTizen Package Manager Main SDK Options\nInstall the required extensions Resources:\nhttps://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/installing-tv-sdk.html#Installing-Required-Extensions In the ‘Extension SDK’ tab:\nDownload the following:\nTV Extensions 8.0\nTizen Studio Package Manager – TV Extensions – Extension SDK\nSamsung Certificate Extension\nTizen Studio Package Manager – Certificate Extension – Extension SDK\nAnother warning:\n“This process can take some time…” and has multiple su password prompts.\nYou may want to copy / paste the password, due to there being that many prompts.\nIn the meantime, go and make a brew, it takes a long time for some reason.\nThen, exit the ‘Package Manager’ and launch the ‘Tizen Studio’.\nAlso, ‘Tizen Studio’ needs a ‘workspace’:\nmkdir /home/foo/Tizen/workspace\nThen, browse to the ‘workspace’ created and set as ‘Default’.\nSetup Tizen certificate(s) in Certificate Manager Tizen Certificate Manager Dialog Box\nAs I had gone through this process quite recently and repeatedly, I imported my existing Certificate(s).\nThe process of creating a new pair of Certificate(s) needs two additional pieces of information:\nThe TV UDID, which on my device was found at:\n‘Settings | Support | About this TV’\nA Samsung Account which I already had\nResources:\nhttps://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/creating-certificates.html First, create a Certificate Profile:\nA certificate profile consists of an author certificate and 1 or more distributor certificates.\nInitial Tizen Certificate Manager Dialog Box\nTo create a certificate profile:\nIn the Tizen Studio menu, select “Tools; Certificate Manager”.\nCreate Certificate Profile – Create a TV Certificate Profile\nThen choose the ‘TV’ option, obviously.\nCreate Certificate Profile – Create New Certificate Profile\n(Even if importing existing certificated, a new profile seems to need creating, the ‘import’ is the the step following this one.)\nI already had an ‘author certificate’.\nSo I chose, ‘Select an existing author certificate’.\nCreate Certificate Profile – Select Existing Author Certificate\nThen browsed to its location.\nCreate Certificate Profile – Browse for Author Certificate\nI already had a ‘distributor certificate’.\nSo I chose, ‘Select an existing distributor certificate’.\nCreate Certificate Profile – Existing Distributor Certificate\nSuccess!\nTizen Certificate Profile Creation Success\nMore success!\nTizen Certificate Success\nDownload the Jellyfin App for Tizen Resources:\nhttps://github.com/jellyfin/jellyfin-tizen https://github.com/jeppevinkel/jellyfin-tizen-builds/releases It is entirely possible to download and make an executable which can then be uploaded to the TV.\nHowever, I choose to use the prebuilt ones.\nEnable ‘Developer Mode’ on TV Before an App can be uploaded to the TV, it needs to be in ‘Developer Mode.\nOn the TV, select the “Apps” panel.\nThen, in the “Apps” panel, enter “12345”\nFor some reason, I had to use the Smart Things App on my phone to successfully complete this step.\nThen the developer mode configuration popup will appear.\nSwitch “Developer mode” to “On”.\nThen enter the IP address of the computer that you want to connect to the TV, and click “OK”.\nFinally, reboot the TV by holding the power button for a few seconds.\nInstall the Jellyfin App on a Tizen TV using the SDK Resources:\nhttps://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/installing-tv-sdk.html Using the SDK ‘Device Manager’ never really worked for me.\nTizen Studio Device Manger\nI would always get the following error when trying to upload the Jellyfin package:\nTizen Studio App Install Error\nSo, plan B.\nUse sdb instead.\nInstall the Jellyfin App on a Tizen TV using SDB The Tizen Studio comes with sdb.\nsdb is the Samsung version of adb.\nEnabling sdb Add sdb to $PATH Resources:\nhttps://linuxize.com/post/how-to-add-directory-to-path-in-linux/ Use sdb one time export PATH=/home/foo/Tizen/tools:$PATH\nexport PATH=/home/foo/Tizen/tools/ide/bin:$PATH\nOr, make sdb persistent Edit:\nnano ~/.bashrc\nThen, add at the bottom:\n# Tizen tools export PATH=/home/foo/Tizen/tools:$PATH export PATH=/home/foo/Tizen/tools/ide/bin:$PATH Then, reload:\nsource ~/.bashrc\nNow you can test (assuming that you know the IP of the TV):\nFirst, connect to the TV:\nsdb connect :26101\nThen, see the devices connected and available:\nsdb devices\nWhen finished:\nsdb disconnect\nNow that sdb is working you can upload the Jellyfin package.\nFirst, connect to the TV:\nsdb connect :26101\nThen, see the devices connected and available:\nsdb devices\nMake a note of the ‘tizen_device_id‘, under the ‘List of devices attached’.\nIn a Terminal, browse to where the Jellyfin package was downloaded to:\ncd /path/to/Jellyfin_for_Tizen_Download\nThen, install:\ntizen install -n Jellyfin_xx.x.x.wgt -t tizen_device_id\nWhere ‘Jellyfin_xx.x.x.wgt‘ is the version number that was downloaded.\nWhen finished:\nsdb disconnect\nFinally, a bit of housekeeping.\nIt is good form to keep the App version number and the Server version number in sync.\nIn order to find the Server version, in a Terminal:\njellyfin --version\nRemember when i said it was a long process?\nIn conclusion, it’s a bit of a faff to do all of the above when the TV browser can do exactly the same thing.\n",
+  "wordCount" : "931",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/05_Tizen_Certificate_Manager_2.webp","datePublished": "2024-06-12T19:58:39+01:00",
+  "dateModified": "2024-06-12T19:58:39+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Jellyfin App on a Tizen TV
+    </h1>
+    <div class="post-meta"><span title='2024-06-12 19:58:39 +0100 BST'>June 12, 2024</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#i-fin-ally-did-it-" aria-label="I ‘Fin-ally did it !">I ‘Fin-ally did it !</a></li>
+                <li>
+                    <a href="#download-the-tizen-studio" aria-label="Download the Tizen Studio">Download the Tizen Studio</a></li>
+                <li>
+                    <a href="#install-tizen-studio" aria-label="Install Tizen Studio">Install Tizen Studio</a><ul>
+                        
+                <li>
+                    <a href="#install-the-required-extensions" aria-label="Install the required extensions">Install the required extensions</a></li></ul>
+                </li>
+                <li>
+                    <a href="#setup-tizen-certificates-in-certificate-manager" aria-label="Setup Tizen certificate(s) in Certificate Manager">Setup Tizen certificate(s) in Certificate Manager</a></li>
+                <li>
+                    <a href="#download-the-jellyfin-app-for-tizen" aria-label="Download the Jellyfin App for Tizen">Download the Jellyfin App for Tizen</a></li>
+                <li>
+                    <a href="#enable-developer-mode-on-tv" aria-label="Enable ‘Developer Mode’ on TV">Enable ‘Developer Mode’ on TV</a></li>
+                <li>
+                    <a href="#install-the-jellyfin-app-on-a-tizen-tv-using-the-sdk" aria-label="Install the Jellyfin App on a Tizen TV using the SDK">Install the Jellyfin App on a Tizen TV using the SDK</a></li>
+                <li>
+                    <a href="#install-the-jellyfin-app-on-a-tizen-tv-using-sdb" aria-label="Install the Jellyfin App on a Tizen TV using SDB">Install the Jellyfin App on a Tizen TV using SDB</a><ul>
+                        
+                <li>
+                    <a href="#enabling-sdb" aria-label="Enabling sdb">Enabling sdb</a><ul>
+                        
+                <li>
+                    <a href="#add-sdb-to-path" aria-label="Add sdb to $PATH">Add sdb to $PATH</a></li>
+                <li>
+                    <a href="#use-sdb-one-time" aria-label="Use sdb one time">Use sdb one time</a></li>
+                <li>
+                    <a href="#or-make-sdb-persistent" aria-label="Or, make sdb persistent">Or, make sdb persistent</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="i-fin-ally-did-it-">I ‘Fin-ally did it !<a hidden class="anchor" aria-hidden="true" href="#i-fin-ally-did-it-">#</a></h2>
+<p>Jellyfin has a supported app, however it hasn’t made it into the Samsung store. This is about how to install the Jellyfin app on a Tizen TV.</p>
+<p>There are a multitude of posts in the Interwebs about ‘How to install Jellyfin’; this is not another one of those.</p>
+<h2 id="download-the-tizen-studio">Download the Tizen Studio<a hidden class="anchor" aria-hidden="true" href="#download-the-tizen-studio">#</a></h2>
+<p>First, download the appropriate version from:</p>
+<p>
+
+<a href="https://developer.tizen.org/development/tizen-studio/download" target="_blank" rel="nofollow noopener noreferrer">https://developer.tizen.org/development/tizen-studio/download</a>
+</p>
+<p>Then, install, I used the ‘Tizen Studio 5.6 with IDE installer’ for Ubuntu.</p>
+<h2 id="install-tizen-studio">Install Tizen Studio<a hidden class="anchor" aria-hidden="true" href="#install-tizen-studio">#</a></h2>
+<p>Resources:</p>
+<p>
+
+<a href="https://docs.tizen.org/application/tizen-studio/setup/install-sdk" target="_blank" rel="nofollow noopener noreferrer">https://docs.tizen.org/application/tizen-studio/setup/install-sdk</a>
+</p>
+<p>First, create an installation location:</p>
+<p><code>mkdir /home/foo/Tizen/</code></p>
+<p>Then, make the download executable:</p>
+<p><code>cd /home/foo/Downloads/</code></p>
+<p><code>sudo chmod a+x web-ide_Tizen_Studio_5.6_ubuntu-64.bin</code></p>
+<p>Finally, install:</p>
+<p><code>./web-ide_Tizen_Studio_5.6_ubuntu-64.bin</code></p>
+<p>Since the installation process prompts for the <strong>SDK</strong> and <strong>data location</strong>.</p>
+<p>I set my <strong>SDK</strong> location to:</p>
+<p><code>/home/foo/Tizen</code></p>
+<p>Then I set my <strong>Data location</strong> to:</p>
+<p><code>/home/foo/Tizen/tizen-studio-data</code></p>
+<p><strong>A warning:</strong></p>
+<p>“This process can take some time…” and has <em>multiple</em> su password prompts.</p>
+<p>Wait while the Tizen Studio is installed.</p>
+<p>Then, launch the ‘Package Manager’.</p>
+<p><strong>Another warning:</strong></p>
+<p>“This process can take some time…” and has <em>multiple</em> su password prompts.</p>
+<p><img alt="Installing the Jellyfin app on a Tizen TV. A screenshot showing the &lsquo;Tizen Studio Package Manager&rsquo;, &lsquo;Main SDK&rsquo; options." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/01_Tizen_Package_Manager.webp#center" title="Installing the Jellyfin app on a Tizen TV. A screenshot showing the &#39;Tizen Studio Package Manager&#39;, &#39;Main SDK&#39; options.">
+<em>Tizen Package Manager Main SDK Options</em></p>
+<h3 id="install-the-required-extensions">Install the required extensions<a hidden class="anchor" aria-hidden="true" href="#install-the-required-extensions">#</a></h3>
+<p>Resources:</p>
+<p>
+
+<a href="https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/installing-tv-sdk.html#Installing-Required-Extensions" target="_blank" rel="nofollow noopener noreferrer">https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/installing-tv-sdk.html#Installing-Required-Extensions</a>
+</p>
+<p>In the ‘Extension SDK’ tab:</p>
+<p>Download the following:</p>
+<p><strong>TV Extensions 8.0</strong></p>
+<p><img alt="Installing the Jellyfin app on a Tizen TV. A screenshot showing the &lsquo;Tizen Studio Package Manager&rsquo;, &lsquo;TV Extensions&rsquo; in the &lsquo;Extension SDK&rsquo; options." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/02_Tizen_TV_Extensions.webp#center" title="Installing the Jellyfin app on a Tizen TV. A screenshot showing the &#39;Tizen Studio Package Manager&#39;, &#39;TV Extensions&#39; in the &#39;Extension SDK&#39; options.">
+<em>Tizen Studio Package Manager – TV Extensions – Extension SDK</em></p>
+<p><strong>Samsung Certificate Extension</strong></p>
+<p><img alt="Installing the Jellyfin app on a Tizen TV. A screenshot showing the &lsquo;Tizen Studio Package Manager&rsquo;, &lsquo;Samsung Certificate Extension&rsquo; in the &lsquo;Extension SDK&rsquo; options." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/03_Samsung_Certificate_Extension.webp#center" title="Installing the Jellyfin app on a Tizen TV. A screenshot showing the &#39;Tizen Studio Package Manager&#39;, &#39;Samsung Certificate Extension&#39; in the &#39;Extension SDK&#39; options.">
+<em>Tizen Studio Package Manager – Certificate Extension – Extension SDK</em></p>
+<p><strong>Another warning:</strong></p>
+<p>“This process can take some time…” and has <em>multiple</em> su password prompts.</p>
+<p>You may want to copy / paste the password, due to there being that many prompts.</p>
+<p>In the meantime, go and make a brew, it takes a long time for some reason.</p>
+<p>Then, exit the ‘Package Manager’ and launch the ‘Tizen Studio’.</p>
+<p>Also, ‘Tizen Studio’ needs a ‘workspace’:</p>
+<p><code>mkdir /home/foo/Tizen/workspace</code></p>
+<p>Then, browse to the ‘workspace’ created and set as ‘Default’.</p>
+<h2 id="setup-tizen-certificates-in-certificate-manager">Setup Tizen certificate(s) in Certificate Manager<a hidden class="anchor" aria-hidden="true" href="#setup-tizen-certificates-in-certificate-manager">#</a></h2>
+<p><img alt="Installing the Jellyfin app on a Tizen TV. A screenshot showing the &lsquo;Tizen Certificate Manager&rsquo; dialog box." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/04_Tizen_Certificate_Manager_1.webp#center" title="Installing the Jellyfin app on a Tizen TV. A screenshot showing the &#39;Tizen Certificate Manager&#39; dialog box.">
+<em>Tizen Certificate Manager Dialog Box</em></p>
+<p>As I had gone through this process quite recently and repeatedly, I imported my existing Certificate(s).</p>
+<p>The process of creating a new pair of Certificate(s) needs two additional pieces of information:</p>
+<ul>
+<li>
+<p>The TV UDID, which on my device was found at:</p>
+<p>‘Settings | Support | About this TV’</p>
+</li>
+<li>
+<p>A Samsung Account which I already had</p>
+</li>
+</ul>
+<p>Resources:</p>
+<p>
+
+<a href="https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/creating-certificates.html" target="_blank" rel="nofollow noopener noreferrer">https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/creating-certificates.html</a>
+</p>
+<p>First, create a Certificate Profile:</p>
+<p>A certificate profile consists of an author certificate and 1 or more distributor certificates.</p>
+<p><img alt="Installing the Jellyfin app on a Tizen TV. A screenshot showing the initial &lsquo;Tizen Certificate Manager&rsquo; dialog box." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/05_Tizen_Certificate_Manager_2.webp#center" title="Installing the Jellyfin app on a Tizen TV. A screenshot showing the initial &#39;Tizen Certificate Manager&#39; dialog box.">
+<em>Initial Tizen Certificate Manager Dialog Box</em></p>
+<p>To create a certificate profile:</p>
+<p>In the Tizen Studio menu, select “Tools; Certificate Manager”.</p>
+<p><img alt="Screenshot showing the &lsquo;Create Certificate Profile&rsquo; dialog box. Device Type TV option." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/06_Tizen_Certificate_Profile_1.webp#center" title="Screenshot showing the &#39;Create Certificate Profile&#39; dialog box. Device Type TV option.">
+<em>Create Certificate Profile – Create a TV Certificate Profile</em></p>
+<p>Then choose the ‘TV’ option, obviously.</p>
+<p><img alt="Screenshot showing the &lsquo;Create Certificate Profile&rsquo; dialog box. Create a new certificate profile&rsquo; option." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/07_Tizen_Certificate_Profile_2.webp#center" title="Screenshot showing the &#39;Create Certificate Profile&#39; dialog box. Create a new certificate profile&#39; option.">
+<em>Create Certificate Profile – Create New Certificate Profile</em></p>
+<p>(Even if importing existing certificated, a new profile seems to need creating, the ‘import’ is the the step following this one.)</p>
+<p>I already had an ‘author certificate’.</p>
+<p>So I chose, ‘Select an existing author certificate’.</p>
+<p><img alt="Screenshot showing the &lsquo;Create Certificate Profile&rsquo; dialog box. Select an existing author certificate option." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/08_Tizen_Certificate_Profile_3a.webp#center" title="Screenshot showing the &#39;Create Certificate Profile&#39; dialog box. Select an existing author certificate option.">
+<em>Create Certificate Profile – Select Existing Author Certificate</em></p>
+<p>Then browsed to its location.</p>
+<p><img alt="Screenshot showing the &lsquo;Create Certificate Profile&rsquo; dialog box, &lsquo;Browse for an Author Certificate option." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/09_Tizen_Certificate_Profile_3b.webp#center" title="Screenshot showing the &#39;Create Certificate Profile&#39; dialog box, &#39;Browse for an Author Certificate option.">
+<em>Create Certificate Profile – Browse for Author Certificate</em></p>
+<p>I already had a ‘distributor certificate’.</p>
+<p>So I chose, ‘Select an existing distributor certificate’.</p>
+<p><img alt="Screenshot showing the &lsquo;Create Certificate Profile&rsquo; dialog box, &lsquo;Select and existing distributor certificate&rsquo; option." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/10_Tizen_Certificate_Profile_4a.webp#center" title="Screenshot showing the &#39;Create Certificate Profile&#39; dialog box, &#39;Select and existing distributor certificate&#39; option.">
+<em>Create Certificate Profile – Existing Distributor Certificate</em></p>
+<p>Success!</p>
+<p><img alt="Screenshot showing the &lsquo;Create Certificate Profile&rsquo; success dialog box." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/11_Tizen_Certificate_Profile_4b.webp#center" title="Screenshot showing the &#39;Create Certificate Profile&#39; success dialog box.">
+<em>Tizen Certificate Profile Creation Success</em></p>
+<p>More success!</p>
+<p><img alt="Screenshot showing the Tizen Certificate Manager &lsquo;Tizen Certificate Success&rsquo; dialog box." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/12_Tizen_Certificate_Success.webp#center" title="Screenshot showing the Tizen Certificate Manager &#39;Tizen Certificate Success&#39; dialog box.">
+<em>Tizen Certificate Success</em></p>
+<h2 id="download-the-jellyfin-app-for-tizen">Download the Jellyfin App for Tizen<a hidden class="anchor" aria-hidden="true" href="#download-the-jellyfin-app-for-tizen">#</a></h2>
+<p>Resources:</p>
+<p>
+
+<a href="https://github.com/jellyfin/jellyfin-tizen" target="_blank" rel="nofollow noopener noreferrer">https://github.com/jellyfin/jellyfin-tizen</a>
+</p>
+<p>
+
+<a href="https://github.com/jeppevinkel/jellyfin-tizen-builds/releases" target="_blank" rel="nofollow noopener noreferrer">https://github.com/jeppevinkel/jellyfin-tizen-builds/releases</a>
+</p>
+<p>It is entirely possible to download and <code>make</code> an executable which can then be uploaded to the TV.</p>
+<p>However, I choose to use the prebuilt ones.</p>
+<h2 id="enable-developer-mode-on-tv">Enable ‘Developer Mode’ on TV<a hidden class="anchor" aria-hidden="true" href="#enable-developer-mode-on-tv">#</a></h2>
+<p>Before an App can be uploaded to the TV, it needs to be in ‘Developer Mode.</p>
+<p>On the TV, select the “Apps” panel.</p>
+<p>Then, in the “Apps” panel, enter “12345”</p>
+<p>For some reason, I had to use the Smart Things App on my phone to successfully complete this step.</p>
+<p>Then the developer mode configuration popup will appear.</p>
+<p>Switch “Developer mode” to “On”.</p>
+<p>Then enter the IP address of the computer that you want to connect to the TV, and click “OK”.</p>
+<p>Finally, reboot the TV by holding the power button for a few seconds.</p>
+<h2 id="install-the-jellyfin-app-on-a-tizen-tv-using-the-sdk">Install the Jellyfin App on a Tizen TV using the SDK<a hidden class="anchor" aria-hidden="true" href="#install-the-jellyfin-app-on-a-tizen-tv-using-the-sdk">#</a></h2>
+<p>Resources:</p>
+<p>
+
+<a href="https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/installing-tv-sdk.html" target="_blank" rel="nofollow noopener noreferrer">https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/installing-tv-sdk.html</a>
+</p>
+<p>Using the SDK ‘Device Manager’ never really worked for me.</p>
+<p><img alt="Screenshot showing the &lsquo;Tizen Studio Device Manger&rsquo; dialog box." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/13_Tizen_Studio_Device_Manger.webp#center" title="Screenshot showing the &#39;Tizen Studio Device Manger&#39; dialog box.">
+<em>Tizen Studio Device Manger</em></p>
+<p>I would always get the following error when trying to upload the Jellyfin package:</p>
+<p><img alt="Screenshot showing the &lsquo;Tizen Studio App Install Error&rsquo; dialog box." loading="lazy" src="/posts/jellyfin-app-on-a-tizen-tv/14_Tizen_Studio_App_Install_Error.webp#center" title="Screenshot showing the &#39;Tizen Studio App Install Error&#39; dialog box.">
+<em>Tizen Studio App Install Error</em></p>
+<p>So, plan B.</p>
+<p>Use sdb instead.</p>
+<h2 id="install-the-jellyfin-app-on-a-tizen-tv-using-sdb">Install the Jellyfin App on a Tizen TV using SDB<a hidden class="anchor" aria-hidden="true" href="#install-the-jellyfin-app-on-a-tizen-tv-using-sdb">#</a></h2>
+<p>The Tizen Studio comes with sdb.</p>
+<p>sdb is the Samsung version of adb.</p>
+<h3 id="enabling-sdb">Enabling sdb<a hidden class="anchor" aria-hidden="true" href="#enabling-sdb">#</a></h3>
+<h4 id="add-sdb-to-path">Add sdb to $PATH<a hidden class="anchor" aria-hidden="true" href="#add-sdb-to-path">#</a></h4>
+<p>Resources:</p>
+<p>
+
+<a href="https://linuxize.com/post/how-to-add-directory-to-path-in-linux/" target="_blank" rel="nofollow noopener noreferrer">https://linuxize.com/post/how-to-add-directory-to-path-in-linux/</a>
+</p>
+<h4 id="use-sdb-one-time">Use sdb one time<a hidden class="anchor" aria-hidden="true" href="#use-sdb-one-time">#</a></h4>
+<p><code>export PATH=/home/foo/Tizen/tools:$PATH</code></p>
+<p><code>export PATH=/home/foo/Tizen/tools/ide/bin:$PATH</code></p>
+<h4 id="or-make-sdb-persistent">Or, make sdb persistent<a hidden class="anchor" aria-hidden="true" href="#or-make-sdb-persistent">#</a></h4>
+<p>Edit:</p>
+<p><code>nano ~/.bashrc</code></p>
+<p>Then, add at the bottom:</p>
+<pre tabindex="0"><code># Tizen tools
+export PATH=/home/foo/Tizen/tools:$PATH
+export PATH=/home/foo/Tizen/tools/ide/bin:$PATH
+</code></pre><p>Then, reload:</p>
+<p><code>source ~/.bashrc</code></p>
+<p>Now you can test (assuming that you know the IP of the TV):</p>
+<p>First, connect to the TV:</p>
+<p><code>sdb connect &lt;TV.IP&gt;:26101</code></p>
+<p>Then, see the devices connected and available:</p>
+<p><code>sdb devices</code></p>
+<p>When finished:</p>
+<p><code>sdb disconnect</code></p>
+<p>Now that sdb is working you can upload the Jellyfin package.</p>
+<p>First, connect to the TV:</p>
+<p><code>sdb connect &lt;TV.IP&gt;:26101</code></p>
+<p>Then, see the devices connected and available:</p>
+<p><code>sdb devices</code></p>
+<p>Make a note of the ‘tizen_device_id‘, under the ‘List of devices attached’.</p>
+<p>In a Terminal, browse to where the Jellyfin package was downloaded to:</p>
+<p><code>cd /path/to/Jellyfin_for_Tizen_Download</code></p>
+<p>Then, install:</p>
+<p><code>tizen install -n Jellyfin_xx.x.x.wgt -t tizen_device_id</code></p>
+<p>Where ‘Jellyfin_xx.x.x.wgt‘ is the version number that was downloaded.</p>
+<p>When finished:</p>
+<p><code>sdb disconnect</code></p>
+<p>Finally, a bit of housekeeping.</p>
+<p>It is good form to keep the <strong>App</strong> version number and the <strong>Server</strong> version number in sync.</p>
+<p>In order to find the Server version, in a Terminal:</p>
+<p><code>jellyfin --version</code></p>
+<p>Remember when i said it was a long process?</p>
+<p>In conclusion, it’s a bit of a faff to do all of the above when the TV browser can do exactly the same thing.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/hardware/">Hardware</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/iceshrimp-net-rss-bot/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Iceshrimp.NET RSS Bot</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/">
+    <span class="title">Next »</span>
+    <br>
+    <span>OpenWrt with AdGuardHome and Unbound on a SheevaPlug</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

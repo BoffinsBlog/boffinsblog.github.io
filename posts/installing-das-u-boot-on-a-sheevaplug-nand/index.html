@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Installing Das U-Boot on a SheevaPlug NAND | Boffins Blog</title>
+<meta name="keywords" content="Hardware, Linux, Self Hosting, SheevaPlug, Software">
+<meta name="description" content="Installing Das U-Boot on a SheevaPlug NAND.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Installing Das U-Boot on a SheevaPlug NAND">
+  <meta property="og:description" content="Installing Das U-Boot on a SheevaPlug NAND.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-07-21T07:40:58+01:00">
+    <meta property="article:modified_time" content="2025-07-21T07:40:58+01:00">
+    <meta property="article:tag" content="Hardware">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="SheevaPlug">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/01_Flashing_U-Boot_Confirmation_Screen.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/01_Flashing_U-Boot_Confirmation_Screen.webp">
+<meta name="twitter:title" content="Installing Das U-Boot on a SheevaPlug NAND">
+<meta name="twitter:description" content="Installing Das U-Boot on a SheevaPlug NAND.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Installing Das U-Boot on a SheevaPlug NAND",
+      "item": "https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Installing Das U-Boot on a SheevaPlug NAND",
+  "name": "Installing Das U-Boot on a SheevaPlug NAND",
+  "description": "Installing Das U-Boot on a SheevaPlug NAND.",
+  "keywords": [
+    "Hardware", "Linux", "Self Hosting", "SheevaPlug", "Software"
+  ],
+  "articleBody": "Introduction A short series of SheevaPlug posts around the installation and configuration of different Operating Systems and additional software.\nUnbricking and booting\nUnbricking Installing Das U-Boot Using OpenWrt\nInstalling OpenWrt on the NAND Configuring OpenWrt Using Debian\nInstalling Debian Bookworm on an MMC Upgrading Debian Bookworm to Trixie Additional OpenWrt software\nInstalling a lighttpd web server Configuring lighttpd TLS and ACME Files and Tools Needed The NAND contains three partitions:\nMTD0 – u-boot, think of it as the grub of embedded systems MTD1 – uImage, the kernel MTD2 – rootfs, the filesystem u-boot, processes the kernel, which then boots the filesystem (and boots).\nTFTP server A TFTP server is a lot easier that messing about with files on a USB.\nTo install a TFTP server run the following in a Terminal:\nsudo apt install tftpd-hpa\nThen, check that it is running:\nsudo systemctl status tftpd-hpa\nThen, take ownership of the TFTP server directory:\nsudo chown -R $USER /srv/tftp\nAny files now placed in this directory will be available to pull onto the ‘Plug.\nThe u-boot files Das U-Boot (subtitled “the Universal Boot Loader” and often shortened to U-Boot; see History for more about the name) is an open-source boot loader used in embedded devices to perform various low-level hardware initialization tasks and boot the device’s operating system kernel.\nhttps://en.wikipedia.org/wiki/Das_U-Boot This process assumes that the new u-boot files are on the TFTP server.\nThe OpenWrt version is here .\n(This is the one that I use.)\nThe Bookworm version provided by Debian is here .\nSteps Power on the ‘Plug.\nIn a Terminal run the following:\nscreen /dev/ttyUSB0 115200\nInterrupt the boot process to get to the ‘Plug command prompt.\nThen, type the following to set the TFTP environment variables:\nsetenv serverip setenv ipaddr Set the MAC address:\nsetenv ethaddr setenv macaddr Now:\nsaveenv saveenv stores the variables so they will not need setting again.\nBoot from the updated u-boot on the TFTP server:\ntftpboot 0x0800000 u-boot.kwb Then:\nnand erase 0x0 0x80000 nand write 0x0800000 0x0 0x80000 This erases a the portion of NAND reserved for u-boot and writes the new version.\nNow restart the ‘Plug:\nreset The ‘Plug will now reboot with an updated u-boot.\nConclusion Now that the ‘Plug is booting and has an up to date u-boot, it’s time to install an OS.\nI’ve documented two (2) routes:\nInstalling OpenWrt on NAND Installing Debian Bookworm on MMC Notes (stuff I found out later) To reset the envvars:\nenv default -a\n",
+  "wordCount" : "416",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/01_Flashing_U-Boot_Confirmation_Screen.webp","datePublished": "2025-07-21T07:40:58+01:00",
+  "dateModified": "2025-07-21T07:40:58+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Installing Das U-Boot on a SheevaPlug NAND
+    </h1>
+    <div class="post-meta"><span title='2025-07-21 07:40:58 +0100 BST'>July 21, 2025</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#introduction" aria-label="Introduction">Introduction</a></li>
+                <li>
+                    <a href="#files-and-tools-needed" aria-label="Files and Tools Needed">Files and Tools Needed</a><ul>
+                        
+                <li>
+                    <a href="#tftp-server" aria-label="TFTP server">TFTP server</a></li>
+                <li>
+                    <a href="#the-u-boot-files" aria-label="The u-boot files">The u-boot files</a></li></ul>
+                </li>
+                <li>
+                    <a href="#steps" aria-label="Steps">Steps</a></li>
+                <li>
+                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a></li>
+                <li>
+                    <a href="#notes-stuff-i-found-out-later" aria-label="Notes (stuff I found out later)">Notes (stuff I found out later)</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
+<p>A short series of SheevaPlug posts around the installation and configuration of different Operating Systems and additional software.</p>
+<p><strong>Unbricking and booting</strong></p>
+<ul>
+<li>
+<p>
+
+
+  <a href="/posts/unbricking-a-sheevaplug">Unbricking</a>
+</p>
+</li>
+<li>
+<p>
+
+
+  <a href="/posts/installing-das-u-boot-on-a-sheevaplug-nand">Installing Das U-Boot</a>
+</p>
+</li>
+</ul>
+<p><strong>Using OpenWrt</strong></p>
+<ul>
+<li>
+<p>
+
+
+  <a href="/posts/installing-openwrt-on-a-sheevaplug-nand">Installing OpenWrt on the NAND</a>
+</p>
+</li>
+<li>
+<p>
+
+
+  <a href="/posts/configuring-openwrt-on-a-sheevaplug">Configuring OpenWrt</a>
+</p>
+</li>
+</ul>
+<p><strong>Using Debian</strong></p>
+<ul>
+<li>
+<p>
+
+
+  <a href="/posts/installing-debian-bookworm-on-a-sheevaplug-mmc">Installing Debian Bookworm on an MMC</a>
+</p>
+</li>
+<li>
+<p>
+
+
+  <a href="/posts/upgrading-debian-bookworm-to-trixie-on-a-sheevaplug-mmc">Upgrading Debian Bookworm to Trixie</a>
+</p>
+</li>
+</ul>
+<p><strong>Additional OpenWrt software</strong></p>
+<ul>
+<li>
+<p>
+
+
+  <a href="/posts/installing-lighttpd-on-a-sheevaplug-running-openwrt">Installing a lighttpd web server</a>
+</p>
+</li>
+<li>
+<p>
+
+
+  <a href="/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug">Configuring lighttpd TLS and ACME</a>
+</p>
+</li>
+</ul>
+<h2 id="files-and-tools-needed">Files and Tools Needed<a hidden class="anchor" aria-hidden="true" href="#files-and-tools-needed">#</a></h2>
+<p>The NAND contains three partitions:</p>
+<ul>
+<li>MTD0 – <strong>u-boot</strong>, think of it as the <strong>grub</strong> of embedded systems</li>
+<li>MTD1 – <strong>uImage</strong>, the kernel</li>
+<li>MTD2 – <strong>rootfs</strong>, the filesystem</li>
+</ul>
+<p><strong>u-boot</strong>, processes the kernel, which then boots the filesystem (and boots).</p>
+<h3 id="tftp-server">TFTP server<a hidden class="anchor" aria-hidden="true" href="#tftp-server">#</a></h3>
+<p>A TFTP server is a <em>lot</em> easier that messing about with files on a USB.</p>
+<p>To install a 
+
+<a href="https://help.ubuntu.com/community/TFTP" target="_blank" rel="nofollow noopener noreferrer">TFTP server</a>
+ run the following in a Terminal:</p>
+<p><code>sudo apt install tftpd-hpa</code></p>
+<p>Then, check that it is running:</p>
+<p><code>sudo systemctl status tftpd-hpa</code></p>
+<p>Then, take ownership of the TFTP server directory:</p>
+<p><code>sudo chown -R $USER /srv/tftp</code></p>
+<p>Any files now placed in this directory will be available to pull onto the ‘Plug.</p>
+<h3 id="the-u-boot-files">The <strong>u-boot</strong> files<a hidden class="anchor" aria-hidden="true" href="#the-u-boot-files">#</a></h3>
+<blockquote>
+<p><strong>Das U-Boot</strong> (subtitled “the Universal Boot Loader” and often shortened to <strong>U-Boot</strong>; see <em>
+
+<a href="https://en.wikipedia.org/wiki/Das_U-Boot#History" target="_blank" rel="nofollow noopener noreferrer">History</a>
+</em> for more about the name) is an 
+
+<a href="https://en.wikipedia.org/wiki/Open-source_software" target="_blank" rel="nofollow noopener noreferrer">open-source</a>
+ 
+
+<a href="https://en.wikipedia.org/wiki/Bootloader" target="_blank" rel="nofollow noopener noreferrer">boot loader</a>
+ used in 
+
+<a href="https://en.wikipedia.org/wiki/Embedded_system" target="_blank" rel="nofollow noopener noreferrer">embedded devices</a>
+ to perform various low-level hardware initialization tasks and boot the device’s operating system kernel.</p>
+<p>
+
+<a href="https://en.wikipedia.org/wiki/Das_U-Boot" target="_blank" rel="nofollow noopener noreferrer">https://en.wikipedia.org/wiki/Das_U-Boot</a>
+</p></blockquote>
+<p>This process assumes that the new u-boot files are on the TFTP server.</p>
+<p>The OpenWrt version is 
+
+<a href="https://downloads.openwrt.org/releases/24.10.2/targets/kirkwood/generic/u-boot-sheevaplug/u-boot.kwb" target="_blank" rel="nofollow noopener noreferrer">here</a>
+.</p>
+<p>(This is the one that I use.)</p>
+<p>The Bookworm version provided by Debian is 
+
+<a href="https://ftp.debian.org/debian/dists/bookworm/main/installer-armel/current/images/kirkwood/u-boot/sheevaplug/u-boot.kwb" target="_blank" rel="nofollow noopener noreferrer">here</a>
+.</p>
+<h2 id="steps">Steps<a hidden class="anchor" aria-hidden="true" href="#steps">#</a></h2>
+<p>Power on the ‘Plug.</p>
+<p>In a Terminal run the following:</p>
+<p><code>screen /dev/ttyUSB0 115200</code></p>
+<p>Interrupt the boot process to get to the ‘Plug command prompt.</p>
+<p>Then, type the following to set the TFTP environment variables:</p>
+<pre tabindex="0"><code>setenv serverip &lt;Host_IP&gt;
+setenv ipaddr &lt;SheevaPlug_IP&gt;
+</code></pre><p>Set the MAC address:</p>
+<pre tabindex="0"><code>setenv ethaddr &lt;SheevaPlug_MAC&gt;
+setenv macaddr &lt;SheevaPlug_MAC&gt;
+</code></pre><p>Now:</p>
+<pre tabindex="0"><code>saveenv
+</code></pre><p><strong>saveenv</strong> stores the variables so they will not need setting again.</p>
+<p>Boot from the updated u-boot on the TFTP server:</p>
+<pre tabindex="0"><code>tftpboot 0x0800000 u-boot.kwb
+</code></pre><p>Then:</p>
+<pre tabindex="0"><code>nand erase 0x0 0x80000
+nand write 0x0800000 0x0 0x80000
+</code></pre><p>This erases a the portion of NAND reserved for u-boot and writes the new version.</p>
+<p>Now restart the &lsquo;Plug:</p>
+<pre tabindex="0"><code>reset
+</code></pre><p>The ‘Plug will now reboot with an updated u-boot.</p>
+<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<p>Now that the &lsquo;Plug is booting and has an up to date u-boot, it&rsquo;s time to install an OS.</p>
+<p>I&rsquo;ve documented two (2) routes:</p>
+<ul>
+<li>
+<p>Installing 
+
+
+  <a href="/posts/installing-openwrt-on-a-sheevaplug-nand">OpenWrt on NAND</a>
+</p>
+</li>
+<li>
+<p>Installing 
+
+
+  <a href="/posts/installing-debian-bookworm-on-a-sheevaplug-mmc">Debian Bookworm on MMC</a>
+</p>
+</li>
+</ul>
+<h2 id="notes-stuff-i-found-out-later">Notes (stuff I found out later)<a hidden class="anchor" aria-hidden="true" href="#notes-stuff-i-found-out-later">#</a></h2>
+<p><strong>To reset the envvars:</strong></p>
+<p><code>env default -a</code></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/hardware/">Hardware</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/sheevaplug/">SheevaPlug</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/installing-openwrt-on-a-sheevaplug-nand/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Installing OpenWrt on a SheevaPlug NAND</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/unbricking-a-sheevaplug/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Unbricking a SheevaPlug</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

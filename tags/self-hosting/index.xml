@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Self Hosting on Boffins Blog</title>
+    <link>https://boffinsblog.github.io/tags/self-hosting/</link>
+    <description>Recent content in Self Hosting on Boffins Blog</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 19 Oct 2025 19:14:16 +0100</lastBuildDate>
+    <atom:link href="https://boffinsblog.github.io/tags/self-hosting/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Configuring lighttpd TLS and ACME on a SheevaPlug</title>
+      <link>https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/</link>
+      <pubDate>Sun, 19 Oct 2025 19:14:16 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/</guid>
+      <description>Configuring lighttpd on a SheevaPlug.</description>
+    </item>
+    <item>
+      <title>Installing lighttpd on a SheevaPlug Running OpenWrt</title>
+      <link>https://boffinsblog.github.io/posts/installing-lighttpd-on-a-sheevaplug-running-openwrt/</link>
+      <pubDate>Sun, 12 Oct 2025 16:51:18 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-lighttpd-on-a-sheevaplug-running-openwrt/</guid>
+      <description>Installing lighttpd on a SheevaPlug Running OpenWrt.</description>
+    </item>
+    <item>
+      <title>Digital Rubble</title>
+      <link>https://boffinsblog.github.io/posts/digital-rubble/</link>
+      <pubDate>Wed, 08 Oct 2025 09:46:18 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/digital-rubble/</guid>
+      <description>Becoming Acquainted with_the Interwebs Again.</description>
+    </item>
+    <item>
+      <title>Upgrading Debian Bookworm to Trixie on a SheevaPlug MMC</title>
+      <link>https://boffinsblog.github.io/posts/upgrading-debian-bookworm-to-trixie-on-a-sheevaplug-mmc/</link>
+      <pubDate>Thu, 25 Sep 2025 07:40:58 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/upgrading-debian-bookworm-to-trixie-on-a-sheevaplug-mmc/</guid>
+      <description>Upgrading Debian Bookworm to Trixie on a SheevaPlug MMC.</description>
+    </item>
+    <item>
+      <title>Installing Debian Bookworm on a SheevaPlug MMC</title>
+      <link>https://boffinsblog.github.io/posts/installing-debian-bookworm-on-a-sheevaplug-mmc/</link>
+      <pubDate>Thu, 18 Sep 2025 09:50:42 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-debian-bookworm-on-a-sheevaplug-mmc/</guid>
+      <description>Installing Debian Bookworm on a SheevaPlug MMC.</description>
+    </item>
+    <item>
+      <title>Configuring OpenWrt on a SheevaPlug</title>
+      <link>https://boffinsblog.github.io/posts/configuring-openwrt-on-a-sheevaplug/</link>
+      <pubDate>Fri, 29 Aug 2025 15:18:52 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/configuring-openwrt-on-a-sheevaplug/</guid>
+      <description>Configuring OpenWrt on a SheevaPlug.</description>
+    </item>
+    <item>
+      <title>Installing OpenWrt on a SheevaPlug NAND</title>
+      <link>https://boffinsblog.github.io/posts/installing-openwrt-on-a-sheevaplug-nand/</link>
+      <pubDate>Sat, 16 Aug 2025 07:40:58 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-openwrt-on-a-sheevaplug-nand/</guid>
+      <description>Installing OpenWrt on a SheevaPlug NAND.</description>
+    </item>
+    <item>
+      <title>Installing Das U-Boot on a SheevaPlug NAND</title>
+      <link>https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/</link>
+      <pubDate>Mon, 21 Jul 2025 07:40:58 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-das-u-boot-on-a-sheevaplug-nand/</guid>
+      <description>Installing Das U-Boot on a SheevaPlug NAND.</description>
+    </item>
+    <item>
+      <title>Unbricking a SheevaPlug</title>
+      <link>https://boffinsblog.github.io/posts/unbricking-a-sheevaplug/</link>
+      <pubDate>Fri, 11 Jul 2025 12:28:47 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/unbricking-a-sheevaplug/</guid>
+      <description>Unbricking a SheevaPlug.</description>
+    </item>
+    <item>
+      <title>Techno Luddites</title>
+      <link>https://boffinsblog.github.io/posts/techno-luddites/</link>
+      <pubDate>Sat, 26 Apr 2025 22:12:14 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/techno-luddites/</guid>
+      <description>Becoming less dependant on tech or at least using it humanly and a few predictions.</description>
+    </item>
+    <item>
+      <title>Reducing My Digital Footprint</title>
+      <link>https://boffinsblog.github.io/posts/reducing-my-digital-footprint/</link>
+      <pubDate>Sat, 15 Mar 2025 15:27:32 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/reducing-my-digital-footprint/</guid>
+      <description>Treading more lightly (digitally).</description>
+    </item>
+    <item>
+      <title>Prometheus Scraper</title>
+      <link>https://boffinsblog.github.io/posts/prometheus-scraper/</link>
+      <pubDate>Tue, 11 Feb 2025 17:23:14 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/prometheus-scraper/</guid>
+      <description>Moar data, Grafana needs feeding.</description>
+    </item>
+    <item>
+      <title>Moving to GoToSocial</title>
+      <link>https://boffinsblog.github.io/posts/moving-to-gotosocial/</link>
+      <pubDate>Thu, 02 Jan 2025 19:21:23 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/moving-to-gotosocial/</guid>
+      <description>Because I like fixing things until they break, I decided to move my Socials to a different Fediverse software.</description>
+    </item>
+    <item>
+      <title>The Travelling Packet</title>
+      <link>https://boffinsblog.github.io/posts/the-travelling-packet/</link>
+      <pubDate>Sun, 01 Dec 2024 11:09:39 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/the-travelling-packet/</guid>
+      <description>A very high level description of how information flows from a web server to a browser.</description>
+    </item>
+    <item>
+      <title>Moving to Hugo from WordPress</title>
+      <link>https://boffinsblog.github.io/posts/moving-to-hugo-from-wordpress/</link>
+      <pubDate>Thu, 21 Nov 2024 10:06:59 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/moving-to-hugo-from-wordpress/</guid>
+      <description>Why I spent an inordinate amount of time moving to the Hugo &amp;lsquo;Static Site Generator&amp;rsquo;.</description>
+    </item>
+    <item>
+      <title>Self-Hosting FreshRSS</title>
+      <link>https://boffinsblog.github.io/posts/self-hosting-freshrss/</link>
+      <pubDate>Tue, 01 Oct 2024 10:06:59 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/self-hosting-freshrss/</guid>
+      <description>Self-Hosting FreshRSS is kind of pointless as a single user but I&amp;rsquo;m going to do it anyway. Just one more self-hosted app then I&amp;rsquo;ll stop.</description>
+    </item>
+    <item>
+      <title>Navidrome Streaming</title>
+      <link>https://boffinsblog.github.io/posts/navidrome-streaming/</link>
+      <pubDate>Sun, 01 Sep 2024 07:02:14 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/navidrome-streaming/</guid>
+      <description>Navidrome is a Server and Streamer compatible with Subsonic/Airsonic Clients.</description>
+    </item>
+    <item>
+      <title>Iceshrimp.NET Grafana Dashboard</title>
+      <link>https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/</link>
+      <pubDate>Fri, 30 Aug 2024 08:19:14 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/</guid>
+      <description>Building an Iceshrimp.NET Grafana dashboard. Install Grafana, connect to the iceshrimp.NET database, build a metrics dashboard.</description>
+    </item>
+    <item>
+      <title>Iceshrimp.NET RSS Bot</title>
+      <link>https://boffinsblog.github.io/posts/iceshrimp-net-rss-bot/</link>
+      <pubDate>Tue, 16 Jul 2024 07:34:36 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/iceshrimp-net-rss-bot/</guid>
+      <description>Turn an RSS feed into an Iceshrimp note. Send either the latest RSS entry or a stream of Iceshrimp posts.</description>
+    </item>
+    <item>
+      <title>Jellyfin App on a Tizen TV</title>
+      <link>https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/</link>
+      <pubDate>Wed, 12 Jun 2024 19:58:39 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/jellyfin-app-on-a-tizen-tv/</guid>
+      <description>Jellyfin has a supported app, however it hasn’t made it into the Samsung store. This is about how to install the Jellyfin app on a Tizen TV.</description>
+    </item>
+    <item>
+      <title>OpenWrt with AdGuardHome and Unbound on a SheevaPlug</title>
+      <link>https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/</link>
+      <pubDate>Sat, 18 May 2024 17:36:40 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/</guid>
+      <description>Take some OpenWrt with a dash of AdGuardHome, add a splash of Unbound and install it all on a SheevaPlug; will it be a recipe for disaster?</description>
+    </item>
+    <item>
+      <title>Installing Iceshrimp.NET</title>
+      <link>https://boffinsblog.github.io/posts/installing-iceshrimp-net/</link>
+      <pubDate>Sun, 28 Apr 2024 13:17:30 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-iceshrimp-net/</guid>
+      <description>How I moved from IceshrimpJS to Iceshrimp.NET, a guide to migrating the database and installing.</description>
+    </item>
+    <item>
+      <title>Fuck Techbros</title>
+      <link>https://boffinsblog.github.io/posts/fuck-techbros/</link>
+      <pubDate>Wed, 20 Mar 2024 14:33:58 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/fuck-techbros/</guid>
+      <description>Redirect their web scraping, either to a friendly URL or a not-so-friendly one. Now with a how-to on null bombs and tarpits.</description>
+    </item>
+    <item>
+      <title>Updating the Iceshrimp Blocklist</title>
+      <link>https://boffinsblog.github.io/posts/updating-the-iceshrimp-blocklist/</link>
+      <pubDate>Sun, 14 Jan 2024 08:48:04 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/updating-the-iceshrimp-blocklist/</guid>
+      <description>Right now updating the blocklists is a manual process, this is a way of updating the Iceshrimp blocklist automatically using Python and cron.</description>
+    </item>
+    <item>
+      <title>Installing Gitea</title>
+      <link>https://boffinsblog.github.io/posts/installing-gitea/</link>
+      <pubDate>Fri, 10 Nov 2023 10:53:17 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-gitea/</guid>
+      <description>Everything from downloading to securing your installation. Now with bash scripts to upload and update Gitea repositories.</description>
+    </item>
+    <item>
+      <title>Pi-hole with Unbound and PiVPN</title>
+      <link>https://boffinsblog.github.io/posts/pi-hole-with-unbound-and-pivpn/</link>
+      <pubDate>Sat, 07 Oct 2023 17:48:02 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/pi-hole-with-unbound-and-pivpn/</guid>
+      <description>Install Pi-hole as a DNS sinkhole to block ads and trackers, Unbound as a recursive DNS resolver and PiVPN.</description>
+    </item>
+    <item>
+      <title>Iceshrimp Backup and Restore</title>
+      <link>https://boffinsblog.github.io/posts/iceshrimp-backup-and-restore/</link>
+      <pubDate>Wed, 13 Sep 2023 08:10:21 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/iceshrimp-backup-and-restore/</guid>
+      <description>Scripts and cron jobs to backup and restore the Iceshrimp database and Iceshrimp files.</description>
+    </item>
+    <item>
+      <title>Installing Iceshrimp</title>
+      <link>https://boffinsblog.github.io/posts/installing-iceshrimp/</link>
+      <pubDate>Fri, 25 Aug 2023 08:10:29 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-iceshrimp/</guid>
+      <description>How I installed and finally settled on Iceshrimp as my Fediverse software of choice, a full bare-metal guide.</description>
+    </item>
+    <item>
+      <title>Firefish Backup and Restore</title>
+      <link>https://boffinsblog.github.io/posts/firefish-backup-and-restore/</link>
+      <pubDate>Sat, 22 Jul 2023 15:03:57 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/firefish-backup-and-restore/</guid>
+      <description>Scripts and cron jobs to backup and restore the PostgreSQL database and Firefish files.</description>
+    </item>
+    <item>
+      <title>Calckey Fediverse Server</title>
+      <link>https://boffinsblog.github.io/posts/calckey-fediverse-server/</link>
+      <pubDate>Mon, 19 Jun 2023 14:37:48 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/calckey-fediverse-server/</guid>
+      <description>Scripts and cron jobs to backup and restore the PostgreSQL database and Calckey files.</description>
+    </item>
+    <item>
+      <title>Apache Traffic Analysis Using GoAccess</title>
+      <link>https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/</link>
+      <pubDate>Thu, 02 Feb 2023 13:53:08 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/</guid>
+      <description>A guide on how to implement real-time visitor traffic analysis on an Apache web server using GoAccess.</description>
+    </item>
+  </channel>
+</rss>

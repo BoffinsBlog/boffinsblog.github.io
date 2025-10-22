@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Mastodon / IFTTT Bot | Boffins Blog</title>
+<meta name="keywords" content="Fediverse, Google AIY, Linux, Raspberry Pi">
+<meta name="description" content="Twitter bots were fun while they lasted but Mastodon bots can be informative and fun too.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/mastodon-ifttt-bot/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/mastodon-ifttt-bot/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/mastodon-ifttt-bot/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Mastodon / IFTTT Bot">
+  <meta property="og:description" content="Twitter bots were fun while they lasted but Mastodon bots can be informative and fun too.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-05-13T11:03:24+01:00">
+    <meta property="article:modified_time" content="2023-05-13T11:03:24+01:00">
+    <meta property="article:tag" content="Fediverse">
+    <meta property="article:tag" content="Google AIY">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/mastodon-ifttt-bot/03_IFTTT_Add_Webhook.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/mastodon-ifttt-bot/03_IFTTT_Add_Webhook.webp">
+<meta name="twitter:title" content="Mastodon / IFTTT Bot">
+<meta name="twitter:description" content="Twitter bots were fun while they lasted but Mastodon bots can be informative and fun too.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Mastodon / IFTTT Bot",
+      "item": "https://boffinsblog.github.io/posts/mastodon-ifttt-bot/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Mastodon / IFTTT Bot",
+  "name": "Mastodon \/ IFTTT Bot",
+  "description": "Twitter bots were fun while they lasted but Mastodon bots can be informative and fun too.",
+  "keywords": [
+    "Fediverse", "Google AIY", "Linux", "Raspberry Pi"
+  ],
+  "articleBody": "If using Mastodon Then use bot. How to create a bot to send alerts from IFTTT to Mastodon.\nBack when Twitter was fun I coded a handful of bots.\nNothing massively complicated.\nLots of If / Then / Else loops that were designed to start a conversation and elicit a response.\nLets just say they got a reaction.\nI wasn’t really too interested on repeating the process on Mastodon and anyway the Fediverse audience is wildly different to the Twitter one.\nBut I was still interested in automation and wondered what else could be done.\nMy homemade Googlebot was already controlling my Hue lights via IFTTT and I was pretty sure that IFTTT could talk to Mastodon.\nThe Mastodon API bit First things first, we need to authorise IFTTT to be able to write to the Mastodon account.\nFollowing the path ‘Edit profile | Development | New application’ will get you to the screen where you can create an application to interact with Mastodon.\nThere are a host of available API options but for this purpose, IFTTT just needs to able to ‘write’ to Mastodon i.e. send a ‘Status’ message.\nPress ‘Submit’ to create the new application.\nMastodon API Screen\nNow when you go into the newly created application the authorisation keys will be visible.\nThe ‘access token’ is the important bit here and the string we will need to paste into the IFTTT interface to authorise interaction with Mastodon.\nMastodon Add Application Screen\nThe IFTTT bit Once we have authorised an application to be able to write to Mastodon we need to have a step in the IFTTT flow that is a ‘write to Mastodon’ step.\nI had previously gone through a process to set up the Hue lights.\nI needed to add a further step that was ‘send some text to Mastodon’.\nIFTTT Add Webhook Screen\nThis extra step is a ‘webhook’.\nIFTTT Add Action Screen\nURL However, the mastodon end point (URL) will depend on the server you are writing to.\nI am was writing to botsin.space and my end point is was:\nbotsin.space/api/v1/statuses Closed\nMethod Next, we are sending a ‘POST’ request as we are trying to ‘write’ or POST to Mastodon.\nContent Type We are sending the form using the POST method.\napplication/x-www-form-urlencoded Additional Headers It is the form headers that contain the Mastodon authorisation.\nNote: Make sure that the access token has the words ‘Authorization: Bearer ‘ before it, and only one (1) space between the words and the token string.\nAuthorization: Bearer Body Lastly, the form body contains the content of what we are wanting to POST preceded by ‘status=’.\nstatus=Somebody turned the kitchen lights on Finally, to create the webhook, click ‘Update action’.\nFinally A bot that sends whatever text was in the IFTTT ‘status=’ step to the Mastodon account using the Mastodon API.\nHowever, if you would like to see the real world bot in action it can could be found at botsin.space (no longer alive).\nMastodon Bot Results\nAnd that is how you create a Mastodon IFTTT bot.\nThis one is straightforward and I’ll look at more complex interactions at a later date.\n",
+  "wordCount" : "526",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/mastodon-ifttt-bot/03_IFTTT_Add_Webhook.webp","datePublished": "2023-05-13T11:03:24+01:00",
+  "dateModified": "2023-05-13T11:03:24+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/mastodon-ifttt-bot/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Mastodon / IFTTT Bot
+    </h1>
+    <div class="post-meta"><span title='2023-05-13 11:03:24 +0100 BST'>May 13, 2023</span>&nbsp;·&nbsp;<span>3 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#if-using-mastodon-then-use-bot" aria-label="If using Mastodon Then use bot.">If using Mastodon Then use bot.</a></li>
+                <li>
+                    <a href="#the-mastodon-api-bit" aria-label="The Mastodon API bit">The Mastodon API bit</a></li>
+                <li>
+                    <a href="#the-ifttt-bit" aria-label="The IFTTT bit">The IFTTT bit</a><ul>
+                        
+                <li>
+                    <a href="#url" aria-label="URL">URL</a></li>
+                <li>
+                    <a href="#method" aria-label="Method">Method</a></li>
+                <li>
+                    <a href="#content-type" aria-label="Content Type">Content Type</a></li>
+                <li>
+                    <a href="#additional-headers" aria-label="Additional Headers">Additional Headers</a></li>
+                <li>
+                    <a href="#body" aria-label="Body">Body</a></li></ul>
+                </li>
+                <li>
+                    <a href="#finally" aria-label="Finally">Finally</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="if-using-mastodon-then-use-bot">If using Mastodon Then use bot.<a hidden class="anchor" aria-hidden="true" href="#if-using-mastodon-then-use-bot">#</a></h2>
+<p>How to create a bot to send alerts from 
+
+<a href="https://ifttt.com/" target="_blank" rel="nofollow noopener noreferrer">IFTTT</a>
+ to Mastodon.</p>
+<p>Back when Twitter was fun I coded a handful of bots.</p>
+<p>Nothing massively complicated.</p>
+<p>Lots of <code>If / Then / Else</code> loops that were designed to start a conversation and elicit a response.</p>
+<p>Lets just say they got a reaction.</p>
+<p>I wasn’t really too interested on repeating the process on Mastodon and anyway the Fediverse audience is <em>wildly</em> different to the Twitter one.</p>
+<p>But I was still interested in automation and wondered what else could be done.</p>
+<p>My 
+
+
+  <a href="/posts/google-aiy-a-raspberrypi-and-a-scroll-phat/">homemade Googlebot</a>
+ was already controlling my Hue lights via IFTTT and I was pretty sure that IFTTT could talk to Mastodon.</p>
+<h2 id="the-mastodon-api-bit">The Mastodon API bit<a hidden class="anchor" aria-hidden="true" href="#the-mastodon-api-bit">#</a></h2>
+<p>First things first, we need to authorise IFTTT to be able to write to the Mastodon account.</p>
+<p>Following the path ‘Edit profile | Development | New application’ will get you to the screen where you can create an application to interact with Mastodon.</p>
+<p>There are a host of available API options but for this purpose, IFTTT just needs to able to ‘write’ to Mastodon i.e. send a ‘Status’ message.</p>
+<p>Press ‘Submit’ to create the new application.</p>
+<p><img alt="Screenshot showing the Mastodon API screen where a new application can be created. It shows an existing application called IFTTT with write permissions." loading="lazy" src="/posts/mastodon-ifttt-bot/01_Mastodon_API.webp#center" title="Screenshot showing the Mastodon API screen where a new application can be created. It shows an existing application called IFTTT with write permissions.">
+<em>Mastodon API Screen</em></p>
+<p>Now when you go into the newly created application the authorisation keys will be visible.</p>
+<p>The ‘access token’ is the important bit here and the string we will need to paste into the IFTTT interface to authorise interaction with Mastodon.</p>
+<p><img alt="Screenshot showing the Mastodon API screen. It shows where the details of the &lsquo;Access Token&rsquo; are generated. It is this token that will be needed for IFTTT to talk to Mastodon." loading="lazy" src="/posts/mastodon-ifttt-bot/02_Mastodon_Add_Application.webp#center" title="Screenshot showing the Mastodon API screen. It shows where the details of the &#39;Access Token&#39; are generated. It is this token that will be needed for IFTTT to talk to Mastodon.">
+<em>Mastodon Add Application Screen</em></p>
+<h2 id="the-ifttt-bit">The IFTTT bit<a hidden class="anchor" aria-hidden="true" href="#the-ifttt-bit">#</a></h2>
+<p>Once we have authorised an application to be able to write to Mastodon we need to have a step in the IFTTT flow that is a ‘write to Mastodon’ step.</p>
+<p>I had previously gone through a process to set up the Hue lights.</p>
+<p>I needed to add a further step that was ‘send some text to Mastodon’.</p>
+<p><img alt="The &lsquo;webhooks&rsquo; or &lsquo;web requests&rsquo; screen. This is where IFTTT talks to Mastodon and where the previously generated &lsquo;Access Token&rsquo; will be pasted." loading="lazy" src="/posts/mastodon-ifttt-bot/03_IFTTT_Add_Webhook.webp#center" title="The &#39;webhooks&#39; or &#39;web requests&#39; screen. This is where IFTTT talks to Mastodon and where the previously generated &#39;Access Token&#39; will be pasted.">
+<em>IFTTT Add Webhook Screen</em></p>
+<p>This extra step is a ‘webhook’.</p>
+<p><img alt="The &lsquo;webhooks&rsquo; screen in detail. Here the &lsquo;Access Token&rsquo; is pasted in and further details of how to communicate with Mastodon are entered, e.g. what text to send as a &lsquo;Status&rsquo; update." loading="lazy" src="/posts/mastodon-ifttt-bot/04_IFTTT_Add_Action.webp#center" title="The &#39;webhooks&#39; screen in detail. Here the &#39;Access Token&#39; is pasted in and further details of how to communicate with Mastodon are entered, e.g. what text to send as a &#39;Status&#39; update.">
+<em>IFTTT Add Action Screen</em></p>
+<h3 id="url">URL<a hidden class="anchor" aria-hidden="true" href="#url">#</a></h3>
+<p>However, the mastodon end point (URL) will depend on the server you are writing to.</p>
+<p>I <del>am</del> <em>was</em> writing to botsin.space and my end point <del>is</del> <em>was</em>:</p>
+<p><del>botsin.space/api/v1/statuses</del> Closed</p>
+<h3 id="method">Method<a hidden class="anchor" aria-hidden="true" href="#method">#</a></h3>
+<p>Next, we are sending a ‘POST’ request as we are trying to ‘write’ or POST to Mastodon.</p>
+<h3 id="content-type">Content Type<a hidden class="anchor" aria-hidden="true" href="#content-type">#</a></h3>
+<p>We are sending the form using the POST method.</p>
+<pre tabindex="0"><code>application/x-www-form-urlencoded
+</code></pre><h3 id="additional-headers">Additional Headers<a hidden class="anchor" aria-hidden="true" href="#additional-headers">#</a></h3>
+<p>It is the form headers that contain the Mastodon authorisation.</p>
+<p><strong>Note: Make sure that the access token has the words ‘Authorization: Bearer ‘ before it, and only one (1) space between the words and the token string</strong>.</p>
+<pre tabindex="0"><code>Authorization: Bearer &lt;Your access token&gt;
+</code></pre><h3 id="body">Body<a hidden class="anchor" aria-hidden="true" href="#body">#</a></h3>
+<p>Lastly, the form body contains the content of what we are wanting to POST preceded by ‘status=’.</p>
+<pre tabindex="0"><code>status=Somebody turned the kitchen lights on
+</code></pre><p>Finally, to create the webhook, click ‘Update action’.</p>
+<h2 id="finally">Finally<a hidden class="anchor" aria-hidden="true" href="#finally">#</a></h2>
+<p>A bot that sends whatever text was in the IFTTT ‘status=’ step to the Mastodon account using the Mastodon API.</p>
+<p>However, if you would like to see the real world bot in action it <del>can</del> could be found at botsin.space (no longer alive).</p>
+<p><img alt="The finished and completed bot showing the updated status, based on the trigger of the HUE lights being turned off." loading="lazy" src="/posts/mastodon-ifttt-bot/05_Mastodon_Bot_Results.webp#center" title="The finished and completed bot showing the updated status, based on the trigger of the HUE lights being turned off.">
+<em>Mastodon Bot Results</em></p>
+<p>And that is how you create a Mastodon IFTTT bot.</p>
+<p>This one is straightforward and I’ll look at more complex interactions at a later date.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/fediverse/">Fediverse</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/google-aiy/">Google AIY</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/calckey-fediverse-server/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Calckey Fediverse Server</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Delete Your Mastodon Favourites</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

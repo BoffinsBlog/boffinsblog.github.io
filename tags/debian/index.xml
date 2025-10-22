@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Debian on Boffins Blog</title>
+    <link>https://boffinsblog.github.io/tags/debian/</link>
+    <description>Recent content in Debian on Boffins Blog</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 25 Sep 2025 07:40:58 +0100</lastBuildDate>
+    <atom:link href="https://boffinsblog.github.io/tags/debian/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Upgrading Debian Bookworm to Trixie on a SheevaPlug MMC</title>
+      <link>https://boffinsblog.github.io/posts/upgrading-debian-bookworm-to-trixie-on-a-sheevaplug-mmc/</link>
+      <pubDate>Thu, 25 Sep 2025 07:40:58 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/upgrading-debian-bookworm-to-trixie-on-a-sheevaplug-mmc/</guid>
+      <description>Upgrading Debian Bookworm to Trixie on a SheevaPlug MMC.</description>
+    </item>
+    <item>
+      <title>Installing Debian Bookworm on a SheevaPlug MMC</title>
+      <link>https://boffinsblog.github.io/posts/installing-debian-bookworm-on-a-sheevaplug-mmc/</link>
+      <pubDate>Thu, 18 Sep 2025 09:50:42 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-debian-bookworm-on-a-sheevaplug-mmc/</guid>
+      <description>Installing Debian Bookworm on a SheevaPlug MMC.</description>
+    </item>
+    <item>
+      <title>How to Unbrick a SheevaPlug</title>
+      <link>https://boffinsblog.github.io/posts/how-to-unbrick-a-sheevaplug/</link>
+      <pubDate>Mon, 18 Dec 2023 12:46:16 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/how-to-unbrick-a-sheevaplug/</guid>
+      <description>You may think your &amp;lsquo;Plug is dead, but if you can plug it into a computer you can resurrect it.</description>
+    </item>
+    <item>
+      <title>Delete Your Mastodon Favourites</title>
+      <link>https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/</link>
+      <pubDate>Sun, 16 Apr 2023 16:53:29 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/</guid>
+      <description>Removing old posts is a trivial matter now that Mastodon allows for automated post deletions, removing old favourites is not so straighforward.</description>
+    </item>
+    <item>
+      <title>Apache Traffic Analysis Using GoAccess</title>
+      <link>https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/</link>
+      <pubDate>Thu, 02 Feb 2023 13:53:08 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/apache-traffic-analysis-using-goaccess/</guid>
+      <description>A guide on how to implement real-time visitor traffic analysis on an Apache web server using GoAccess.</description>
+    </item>
+    <item>
+      <title>Upgrading Debian on a Gemini PDA</title>
+      <link>https://boffinsblog.github.io/posts/upgrading-debian-on-a-gemini-pda/</link>
+      <pubDate>Mon, 23 Jan 2023 13:25:26 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/upgrading-debian-on-a-gemini-pda/</guid>
+      <description>There is an upgrade path to Debian 10 but an &amp;lsquo;apt-get upgrade&amp;rsquo; will fail. This bash script will help.</description>
+    </item>
+    <item>
+      <title>GoogleAIY a RaspberryPi and a Scroll pHAT</title>
+      <link>https://boffinsblog.github.io/posts/google-aiy-a-raspberrypi-and-a-scroll-phat/</link>
+      <pubDate>Wed, 25 Apr 2018 14:32:42 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/google-aiy-a-raspberrypi-and-a-scroll-phat/</guid>
+      <description>I got my RaspberryPi powered GoogleAIY box to talk nicely to both Google and a Scroll pHAT.</description>
+    </item>
+  </channel>
+</rss>

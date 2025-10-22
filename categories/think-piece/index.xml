@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Think Piece on Boffins Blog</title>
+    <link>https://boffinsblog.github.io/categories/think-piece/</link>
+    <description>Recent content in Think Piece on Boffins Blog</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 08 Oct 2025 09:46:18 +0100</lastBuildDate>
+    <atom:link href="https://boffinsblog.github.io/categories/think-piece/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Digital Rubble</title>
+      <link>https://boffinsblog.github.io/posts/digital-rubble/</link>
+      <pubDate>Wed, 08 Oct 2025 09:46:18 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/digital-rubble/</guid>
+      <description>Becoming Acquainted with_the Interwebs Again.</description>
+    </item>
+    <item>
+      <title>Techno Luddites</title>
+      <link>https://boffinsblog.github.io/posts/techno-luddites/</link>
+      <pubDate>Sat, 26 Apr 2025 22:12:14 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/techno-luddites/</guid>
+      <description>Becoming less dependant on tech or at least using it humanly and a few predictions.</description>
+    </item>
+    <item>
+      <title>Reducing My Digital Footprint</title>
+      <link>https://boffinsblog.github.io/posts/reducing-my-digital-footprint/</link>
+      <pubDate>Sat, 15 Mar 2025 15:27:32 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/reducing-my-digital-footprint/</guid>
+      <description>Treading more lightly (digitally).</description>
+    </item>
+    <item>
+      <title>Fuck Techbros</title>
+      <link>https://boffinsblog.github.io/posts/fuck-techbros/</link>
+      <pubDate>Wed, 20 Mar 2024 14:33:58 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/fuck-techbros/</guid>
+      <description>Redirect their web scraping, either to a friendly URL or a not-so-friendly one. Now with a how-to on null bombs and tarpits.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Iceshrimp.NET Grafana Dashboard | Boffins Blog</title>
+<meta name="keywords" content="Fediverse, Linux, Raspberry Pi, Self Hosting, Software, Web-Servers">
+<meta name="description" content="Building an Iceshrimp.NET Grafana dashboard. Install Grafana, connect to the iceshrimp.NET database, build a metrics dashboard.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Iceshrimp.NET Grafana Dashboard">
+  <meta property="og:description" content="Building an Iceshrimp.NET Grafana dashboard. Install Grafana, connect to the iceshrimp.NET database, build a metrics dashboard.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-08-30T08:19:14+01:00">
+    <meta property="article:modified_time" content="2024-08-30T08:19:14+01:00">
+    <meta property="article:tag" content="Fediverse">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="Software">
+    <meta property="article:tag" content="Web-Servers">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/01_Iceshrimp_NET_Grafana_Dashboard_Screenshot.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/01_Iceshrimp_NET_Grafana_Dashboard_Screenshot.webp">
+<meta name="twitter:title" content="Iceshrimp.NET Grafana Dashboard">
+<meta name="twitter:description" content="Building an Iceshrimp.NET Grafana dashboard. Install Grafana, connect to the iceshrimp.NET database, build a metrics dashboard.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Iceshrimp.NET Grafana Dashboard",
+      "item": "https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Iceshrimp.NET Grafana Dashboard",
+  "name": "Iceshrimp.NET Grafana Dashboard",
+  "description": "Building an Iceshrimp.NET Grafana dashboard. Install Grafana, connect to the iceshrimp.NET database, build a metrics dashboard.",
+  "keywords": [
+    "Fediverse", "Linux", "Raspberry Pi", "Self Hosting", "Software", "Web-Servers"
+  ],
+  "articleBody": "Metrics, metrics everywhere Building an Iceshrimp.NET Grafana dashboard.\nWhat is Grafana? Grafana open source software enables you to query, visualize, alert on, and explore your metrics, logs, and traces wherever they are stored.\nhttps://grafana.com/docs/grafana/latest/introduction Iceshrimp.NET Grafana Dashboard Installation Resources:\nhttps://grafana.com/ https://grafana.com/docs/grafana/latest/setup-grafana/installation/debian/ https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-grafana-on-ubuntu-22-04 Update Everything The following may be a bit of overkill but I run this command quite frequently:\nsudo apt update \u0026\u0026 sudo apt upgrade \u0026\u0026 sudo apt remove \u0026\u0026 sudo apt clean \u0026\u0026 sudo apt autoremove \u0026\u0026 sudo apt autoclean\nInstall part I sudo apt-get install -y apt-transport-https software-properties-common wget\nAdd Grafana APT repository and key wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg \u003e /dev/null\necho \"deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main\" | sudo tee -a /etc/apt/sources.list.d/grafana.list\nInstall part II sudo apt-get update\nsudo apt-get install grafana\nEnable Grafana Server sudo /bin/systemctl daemon-reload\nsudo /bin/systemctl enable grafana-server\nsudo systemctl start grafana-server\nsudo systemctl status grafana-server\nChange listening port Then, if iceshrimp.NET is using the default port, change the Grafana listening port.\nsudo systemctl stop grafana-server\nsudo nano /etc/grafana/grafana.ini\nChange:\n# The http port to use ;http_port = 3000 To:\n# The http port to use # ;http_port = 3000 http_port = 'port of your choice' Restart sudo systemctl restart grafana-server\nUpdate firewall sudo ufw allow 'port of your choice' comment \"Grafana traffic\"\nsudo ufw status verbose\nA slight installation detour Even though Grafana only READs from the database, I prefer to have a dedicated user per process.\nFirst, CREATE a PostgreSQL User with READ-ONLY access to the ‘iceshrimp‘ database:\nsudo -u postgres psql\nCREATE ROLE grafana_user WITH LOGIN PASSWORD 'super_long_password';\nThen, connect as that User:\n\\connect iceshrimp;\nGRANT CONNECT ON DATABASE \"iceshrimp\" TO grafana_user;\nGRANT USAGE ON SCHEMA public TO grafana_user;\nGRANT SELECT ON ALL TABLES IN SCHEMA public TO grafana_user;\nThen, alter the privileges the new User has:\nALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO grafana_user;\nCreate Account(s) Then, go to the Grafana homepage and create the first Account.\nRemember that by default this will be an Admin (i.e. will have elevated privileges).\nhttp://:port of your choice\nIceshrimp.NET Grafana Dashboard I am aware that Grafana can hook into all sorts of other stuff; this was a learning exercise for me and as such is limited to using the PostgreSQL database as a data source.\nCurrent Grafana Dashboard Links go to the SQL used to pull the data into the Grafana panel.\nMost of the time this was done with the ‘Builder’ tool but a couple of queries are handwritten.\n00. Instance Info: Just a Header really (i.e. the top of the page content) 01. Overview: Federated Instances Shows the total number of Federated instances (i.e. how many instances this installation is connected to)\nBlocked Instances Shows the total number of blocked instances (i.e. how many instances this installation is blocks)\nAccounts Shows the total number of Accounts; this includes the instance.actor (i.e. accounts have been created on this instance)\nNotes Shows the total number of Notes (i.e. how many Notes this installation has processed)\nBlocked Accounts Shows the total number of blocked Accounts that fall outside of blocked Instances (i.e. how many Accounts that have been individually blocked)\nMuted Accounts Total number of muted Accounts (i.e. how many Accounts that have been individually muted)\n02. Jobs: Job Queue by Status Current status of Notes (jobs) being processed (i.e. the current workload in respect of job processing) 03. Notes: Notes Processed by Instance Shows the total number of Notes processed by Instance (i.e. which Instance posted the most Notes)\nNotes Processed by Account and Instance Shows the total number of Notes processed by Account and Instance (i.e. which single Account posted the most Notes per Instance)\n04. Sessions: Active sessions by Account and App Shows the currently authorised (App) sessions by Account (i.e. which Account is currently active and using which App)\nActive sessions by Account and OAuth Token Shows the currently authorised (OAuth Token) sessions by Account (i.e. which Account is currently active and using which OAuth Token)\n05. Misc: Is Cat ? Yes, really (i.e. whether or not Accounts identify as a cat)\nNote Reactions A list of posted Reactions, ranked by usage (i.e. the most used emoji)\nSetup a Sub Domain for the Dashboard Resources:\nhttps://grafana.com/tutorials/run-grafana-behind-a-proxy First, set up a basic nginx grafana.conf to ensure domain resolution works:\nsudo nano /etc/nginx/sites-available/grafana.conf\nserver { listen 80; listen [::]:80; server_name grafana.example.net; location / { root /usr/share/nginx/html; index index.html index.htm; } } Then, enable the new site by linking:\nsudo ln -s /etc/nginx/sites-available/grafana.conf /etc/nginx/sites-enabled/\nThen, restart nginx:\nsudo nginx -t \u0026\u0026 sudo systemctl restart nginx\nSecondly, setup a basic non-SSL nginx conf file for Grafana:\nsudo nano /etc/nginx/sites-available/grafana.conf\nmap $http_upgrade $connection_upgrade { default upgrade; '' close; } upstream grafana { server localhost:3000; } server { server_name grafana.example.net; root /usr/share/nginx/html; index index.html index.htm; location / { proxy_set_header Host $host; proxy_pass http://grafana; } # Proxy Grafana Live WebSocket connections. location /api/live/ { proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection $connection_upgrade; proxy_set_header Host $host; proxy_pass http://grafana; } } Check and restart nginx:\nsudo nginx -t \u0026\u0026 sudo systemctl restart nginx\nThen, restart and check Grafana:\nsudo systemctl restart grafana-server\nsudo systemctl status grafana-server\nFinally, generate up a Grafana SSL certificate.\nsudo certbot\nThe result (i.e. successful) should look something like this:\nSuccessfully received certificate. Certificate is saved at: /etc/letsencrypt/live/viz.example.org/fullchain.pem Key is saved at: /etc/letsencrypt/live/viz.example.org/privkey.pem Check and restart nginx:\nsudo nginx -t \u0026\u0026 sudo systemctl restart nginx\nThen, restart and check Grafana:\nsudo systemctl restart grafana-server\nsudo systemctl status grafana-server\nThere are a slew of Grafana posts on Google about updating the grafani.ini to get SSL functioning properly.\nHowever I did none of those things and it seems to be functioning quite well.\nIceshrimp.NET Grafana Dashboard Screenshot\n",
+  "wordCount" : "953",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/01_Iceshrimp_NET_Grafana_Dashboard_Screenshot.webp","datePublished": "2024-08-30T08:19:14+01:00",
+  "dateModified": "2024-08-30T08:19:14+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/iceshrimp-net-grafana-dashboard/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Iceshrimp.NET Grafana Dashboard
+    </h1>
+    <div class="post-meta"><span title='2024-08-30 08:19:14 +0100 BST'>August 30, 2024</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#metrics-metrics-everywhere" aria-label="Metrics, metrics everywhere">Metrics, metrics everywhere</a></li>
+                <li>
+                    <a href="#what-is-grafana" aria-label="What is Grafana?">What is Grafana?</a></li>
+                <li>
+                    <a href="#iceshrimpnet-grafana-dashboard-installation" aria-label="Iceshrimp.NET Grafana Dashboard Installation">Iceshrimp.NET Grafana Dashboard Installation</a><ul>
+                        
+                <li>
+                    <a href="#update-everything" aria-label="Update Everything">Update Everything</a></li>
+                <li>
+                    <a href="#install-part-i" aria-label="Install part I">Install part I</a></li>
+                <li>
+                    <a href="#add-grafana-apt-repository-and-key" aria-label="Add Grafana APT repository and key">Add Grafana APT repository and key</a></li>
+                <li>
+                    <a href="#install-part-ii" aria-label="Install part II">Install part II</a></li>
+                <li>
+                    <a href="#enable-grafana-server" aria-label="Enable Grafana Server">Enable Grafana Server</a></li>
+                <li>
+                    <a href="#change-listening-port" aria-label="Change listening port">Change listening port</a></li>
+                <li>
+                    <a href="#restart" aria-label="Restart">Restart</a></li>
+                <li>
+                    <a href="#update-firewall" aria-label="Update firewall">Update firewall</a></li></ul>
+                </li>
+                <li>
+                    <a href="#a-slight-installation-detour" aria-label="A slight installation detour">A slight installation detour</a><ul>
+                        
+                <li>
+                    <a href="#create-accounts" aria-label="Create Account(s)">Create Account(s)</a></li></ul>
+                </li>
+                <li>
+                    <a href="#iceshrimpnet-grafana-dashboard" aria-label="Iceshrimp.NET Grafana Dashboard">Iceshrimp.NET Grafana Dashboard</a><ul>
+                        
+                <li>
+                    <a href="#current-grafana-dashboard" aria-label="Current Grafana Dashboard">Current Grafana Dashboard</a><ul>
+                        
+                <li>
+                    <a href="#00-instance-info" aria-label="00. Instance Info:">00. Instance Info:</a></li>
+                <li>
+                    <a href="#01-overview" aria-label="01. Overview:">01. Overview:</a></li>
+                <li>
+                    <a href="#02-jobs" aria-label="02. Jobs:">02. Jobs:</a></li>
+                <li>
+                    <a href="#03-notes" aria-label="03. Notes:">03. Notes:</a></li>
+                <li>
+                    <a href="#04-sessions" aria-label="04. Sessions:">04. Sessions:</a></li>
+                <li>
+                    <a href="#05-misc" aria-label="05. Misc:">05. Misc:</a></li></ul>
+                </li>
+                <li>
+                    <a href="#setup-a-sub-domain-for-the-dashboard" aria-label="Setup a Sub Domain for the Dashboard">Setup a Sub Domain for the Dashboard</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="metrics-metrics-everywhere">Metrics, metrics everywhere<a hidden class="anchor" aria-hidden="true" href="#metrics-metrics-everywhere">#</a></h2>
+<p>Building an 
+
+
+  <a href="/posts/installing-iceshrimp-net/">Iceshrimp.NET</a>
+ Grafana dashboard.</p>
+<h2 id="what-is-grafana">What is Grafana?<a hidden class="anchor" aria-hidden="true" href="#what-is-grafana">#</a></h2>
+<blockquote>
+<p>Grafana open source software enables you to query, visualize, alert on, and explore your metrics, logs, and traces wherever they are stored.</p>
+<p><em>
+
+<a href="https://grafana.com/docs/grafana/latest/introduction" target="_blank" rel="nofollow noopener noreferrer">https://grafana.com/docs/grafana/latest/introduction</a>
+</em></p></blockquote>
+<h2 id="iceshrimpnet-grafana-dashboard-installation">Iceshrimp.NET Grafana Dashboard Installation<a hidden class="anchor" aria-hidden="true" href="#iceshrimpnet-grafana-dashboard-installation">#</a></h2>
+<p>Resources:</p>
+<p>
+
+<a href="https://grafana.com/" target="_blank" rel="nofollow noopener noreferrer">https://grafana.com/</a>
+</p>
+<p>
+
+<a href="https://grafana.com/docs/grafana/latest/setup-grafana/installation/debian/" target="_blank" rel="nofollow noopener noreferrer">https://grafana.com/docs/grafana/latest/setup-grafana/installation/debian/</a>
+</p>
+<p>
+
+<a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-grafana-on-ubuntu-22-04" target="_blank" rel="nofollow noopener noreferrer">https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-grafana-on-ubuntu-22-04</a>
+</p>
+<h3 id="update-everything">Update Everything<a hidden class="anchor" aria-hidden="true" href="#update-everything">#</a></h3>
+<p>The following may be a bit of overkill but I run this command quite frequently:</p>
+<p><code>sudo apt update &amp;&amp; sudo apt upgrade &amp;&amp; sudo apt remove &amp;&amp; sudo apt clean &amp;&amp; sudo apt autoremove &amp;&amp; sudo apt autoclean</code></p>
+<h3 id="install-part-i">Install part I<a hidden class="anchor" aria-hidden="true" href="#install-part-i">#</a></h3>
+<p><code>sudo apt-get install -y apt-transport-https software-properties-common wget</code></p>
+<h3 id="add-grafana-apt-repository-and-key">Add Grafana APT repository and key<a hidden class="anchor" aria-hidden="true" href="#add-grafana-apt-repository-and-key">#</a></h3>
+<p><code>wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg &gt; /dev/null</code></p>
+<p><code>echo &quot;deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main&quot; | sudo tee -a /etc/apt/sources.list.d/grafana.list</code></p>
+<h3 id="install-part-ii">Install part II<a hidden class="anchor" aria-hidden="true" href="#install-part-ii">#</a></h3>
+<p><code>sudo apt-get update</code></p>
+<p><code>sudo apt-get install grafana</code></p>
+<h3 id="enable-grafana-server">Enable Grafana Server<a hidden class="anchor" aria-hidden="true" href="#enable-grafana-server">#</a></h3>
+<p><code>sudo /bin/systemctl daemon-reload</code></p>
+<p><code>sudo /bin/systemctl enable grafana-server</code></p>
+<p><code>sudo systemctl start grafana-server</code></p>
+<p><code>sudo systemctl status grafana-server</code></p>
+<h3 id="change-listening-port">Change listening port<a hidden class="anchor" aria-hidden="true" href="#change-listening-port">#</a></h3>
+<p>Then, if iceshrimp.NET is using the default port, change the Grafana listening port.</p>
+<p><code>sudo systemctl stop grafana-server</code></p>
+<p><code>sudo nano /etc/grafana/grafana.ini</code></p>
+<p>Change:</p>
+<pre tabindex="0"><code># The http port  to use
+;http_port = 3000
+</code></pre><p>To:</p>
+<pre tabindex="0"><code># The http port  to use
+# ;http_port = 3000
+http_port = &#39;port of your choice&#39;
+</code></pre><h3 id="restart">Restart<a hidden class="anchor" aria-hidden="true" href="#restart">#</a></h3>
+<p><code>sudo systemctl restart grafana-server</code></p>
+<h3 id="update-firewall">Update firewall<a hidden class="anchor" aria-hidden="true" href="#update-firewall">#</a></h3>
+<p><code>sudo ufw allow 'port of your choice' comment &quot;Grafana traffic&quot;</code></p>
+<p><code>sudo ufw status verbose</code></p>
+<h2 id="a-slight-installation-detour">A slight installation detour<a hidden class="anchor" aria-hidden="true" href="#a-slight-installation-detour">#</a></h2>
+<p>Even though Grafana only <strong>READ</strong>s from the database, I prefer to have a dedicated user per process.</p>
+<p>First, <strong>CREATE</strong> a PostgreSQL User with <strong>READ-ONLY</strong> access to the ‘<code>iceshrimp</code>‘ database:</p>
+<p><code>sudo -u postgres psql</code></p>
+<p><code>CREATE ROLE grafana_user WITH LOGIN PASSWORD 'super_long_password';</code></p>
+<p>Then, connect as that User:</p>
+<p><code>\connect iceshrimp;</code></p>
+<p><code>GRANT CONNECT ON DATABASE &quot;iceshrimp&quot; TO grafana_user;</code></p>
+<p><code>GRANT USAGE ON SCHEMA public TO grafana_user;</code></p>
+<p><code>GRANT SELECT ON ALL TABLES IN SCHEMA public TO grafana_user;</code></p>
+<p>Then, alter the privileges the new User has:</p>
+<p><code>ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO grafana_user;</code></p>
+<h3 id="create-accounts">Create Account(s)<a hidden class="anchor" aria-hidden="true" href="#create-accounts">#</a></h3>
+<p>Then, go to the Grafana homepage and create the first Account.</p>
+<p>Remember that by default this will be an Admin (i.e. will have elevated privileges).</p>
+<p><code>http://&lt;server-ip&gt;:port of your choice</code></p>
+<h2 id="iceshrimpnet-grafana-dashboard">Iceshrimp.NET Grafana Dashboard<a hidden class="anchor" aria-hidden="true" href="#iceshrimpnet-grafana-dashboard">#</a></h2>
+<p>I am aware that Grafana can hook into all sorts of other stuff; this was a learning exercise for me and as such is limited to using the PostgreSQL database as a data source.</p>
+<h3 id="current-grafana-dashboard">Current Grafana Dashboard<a hidden class="anchor" aria-hidden="true" href="#current-grafana-dashboard">#</a></h3>
+<p>Links go to the SQL used to pull the data into the Grafana panel.</p>
+<p>Most of the time this was done with the ‘Builder’ tool but a couple of queries are handwritten.</p>
+<h4 id="00-instance-info">00. Instance Info:<a hidden class="anchor" aria-hidden="true" href="#00-instance-info">#</a></h4>
+<ul>
+<li>Just a Header really (i.e. the top of the page content)</li>
+</ul>
+<h4 id="01-overview">01. Overview:<a hidden class="anchor" aria-hidden="true" href="#01-overview">#</a></h4>
+<ul>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_01a_overview_federated_instances.sql" target="_blank" rel="nofollow noopener noreferrer">Federated Instances</a>
+
+Shows the total number of Federated instances (i.e. how many instances this installation is connected to)</p>
+</li>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_01b_overview_blocked_instances.sql" target="_blank" rel="nofollow noopener noreferrer">Blocked Instances</a>
+
+Shows the total number of blocked instances (i.e. how many instances this installation is blocks)</p>
+</li>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_01c_overview_accounts.sql" target="_blank" rel="nofollow noopener noreferrer">Accounts</a>
+
+Shows the total number of Accounts; this includes the instance.actor (i.e. accounts have been created on this instance)</p>
+</li>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_01d_overview_notes.sql" target="_blank" rel="nofollow noopener noreferrer">Notes</a>
+
+Shows the total number of Notes (i.e. how many Notes this installation has processed)</p>
+</li>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_01e_overview_blocked_accounts.sql" target="_blank" rel="nofollow noopener noreferrer">Blocked Accounts</a>
+
+Shows the total number of blocked Accounts that fall outside of blocked Instances (i.e. how many Accounts that have been individually blocked)</p>
+</li>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_01f_overview_muted_accounts.sql" target="_blank" rel="nofollow noopener noreferrer">Muted Accounts</a>
+
+Total number of muted Accounts (i.e. how many Accounts that have been individually muted)</p>
+</li>
+</ul>
+<h4 id="02-jobs">02. Jobs:<a hidden class="anchor" aria-hidden="true" href="#02-jobs">#</a></h4>
+<ul>
+<li>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_02a_jobs_job_status.sql" target="_blank" rel="nofollow noopener noreferrer">Job Queue by Status</a>
+
+Current status of Notes (jobs) being processed (i.e. the current workload in respect of job processing)</li>
+</ul>
+<h4 id="03-notes">03. Notes:<a hidden class="anchor" aria-hidden="true" href="#03-notes">#</a></h4>
+<ul>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_03a_notes_notes_processed_by_instance.sql" target="_blank" rel="nofollow noopener noreferrer">Notes Processed by Instance</a>
+
+Shows the total number of Notes processed by Instance (i.e. which Instance posted the most Notes)</p>
+</li>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_03b_notes_notes_processed_by_account_and_instance.sql" target="_blank" rel="nofollow noopener noreferrer">Notes Processed by Account and Instance</a>
+
+Shows the total number of Notes processed by Account and Instance (i.e. which single Account posted the most Notes per Instance)</p>
+</li>
+</ul>
+<h4 id="04-sessions">04. Sessions:<a hidden class="anchor" aria-hidden="true" href="#04-sessions">#</a></h4>
+<ul>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_04a_sessions_active_sessions_by_account_and_app.sql" target="_blank" rel="nofollow noopener noreferrer">Active sessions by Account and App</a>
+
+Shows the currently authorised (App) sessions by Account (i.e. which Account is currently active and using which App)</p>
+</li>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_04b_sessions_active_sessions_by_account_and_oauth_token.sql" target="_blank" rel="nofollow noopener noreferrer">Active sessions by Account and OAuth Token</a>
+
+Shows the currently authorised (OAuth Token) sessions by Account (i.e. which Account is currently active and using which OAuth Token)</p>
+</li>
+</ul>
+<h4 id="05-misc">05. Misc:<a hidden class="anchor" aria-hidden="true" href="#05-misc">#</a></h4>
+<ul>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_05a_misc_is_cat.sql" target="_blank" rel="nofollow noopener noreferrer">Is Cat ?</a>
+
+Yes, really (i.e. whether or not Accounts identify as a cat)</p>
+</li>
+<li>
+<p>
+
+<a href="https://github.com/BoffinsBlog/Iceshrimp-NET/tree/main/grafana/SELECT_05b_misc_note_reactions.sql" target="_blank" rel="nofollow noopener noreferrer">Note Reactions</a>
+
+A list of posted Reactions, ranked by usage (i.e. the most used emoji)</p>
+</li>
+</ul>
+<h3 id="setup-a-sub-domain-for-the-dashboard">Setup a Sub Domain for the Dashboard<a hidden class="anchor" aria-hidden="true" href="#setup-a-sub-domain-for-the-dashboard">#</a></h3>
+<p>Resources:</p>
+<p>
+
+<a href="https://grafana.com/tutorials/run-grafana-behind-a-proxy" target="_blank" rel="nofollow noopener noreferrer">https://grafana.com/tutorials/run-grafana-behind-a-proxy</a>
+</p>
+<p>First, set up a basic nginx grafana.conf to ensure domain resolution works:</p>
+<p><code>sudo nano /etc/nginx/sites-available/grafana.conf</code></p>
+<pre tabindex="0"><code>server {
+    listen              80;
+    listen              [::]:80;
+    server_name         grafana.example.net;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+}
+</code></pre><p>Then, enable the new site by linking:</p>
+<p><code>sudo ln -s /etc/nginx/sites-available/grafana.conf /etc/nginx/sites-enabled/</code></p>
+<p>Then, restart nginx:</p>
+<p><code>sudo nginx -t &amp;&amp; sudo systemctl restart nginx</code></p>
+<p>Secondly, setup a basic <strong>non-SSL</strong> nginx conf file for Grafana:</p>
+<p><code>sudo nano /etc/nginx/sites-available/grafana.conf</code></p>
+<pre tabindex="0"><code>map $http_upgrade $connection_upgrade {
+    default upgrade;
+        &#39;&#39; close;
+}
+
+upstream grafana {
+    server localhost:3000;
+}
+
+server {
+    server_name         grafana.example.net;
+    root                /usr/share/nginx/html;
+    index               index.html index.htm;
+
+    location / {
+    proxy_set_header Host $host;
+        proxy_pass http://grafana;
+    }
+
+    # Proxy Grafana Live WebSocket connections.
+    location /api/live/ {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_pass http://grafana;
+  }
+}
+</code></pre><p>Check and restart nginx:</p>
+<p><code>sudo nginx -t &amp;&amp; sudo systemctl restart nginx</code></p>
+<p>Then, restart and check Grafana:</p>
+<p><code>sudo systemctl restart grafana-server</code></p>
+<p><code>sudo systemctl status grafana-server</code></p>
+<p>Finally, generate up a Grafana SSL certificate.</p>
+<p><code>sudo certbot</code></p>
+<p>The result (i.e. successful) should look something like this:</p>
+<pre tabindex="0"><code>Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/viz.example.org/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/viz.example.org/privkey.pem
+</code></pre><p>Check and restart nginx:</p>
+<p><code>sudo nginx -t &amp;&amp; sudo systemctl restart nginx</code></p>
+<p>Then, restart and check Grafana:</p>
+<p><code>sudo systemctl restart grafana-server</code></p>
+<p><code>sudo systemctl status grafana-server</code></p>
+<p>There are a slew of Grafana posts on Google about updating the grafani.ini to get SSL functioning properly.</p>
+<p>However I did none of those things and it seems to be functioning quite well.</p>
+<p><img alt="A screenshot of the iceshrimp.NET Grafana Dashboard showing various metrics as gauges and large numbers." loading="lazy" src="/posts/iceshrimp-net-grafana-dashboard/01_Iceshrimp_NET_Grafana_Dashboard_Screenshot.webp#center" title="A screenshot of the iceshrimp.NET Grafana Dashboard showing various metrics as gauges and large numbers.">
+<em>Iceshrimp.NET Grafana Dashboard Screenshot</em></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/fediverse/">Fediverse</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/navidrome-streaming/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Navidrome Streaming</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/iceshrimp-net-rss-bot/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Iceshrimp.NET RSS Bot</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

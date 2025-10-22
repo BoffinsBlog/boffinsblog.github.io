@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Delete Your Mastodon Favourites | Boffins Blog</title>
+<meta name="keywords" content="Debian, Fediverse, Linux, Software">
+<meta name="description" content="Removing old posts is a trivial matter now that Mastodon allows for automated post deletions, removing old favourites is not so straighforward.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Delete Your Mastodon Favourites">
+  <meta property="og:description" content="Removing old posts is a trivial matter now that Mastodon allows for automated post deletions, removing old favourites is not so straighforward.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-04-16T16:53:29+01:00">
+    <meta property="article:modified_time" content="2023-04-16T16:53:29+01:00">
+    <meta property="article:tag" content="Debian">
+    <meta property="article:tag" content="Fediverse">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/01_Mastodon_Post_Deletion_Screen.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/01_Mastodon_Post_Deletion_Screen.webp">
+<meta name="twitter:title" content="Delete Your Mastodon Favourites">
+<meta name="twitter:description" content="Removing old posts is a trivial matter now that Mastodon allows for automated post deletions, removing old favourites is not so straighforward.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Delete Your Mastodon Favourites",
+      "item": "https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Delete Your Mastodon Favourites",
+  "name": "Delete Your Mastodon Favourites",
+  "description": "Removing old posts is a trivial matter now that Mastodon allows for automated post deletions, removing old favourites is not so straighforward.",
+  "keywords": [
+    "Debian", "Fediverse", "Linux", "Software"
+  ],
+  "articleBody": "Tidying up. I wanted to delete an old Mastodon account (and especially nuke those pesky Favourites).\nTotally delete.\nAvatars, banners, favourites, images, posts, everything.\nRemoving old posts is a trivial matter now that Mastodon allows for automated post deletions.\nYou can set the expiry threshold to a week and just wait.\nMastodon Post Deletion Screen\nBut those ‘Favourites’ remained, and I had thousands of them to delete.\nThousands.\nI could have sat there for a couple of hours unclicking all of of those little stars but I wasn’t about to do that.\nUsing ‘mastodon-archive’ to delete those pesky Favourites Thankfully I came across ‘ mastodon-archive ‘ which says it:\n“allows you to make an archive of your statuses, your favourites, bookmarks and the media in both your statuses, your favourites and your bookmarks.”\nhttps://pypi.org/project/mastodon-archive/ Additionally there is a process around “Expiring your toots and favourites”, which Mastodon does not do at all.\nIt comes with a warning, which sounds like it will:\n“Warning: This is a destructive operation. You will delete your toots on your instance, or unfavour your favourites, or dismiss your notifications on your instance.”\nThe full documentation is in the mastodon project and there are a slew of options available, including downloading an archive for offline processing with jq , which is:\n“like sed for JSON data – you can use it to slice and filter and map and transform structured data with the same ease that sed, awk, grep and friends let you play with text.”\nhttps://jqlang.org/ But I was only interested in destroying things so got straight to work, issuing the below in a terminal:\nsudo apt install python3-pip\nsudo pip3 install mastodon-archive\nI didn’t bother updating my $PATH and ran the command below which will, after an authorisation prompt, create the initial Mastodon archive:\n/home/foo/.local/bin/mastodon-archive archive my_unwanted account@mastodon.social\nThen, running the below will loop through that Mastodon archive and remove all the posts that have been favourited:\n/home/foo/.local/bin/mastodon-archive expire --collection favourites --older-than 0 --confirmed my_unwanted account@mastodon.social\nSimple.\nThe whole process took about 10 minutes to create the initial archive and another 20 to loop through and delete them all.\nAs is usual with a Linux terminal command, there is no verbose output.\nIf I had one very minor gripe, it would be to include a -v flag.\n",
+  "wordCount" : "383",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/01_Mastodon_Post_Deletion_Screen.webp","datePublished": "2023-04-16T16:53:29+01:00",
+  "dateModified": "2023-04-16T16:53:29+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/delete-your-mastodon-favourites/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Delete Your Mastodon Favourites
+    </h1>
+    <div class="post-meta"><span title='2023-04-16 16:53:29 +0100 BST'>April 16, 2023</span>&nbsp;·&nbsp;<span>2 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#tidying-up" aria-label="Tidying up.">Tidying up.</a></li>
+                <li>
+                    <a href="#using-mastodon-archive-to-delete-those-pesky-favourites" aria-label="Using ‘mastodon-archive’ to delete those pesky Favourites">Using ‘mastodon-archive’ to delete those pesky Favourites</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="tidying-up">Tidying up.<a hidden class="anchor" aria-hidden="true" href="#tidying-up">#</a></h2>
+<p>I wanted to delete an old Mastodon account (and especially nuke those pesky Favourites).</p>
+<p>Totally delete.</p>
+<p>Avatars, banners, favourites, images, posts, everything.</p>
+<p>Removing old posts is a trivial matter now that Mastodon allows for automated post deletions.</p>
+<p>You can set the expiry threshold to a week and just wait.</p>
+<p><img alt="The Mastodon screen where posts can be set to be deleted after a set amount of time has passed. This will retire old Posts but will not delete Favourites." loading="lazy" src="/posts/delete-your-mastodon-favourites/01_Mastodon_Post_Deletion_Screen.webp#center" title="The Mastodon screen where posts can be set to be deleted after a set amount of time has passed. This will retire old Posts but will not delete Favourites.">
+<em>Mastodon Post Deletion Screen</em></p>
+<p>But those ‘Favourites’ remained, and I had thousands of them to delete.</p>
+<p>Thousands.</p>
+<p>I could have sat there for a couple of hours unclicking all of of those little stars but I wasn’t about to do that.</p>
+<h2 id="using-mastodon-archive-to-delete-those-pesky-favourites">Using ‘mastodon-archive’ to delete those pesky Favourites<a hidden class="anchor" aria-hidden="true" href="#using-mastodon-archive-to-delete-those-pesky-favourites">#</a></h2>
+<p>Thankfully I came across ‘
+
+<a href="https://pypi.org/project/mastodon-archive/" target="_blank" rel="nofollow noopener noreferrer">mastodon-archive</a>
+‘ which says it:</p>
+<blockquote>
+<p>“allows you to make an archive of your statuses, your favourites, bookmarks and the media in both your statuses, your favourites and your bookmarks.”</p>
+<p><em>
+
+<a href="https://pypi.org/project/mastodon-archive/" target="_blank" rel="nofollow noopener noreferrer">https://pypi.org/project/mastodon-archive/</a>
+</em></p></blockquote>
+<p>Additionally there is a process around “Expiring your toots and favourites”, which Mastodon does not do at all.</p>
+<p>It comes with a warning, which sounds like it will:</p>
+<blockquote>
+<p>“<strong>Warning:</strong> This is a destructive operation. You will delete your toots on your instance, or unfavour your favourites, or dismiss your notifications on your instance.”</p></blockquote>
+<p>The full documentation is in the mastodon project and there are a slew of options available, including downloading an archive for offline processing with 
+
+<a href="https://jqlang.github.io/jq/" target="_blank" rel="nofollow noopener noreferrer">jq</a>
+, which is:</p>
+<blockquote>
+<p>“like <code>sed</code> for JSON data – you can use it to slice and filter and map and transform structured data with the same ease that <code>sed</code>, <code>awk</code>, <code>grep</code> and friends let you play with text.”</p>
+<p><em>
+
+<a href="https://jqlang.org/" target="_blank" rel="nofollow noopener noreferrer">https://jqlang.org/</a>
+</em></p></blockquote>
+<p>But I was only interested in destroying things so got straight to work, issuing the below in a terminal:</p>
+<p><code>sudo apt install python3-pip</code></p>
+<p><code>sudo pip3 install mastodon-archive</code></p>
+<p>I didn’t bother updating my $PATH and ran the command below which will, after an authorisation prompt, create the initial Mastodon archive:</p>
+<p><code>/home/foo/.local/bin/mastodon-archive archive my_unwanted account@mastodon.social</code></p>
+<p>Then, running the below will loop through that Mastodon archive and remove all the posts that have been favourited:</p>
+<p><code>/home/foo/.local/bin/mastodon-archive expire --collection favourites --older-than 0 --confirmed my_unwanted account@mastodon.social</code></p>
+<p>Simple.</p>
+<p>The whole process took about 10 minutes to create the initial archive and another 20 to loop through and delete them all.</p>
+<p>As is usual with a Linux terminal command, there is no verbose output.</p>
+<p>If I had one <strong>very</strong> minor gripe, it would be to include a <strong>-v</strong> flag.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/debian/">Debian</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/fediverse/">Fediverse</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/mastodon-ifttt-bot/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Mastodon / IFTTT Bot</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/encryption-using-pgp-and-geany/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Encryption Using PGP and Geany</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Robot Pan / Tilt Hat CCTV | Boffins Blog</title>
+<meta name="keywords" content="Bash, Hardware, Maker, Python, Raspberry Pi, Robots, Software">
+<meta name="description" content="An Internet controlled robot with a pan and tilt CCTV camera? What could go wrong?">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Robot Pan / Tilt Hat CCTV">
+  <meta property="og:description" content="An Internet controlled robot with a pan and tilt CCTV camera? What could go wrong?">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-02-25T15:10:37+00:00">
+    <meta property="article:modified_time" content="2022-02-25T15:10:37+00:00">
+    <meta property="article:tag" content="Bash">
+    <meta property="article:tag" content="Hardware">
+    <meta property="article:tag" content="Maker">
+    <meta property="article:tag" content="Python">
+    <meta property="article:tag" content="Raspberry Pi">
+    <meta property="article:tag" content="Robots">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/06_Hot_Glue_Base_Of_Hat.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/06_Hot_Glue_Base_Of_Hat.webp">
+<meta name="twitter:title" content="Robot Pan / Tilt Hat CCTV">
+<meta name="twitter:description" content="An Internet controlled robot with a pan and tilt CCTV camera? What could go wrong?">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Robot Pan / Tilt Hat CCTV",
+      "item": "https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Robot Pan / Tilt Hat CCTV",
+  "name": "Robot Pan \/ Tilt Hat CCTV",
+  "description": "An Internet controlled robot with a pan and tilt CCTV camera? What could go wrong?",
+  "keywords": [
+    "Bash", "Hardware", "Maker", "Python", "Raspberry Pi", "Robots", "Software"
+  ],
+  "articleBody": "A Robot With A CCTV Camera ? That You Control via The Internet? The idea was to use a Pan / Tilt HAT and then add a camera to make a CCTV system, make it accessible / controllable from the Internet and contain it in something unusual looking; something that I wouldn’t mind having on a shelf (maybe a robot?).\nIt’s a good starting point in getting a pan / tilt Hat working and sending images to the Internet.\nAll of the bits for the robot CCTV build Some partially assembled pieces:\n1 x Pi 3A 1 x Pan / Tilt HAT 1 x Camera module Not shown are:\n1 x NeoPixel Stick A diffuser (which came with the NeoPixel Stick)\nRasPi3A and PanTilt Camera\nSome extra long nylon bolts were added so that the Pi could be mounted underneath the HAT.\nThese were far too long but needed.\nI could have trimmed them but as the finished unit was never going to be visible I left them alone.\nPi3A Board and Extension Screws\nYou can see that the bolts are too long but as I mentioned I decided to leave them untrimmed.\nAssembled Side View\nIt’s quite a squeeze but it all fits.\nTight Squeeze!\nThe fully assembled top view with the clearly visible NeoPixel Stick.\nThe stick was a late build decision but it does look good!\nIt was always an option that then provided me with the opportunity to write a neat menu system for the lights.\nAssembled Top View\nAs the whole thing is to be encased and impossible to adjust or repair, I made sure that the connectors wouldn’t budge.\nHot Glue Keeping Wires Secure\nDid I mention hot glue? Here again making sure that the nylon bolts on the camera module stay in place.\nHot Glue Keeping Camera Module Secure\nFinished The whole unit in its final resting place, standing tall!\nScrewbot Standing Tall\nBit of a close up of the Pan / Tilt unit and camera.\nIt’s a odd looking CCTV system for sure being housed in a recycled robot.\nA big thank-you to ScrewedSculpts for his work on the robot, I just did the nerdy bits.\nScrewbot Closeup\nMaking the robot move and operate the CCTV remotely There are quite a few guides on how to do this, and I also found some of them a bit too confusing.\nAfter a few bungled attempts then, I distilled them into a few simple commands.\nThe obvious starting place is to install the Pimoroni libraries:\ncurl https://get.pimoroni.com/pantilthat | bash\nAnd then check that it’s all working:\ncd /home/foo/Pimoroni/pantilthat/examples\npython smooth.py\nThe RPi-Cam-Web-Interface is also needed:\nNOTE – Enabling the Camera\nBullseye OS has replaced the camera stack which stopped the raspimjpeg working.\nLegacy camera support should be enabled.\nDo this within raspi-config under Interface.\nIf this shows just “Enable camera” then update raspi-config itself from its menu item.\nThe interface option should now show enable Legacy camera support.\nThe Pi will reboot.\nThe install.sh script will detect a Bullseye OS, set the right PHP version and create a missing directory needed by this software to run.\nTo do this you will need to clone the code from github and enable and run the install script with the following:\ngit clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git\ncd RPi_Cam_Web_Interface\n./install.sh\nConfigure accordingly with the cam folder at ‘/html/wherever-you-like’.\nOK \u0026 Wait for ‘Start’.\nLocally, at ‘http://Your-Pi-IP-Address/html/wherever-you-like’ there should be an image.\nAlso on the Pi, in a browser, at URL ‘http://127.0.0.1/html/wherever-you-like’ there should be an image.\nConfigure the pan and tilt Hat for RPi-Cam-Web-Interface This part can be confusing but if the following steps are taken, a working image should appear on a web page of your choice.\nFirstly, rename pipan_off to enable the browser direction arrows (needs a browser refresh):\ncd /var/www/html/wherever-you-like\nsudo mv pipan_off pipan_on\nAdd a FIFO pipe:\ncd /var/www/html/wherever-you-like sudo mknod FIFO_pipan p sudo chmod 666 FIFO_pipan\nCreate a pipan-pipe.py on the Pi:\nnano pipan_pipe.py\nThe one I used came from this post: https://forums.pimoroni.com/t/rpi3-camery-pimioroni-adafruit-pan-tilt-rpi-cam-web-interfac/3263/13 The important line is this one:\npipein = open(\"/var/www/html/wherever-you-like/FIFO_pipan\", 'r')\nSave it somewhere sensible (mine went in my Home folder).\nCheck that it’s working:\ncd /home/foo python pipan_pipe.py\nEdit /etc/rc.local and add the following line above the exit-command:\n(Change the path to the directory where you saved the pipan-file).\nsudo nano /etc/rc.local python /home/foo/pipan_pipe.py \u0026\nIf you see this, then put the above lines ^^ above it.\n#START RASPIMJPEG SECTION\nFinally, it may need a reboot but the Pan / Tilt HAT should now be operable via a browser.\nConnecting to the outside world As the ‘RPi-Cam-Web-Interface’ comes with a web server, it can serve requests from the internet.\nHowever, on my router port 80 traffic goes to a web server where it determines where to send that request internally.\nAn easier route would be to direct port 80* traffic to the Pi where all of the above magic takes place.\n(This only applies if it was port 80 that was chosen to serve requests when installing ‘RPi-Cam-Web-Interface’.)\nAdding the NeoPixel stick menu I then added a bash menu to control the lights.\nAt the moment all the options link to the Pimoroni examples, apart from the ‘Sleep’ which turns the pixels off and returns the head back to its starting position.\nThe menu #!/bin/bash HEIGHT=15 WIDTH=40 CHOICE_HEIGHT=4 BACKTITLE=\"robotcam Neopixel Lights\" TITLE=\"Neopixel Stick Examples\" MENU=\"Choose one of the following options:\" OPTIONS=(1 \"360 White\" 2 \"360 Rainbow\" 3 \"Smooth Sweep\" 4 \"Staggered Sweep\" 5 \"Sleep\") CHOICE=$(dialog --clear \\ --backtitle \"$BACKTITLE\" \\ --title \"$TITLE\" \\ --menu \"$MENU\" \\ $HEIGHT $WIDTH $CHOICE_HEIGHT \\ \"${OPTIONS[@]}\" \\ 2\u003e\u00261 \u003e/dev/tty) clear case $CHOICE in 1) python ~/Pimoroni/pantilthat/examples/grbw.py ;; 2) ~/Pimoroni/pantilthat/examples/neopixels.py ;; 3) ~/Pimoroni/pantilthat/examples/smooth.py ;; 4) ~/Pimoroni/pantilthat/examples/timeout.py ;; 5) ~/Pimoroni/pantilthat/examples/sleep.py ;; esac The ‘Sleep’ bit #!/usr/bin/env python import pantilthat pantilthat.light_mode(pantilthat.WS2812) pantilthat.light_type(pantilthat.GRBW) r, g, b, w = 0, 0, 0, 0 while True: for x in range(18): pantilthat.set_pixel(x, r, g, b, w) pantilthat.show() p = 0.00 t = 0.00 pantilthat.pan(p) pantilthat.tilt(t) I hope that the above helps anyone also looking to do something similar.\nIt’s not a straightforward process, especially getting the ‘RPi-Cam-Web-Interface’ up and running; it is however worth the effort.\nAnd Finally These are both excellent reading and flesh out the above a bit more:\nPimoroni Forums post elinux post All of the Pan-Tilt-HAT code examples can also be found here .\n",
+  "wordCount" : "1050",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/06_Hot_Glue_Base_Of_Hat.webp","datePublished": "2022-02-25T15:10:37Z",
+  "dateModified": "2022-02-25T15:10:37Z",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Robot Pan / Tilt Hat CCTV
+    </h1>
+    <div class="post-meta"><span title='2022-02-25 15:10:37 +0000 GMT'>February 25, 2022</span>&nbsp;·&nbsp;<span>5 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#a-robot-with-a-cctv-camera--that-you-control-via-the-internet" aria-label="A Robot With A CCTV Camera ? That You Control via The Internet?">A Robot With A CCTV Camera ? That You Control via The Internet?</a></li>
+                <li>
+                    <a href="#all-of-the-bits-for-the-robot-cctv-build" aria-label="All of the bits for the robot CCTV build">All of the bits for the robot CCTV build</a></li>
+                <li>
+                    <a href="#finished" aria-label="Finished">Finished</a></li>
+                <li>
+                    <a href="#making-the-robot-move-and-operate-the-cctv-remotely" aria-label="Making the robot move and operate the CCTV remotely">Making the robot move and operate the CCTV remotely</a></li>
+                <li>
+                    <a href="#configure-the-pan-and-tilt-hat-for-rpi-cam-web-interface" aria-label="Configure the pan and tilt Hat for RPi-Cam-Web-Interface">Configure the pan and tilt Hat for RPi-Cam-Web-Interface</a></li>
+                <li>
+                    <a href="#connecting-to-the-outside-world" aria-label="Connecting to the outside world">Connecting to the outside world</a></li>
+                <li>
+                    <a href="#adding-the-neopixel-stick-menu" aria-label="Adding the NeoPixel stick menu">Adding the NeoPixel stick menu</a></li>
+                <li>
+                    <a href="#and-finally" aria-label="And Finally">And Finally</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="a-robot-with-a-cctv-camera--that-you-control-via-the-internet">A Robot With A CCTV Camera ? That You Control via The Internet?<a hidden class="anchor" aria-hidden="true" href="#a-robot-with-a-cctv-camera--that-you-control-via-the-internet">#</a></h2>
+<p>The idea was to use a Pan / Tilt HAT and then add a camera to make a CCTV system, make it accessible / controllable from the Internet and contain it in something unusual looking; something that I wouldn’t mind having on a shelf (maybe a robot?).</p>
+<p>It&rsquo;s a good starting point in getting a pan / tilt Hat working and sending images to the Internet.</p>
+<h2 id="all-of-the-bits-for-the-robot-cctv-build">All of the bits for the robot CCTV build<a hidden class="anchor" aria-hidden="true" href="#all-of-the-bits-for-the-robot-cctv-build">#</a></h2>
+<p>Some partially assembled pieces:</p>
+<ul>
+<li>
+<p>1 x 
+
+<a href="https://shop.pimoroni.com/products/raspberry-pi-3-a-plus?variant=17989206507603" target="_blank" rel="nofollow noopener noreferrer">Pi 3A</a>
+</p>
+</li>
+<li>
+<p>1 x 
+
+<a href="https://shop.pimoroni.com/products/pan-tilt-hat?variant=22408353287" target="_blank" rel="nofollow noopener noreferrer">Pan / Tilt HAT</a>
+</p>
+</li>
+<li>
+<p>1 x 
+
+<a href="https://shop.pimoroni.com/products/raspberry-pi-camera-module-v2?variant=19833929735" target="_blank" rel="nofollow noopener noreferrer">Camera module</a>
+</p>
+</li>
+</ul>
+<p>Not shown are:</p>
+<ul>
+<li>
+<p>1 x 
+
+<a href="https://shop.pimoroni.com/products/adafruit-neopixel-stick?variant=370777247" target="_blank" rel="nofollow noopener noreferrer">NeoPixel Stick</a>
+</p>
+</li>
+<li>
+<p>A diffuser (which came with the NeoPixel Stick)</p>
+</li>
+</ul>
+<p><img alt="A Raspberry Pi 3A connected to a Pimoroni Pan-Tilt HAT which has a camera connect to it. The start of building my robot CCTV system." loading="lazy" src="/posts/robot-pan-tilt-hat-cctv/01_RasPi3A_PanTilt_Camera.webp#center" title="A Raspberry Pi 3A connected to a Pimoroni Pan-Tilt HAT which has a camera connect to it. The start of building my robot CCTV system.">
+<em>RasPi3A and PanTilt Camera</em></p>
+<p>Some extra long nylon bolts were added so that the Pi could be mounted underneath the HAT.</p>
+<p>These were far too long but needed.</p>
+<p>I could have trimmed them but as the finished unit was never going to be visible I left them alone.</p>
+<p><img alt="A Raspberry Pi 3A connected to a Pimoroni Pan-Tilt HAT which has a camera connect to it. The Pi has long nylon screws coming out of it. The start of building the robot CCTV system." loading="lazy" src="/posts/robot-pan-tilt-hat-cctv/02_Pi3A_Board_Extension_Screws.webp#center" title="A Raspberry Pi 3A connected to a Pimoroni Pan-Tilt HAT which has a camera connect to it. The Pi has long nylon screws coming out of it. The start of building the robot CCTV system.">
+<em>Pi3A Board and Extension Screws</em></p>
+<p>You can see that the bolts are too long but as I mentioned I decided to leave them untrimmed.</p>
+<p><img alt="Side view of a Raspberry Pi 3A connected to a Pimoroni Pan-Tilt HAT which has a camera connect to it. The Pi has long nylon screws coming out of it. It is fully assembled. This will become the head of the robot CCTV unit" loading="lazy" src="/posts/robot-pan-tilt-hat-cctv/03_Assembled_Side_View.webp#center" title="Side view of a Raspberry Pi 3A connected to a Pimoroni Pan-Tilt HAT which has a camera connect to it. The Pi has long nylon screws coming out of it. It is fully assembled. This will become the head of the robot CCTV unit">
+<em>Assembled Side View</em></p>
+<p>It’s quite a squeeze but it all fits.</p>
+<p><img alt="Close up of a Raspberry Pi 3A connected to a Pimoroni Pan-Tilt HAT which has a camera connect to it. The Pi has long nylon screws coming out of it. It is fully assembled and is a tight squeeze fitting all the wires between the boards." loading="lazy" src="/posts/robot-pan-tilt-hat-cctv/04_Tight_Squeeze_Closeup.webp#center" title="Close up of a Raspberry Pi 3A connected to a Pimoroni Pan-Tilt HAT which has a camera connect to it. The Pi has long nylon screws coming out of it. It is fully assembled and is a tight squeeze fitting all the wires between the boards.">
+<em>Tight Squeeze!</em></p>
+<p>The fully assembled top view with the clearly visible NeoPixel Stick.</p>
+<p>The stick was a late build decision but it does look good!</p>
+<p>It was always an option that then provided me with the opportunity to write a neat menu system for the lights.</p>
+<p><img alt="Top view of the assembled unit sitting upright. The Pan-Tilt HAT is mounted on the Pi with a camera extending from the HAT. Wires lead from all side up to the camera and a LED light." loading="lazy" src="/posts/robot-pan-tilt-hat-cctv/05_Assembled_Top_View.webp#center" title="Top view of the assembled unit sitting upright. The Pan-Tilt HAT is mounted on the Pi with a camera extending from the HAT. Wires lead from all side up to the camera and a LED light.">
+<em>Assembled Top View</em></p>
+<p>As the whole thing is to be encased and impossible to adjust or repair, I made sure that the connectors wouldn’t budge.</p>
+<p><img alt="Close up of the base of the Pan-Tilt HAT showing an abundance of hot glue keeping the wires secure." loading="lazy" src="/posts/robot-pan-tilt-hat-cctv/06_Hot_Glue_Base_Of_Hat.webp#center" title="Close up of the base of the Pan-Tilt HAT showing an abundance of hot glue keeping the wires secure.">
+<em>Hot Glue Keeping Wires Secure</em></p>
+<p>Did I mention hot glue? Here again making sure that the nylon bolts on the camera module stay in place.</p>
+<p><img alt="Close up of the rear of the camera module showing an abundance of hot glue keeping the wires secure." loading="lazy" src="/posts/robot-pan-tilt-hat-cctv/07_Hot_Glue_Camera_Module.webp#center" title="Close up of the rear of the camera module showing an abundance of hot glue keeping the wires secure.">
+<em>Hot Glue Keeping Camera Module Secure</em></p>
+<h2 id="finished">Finished<a hidden class="anchor" aria-hidden="true" href="#finished">#</a></h2>
+<p>The whole unit in its final resting place, standing tall!</p>
+<p><img alt="The finished CCTV in its final home, a 18cm tall robot made from recycled materials and painted silver." loading="lazy" src="/posts/robot-pan-tilt-hat-cctv/08_Screwbot_Standing_Tall.webp#center" title="The finished CCTV in its final home, a 18cm tall robot made from recycled materials and painted silver.">
+<em>Screwbot Standing Tall</em></p>
+<p>Bit of a close up of the Pan / Tilt unit and camera.</p>
+<p>It’s a odd looking CCTV system for sure being housed in a recycled robot.</p>
+<p>A big thank-you to ScrewedSculpts for his work on the robot, I just did the nerdy bits.</p>
+<p><img alt="Close up of the finished robot CCTV unit in its final home, a 18cm tall robot made from recycled materials and painted silver." loading="lazy" src="/posts/robot-pan-tilt-hat-cctv/09_Screwbot_Closeup.webp#center" title="Close up of the finished robot CCTV unit in its final home, a 18cm tall robot made from recycled materials and painted silver.">
+<em>Screwbot Closeup</em></p>
+<h2 id="making-the-robot-move-and-operate-the-cctv-remotely">Making the robot move and operate the CCTV remotely<a hidden class="anchor" aria-hidden="true" href="#making-the-robot-move-and-operate-the-cctv-remotely">#</a></h2>
+<p>There are quite a few guides on how to do this, and I also found some of them a bit too confusing.</p>
+<p>After a few bungled attempts then, I distilled them into a few simple commands.</p>
+<p>The obvious starting place is to install the Pimoroni libraries:</p>
+<p><code>curl https://get.pimoroni.com/pantilthat | bash</code></p>
+<p>And then check that it’s all working:</p>
+<p><code>cd /home/foo/Pimoroni/pantilthat/examples&lt;br&gt;&lt;/br&gt;python smooth.py</code></p>
+<p>The <strong>RPi-Cam-Web-Interface</strong> is also needed:</p>
+<blockquote>
+<p><strong>NOTE – Enabling the Camera</strong></p>
+<p>Bullseye OS has replaced the camera stack which stopped the raspimjpeg working.</p>
+<p>Legacy camera support should be enabled.</p>
+<p>Do this within raspi-config under Interface.</p>
+<p>If this shows just “Enable camera” then update raspi-config itself from its menu item.</p>
+<p>The interface option should now show enable Legacy camera support.</p>
+<p>The Pi will reboot.</p>
+<p>The install.sh script will detect a Bullseye OS, set the right PHP version and create a missing directory needed by this software to run.</p></blockquote>
+<p>To do this you will need to clone the code from github and enable and run the install script with the following:</p>
+<p><code>git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git&lt;br&gt;&lt;/br&gt;cd RPi_Cam_Web_Interface&lt;br&gt;&lt;/br&gt;./install.sh</code></p>
+<p>Configure accordingly with the cam folder at ‘<em>/html/wherever-you-like</em>’.</p>
+<p>OK &amp; Wait for ‘Start’.</p>
+<p>Locally, at ‘<em>http://Your-Pi-IP-Address/html/wherever-you-like</em>’ there should be an image.</p>
+<p>Also on the Pi, in a browser, at URL ‘<em>http://127.0.0.1/html/wherever-you-like</em>’ there should be an image.</p>
+<h2 id="configure-the-pan-and-tilt-hat-for-rpi-cam-web-interface">Configure the pan and tilt Hat for RPi-Cam-Web-Interface<a hidden class="anchor" aria-hidden="true" href="#configure-the-pan-and-tilt-hat-for-rpi-cam-web-interface">#</a></h2>
+<p>This part can be confusing but if the following steps are taken, a working image should appear on a web page of your choice.</p>
+<p>Firstly, rename <strong>pipan_off</strong> to enable the browser direction arrows (needs a browser refresh):</p>
+<p><code>cd /var/www/html/wherever-you-like&lt;br&gt;&lt;/br&gt;sudo mv pipan_off pipan_on</code></p>
+<p>Add a FIFO pipe:</p>
+<p><code>cd /var/www/html/wherever-you-like sudo mknod FIFO_pipan p sudo chmod 666 FIFO_pipan</code></p>
+<p>Create a <strong>pipan-pipe.py</strong> on the Pi:</p>
+<p><code>nano pipan_pipe.py</code></p>
+<p>The one I used came from this post:
+
+
+<a href="https://forums.pimoroni.com/t/rpi3-camery-pimioroni-adafruit-pan-tilt-rpi-cam-web-interfac/3263/13" target="_blank" rel="nofollow noopener noreferrer">https://forums.pimoroni.com/t/rpi3-camery-pimioroni-adafruit-pan-tilt-rpi-cam-web-interfac/3263/13</a>
+</p>
+<p>The important line is this one:</p>
+<p><code>pipein = open(&quot;/var/www/html/wherever-you-like/FIFO_pipan&quot;, 'r')</code></p>
+<p>Save it somewhere sensible (mine went in my Home folder).</p>
+<p>Check that it’s working:</p>
+<p><code>cd /home/foo python pipan_pipe.py</code></p>
+<p>Edit <strong>/etc/rc.local</strong> and add the following line above the exit-command:</p>
+<p>(Change the path to the directory where you saved the pipan-file).</p>
+<p><code>sudo nano /etc/rc.local python /home/foo/pipan_pipe.py &amp;</code></p>
+<p>If you see <strong>this</strong>, then put the above lines ^^ <strong>above</strong> it.</p>
+<p><code>#START RASPIMJPEG SECTION</code></p>
+<p>Finally, it may need a reboot but the Pan / Tilt HAT should now be operable via a browser.</p>
+<h2 id="connecting-to-the-outside-world">Connecting to the outside world<a hidden class="anchor" aria-hidden="true" href="#connecting-to-the-outside-world">#</a></h2>
+<p>As the ‘RPi-Cam-Web-Interface’ comes with a web server, it can serve requests from the internet.</p>
+<p>However, on <strong>my</strong> router port 80 traffic goes to a web server where it determines where to send that request internally.</p>
+<p>An easier route would be to direct port 80* traffic to the Pi where all of the above magic takes place.</p>
+<p><em>(This only applies if it was port 80 that was chosen to serve requests when installing ‘RPi-Cam-Web-Interface’.)</em></p>
+<h2 id="adding-the-neopixel-stick-menu">Adding the NeoPixel stick menu<a hidden class="anchor" aria-hidden="true" href="#adding-the-neopixel-stick-menu">#</a></h2>
+<p>I then added a <strong>bash</strong> menu to control the lights.</p>
+<p>At the moment all the options link to the Pimoroni examples, apart from the ‘Sleep’ which turns the pixels off and returns the head back to its starting position.</p>
+<h3 id="the-menu">
+
+<a href="https://github.com/BoffinsBlog/Pan-Tilt-HAT/blob/main/robotcam/neopixels.sh" target="_blank" rel="nofollow noopener noreferrer">The menu</a>
+</h3>
+<pre tabindex="0"><code>#!/bin/bash
+
+HEIGHT=15
+WIDTH=40
+CHOICE_HEIGHT=4
+BACKTITLE=&#34;robotcam Neopixel Lights&#34;
+TITLE=&#34;Neopixel Stick Examples&#34;
+MENU=&#34;Choose one of the following options:&#34;
+
+OPTIONS=(1 &#34;360 White&#34;
+         2 &#34;360 Rainbow&#34;
+         3 &#34;Smooth Sweep&#34;
+         4 &#34;Staggered Sweep&#34;
+         5 &#34;Sleep&#34;)
+
+CHOICE=$(dialog --clear \
+                --backtitle &#34;$BACKTITLE&#34; \
+                --title &#34;$TITLE&#34; \
+                --menu &#34;$MENU&#34; \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                &#34;${OPTIONS[@]}&#34; \
+                2&gt;&amp;1 &gt;/dev/tty)
+
+clear
+case $CHOICE in
+        1)
+            python ~/Pimoroni/pantilthat/examples/grbw.py
+            ;;
+        2)
+            ~/Pimoroni/pantilthat/examples/neopixels.py
+            ;;
+        3)
+            ~/Pimoroni/pantilthat/examples/smooth.py
+            ;;
+        4)
+            ~/Pimoroni/pantilthat/examples/timeout.py
+            ;;
+        5)
+            ~/Pimoroni/pantilthat/examples/sleep.py
+            ;;
+esac
+</code></pre><h3 id="the-sleep-bit">
+
+<a href="https://github.com/BoffinsBlog/Pan-Tilt-HAT/blob/main/robotcam/sleep.py" target="_blank" rel="nofollow noopener noreferrer">The ‘Sleep’ bit</a>
+</h3>
+<pre tabindex="0"><code>#!/usr/bin/env python
+
+import pantilthat
+
+pantilthat.light_mode(pantilthat.WS2812)
+pantilthat.light_type(pantilthat.GRBW)
+
+r, g, b, w = 0, 0, 0, 0
+
+while True:
+    for x in range(18):
+        pantilthat.set_pixel(x, r, g, b, w)
+
+    pantilthat.show()
+
+    p = 0.00
+    t = 0.00
+
+    pantilthat.pan(p)
+    pantilthat.tilt(t)
+</code></pre><p>I hope that the above helps anyone also looking to do something similar.</p>
+<p>It’s not a straightforward process, especially getting the <strong>‘RPi-Cam-Web-Interface’</strong> up and running; it is however worth the effort.</p>
+<h2 id="and-finally">And Finally<a hidden class="anchor" aria-hidden="true" href="#and-finally">#</a></h2>
+<p>These are both excellent reading and flesh out the above a bit more:</p>
+<p>
+
+<a href="https://forums.pimoroni.com/t/rpi3-camery-pimioroni-adafruit-pan-tilt-rpi-cam-web-interfac/3263/13" target="_blank" rel="nofollow noopener noreferrer">Pimoroni Forums post</a>
+</p>
+<p>
+
+<a href="https://elinux.org/RPi-Cam-Web-Interface#Pan-Tilt_or_Pi-Light" target="_blank" rel="nofollow noopener noreferrer">elinux post</a>
+</p>
+<p>All of the Pan-Tilt-HAT code examples can also be found 
+
+<a href="https://github.com/BoffinsBlog/Pan-Tilt-HAT/" target="_blank" rel="nofollow noopener noreferrer">here</a>
+.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/bash/">Bash</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/hardware/">Hardware</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/maker/">Maker</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/python/">Python</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/raspberry-pi/">Raspberry Pi</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/robots/">Robots</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/larson-scanner/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Larson Scanner</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/more-data-collection-logging-and-plotting/">
+    <span class="title">Next »</span>
+    <br>
+    <span>More Data Collection Logging and Plotting</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

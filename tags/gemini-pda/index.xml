@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Gemini PDA on Boffins Blog</title>
+    <link>https://boffinsblog.github.io/tags/gemini-pda/</link>
+    <description>Recent content in Gemini PDA on Boffins Blog</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 23 Jan 2023 13:25:26 +0000</lastBuildDate>
+    <atom:link href="https://boffinsblog.github.io/tags/gemini-pda/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Upgrading Debian on a Gemini PDA</title>
+      <link>https://boffinsblog.github.io/posts/upgrading-debian-on-a-gemini-pda/</link>
+      <pubDate>Mon, 23 Jan 2023 13:25:26 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/upgrading-debian-on-a-gemini-pda/</guid>
+      <description>There is an upgrade path to Debian 10 but an &amp;lsquo;apt-get upgrade&amp;rsquo; will fail. This bash script will help.</description>
+    </item>
+  </channel>
+</rss>

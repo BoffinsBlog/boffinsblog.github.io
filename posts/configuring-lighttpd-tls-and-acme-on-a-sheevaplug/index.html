@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Configuring lighttpd TLS and ACME on a SheevaPlug | Boffins Blog</title>
+<meta name="keywords" content="Hardware, Linux, OpenWrt, Self Hosting, SheevaPlug, Software, Web-Servers">
+<meta name="description" content="Configuring lighttpd on a SheevaPlug.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Configuring lighttpd TLS and ACME on a SheevaPlug">
+  <meta property="og:description" content="Configuring lighttpd on a SheevaPlug.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-10-19T19:14:16+01:00">
+    <meta property="article:modified_time" content="2025-10-19T19:14:16+01:00">
+    <meta property="article:tag" content="Hardware">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="OpenWrt">
+    <meta property="article:tag" content="Self Hosting">
+    <meta property="article:tag" content="SheevaPlug">
+    <meta property="article:tag" content="Software">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/01_xkcd_Red_Line_Through_HTTPS.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/01_xkcd_Red_Line_Through_HTTPS.webp">
+<meta name="twitter:title" content="Configuring lighttpd TLS and ACME on a SheevaPlug">
+<meta name="twitter:description" content="Configuring lighttpd on a SheevaPlug.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Configuring lighttpd TLS and ACME on a SheevaPlug",
+      "item": "https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Configuring lighttpd TLS and ACME on a SheevaPlug",
+  "name": "Configuring lighttpd TLS and ACME on a SheevaPlug",
+  "description": "Configuring lighttpd on a SheevaPlug.",
+  "keywords": [
+    "Hardware", "Linux", "OpenWrt", "Self Hosting", "SheevaPlug", "Software", "Web-Servers"
+  ],
+  "articleBody": "Note: The cover image is from https://xkcd.com/2634/ Introduction A short series of SheevaPlug posts around the installation and configuration of different Operating Systems and additional software.\nUnbricking and booting\nUnbricking Installing Das U-Boot Using OpenWrt\nInstalling OpenWrt on the NAND Configuring OpenWrt Using Debian\nInstalling Debian Bookworm on an MMC Upgrading Debian Bookworm to Trixie Additional OpenWrt software\nInstalling a lighttpd web server Configuring lighttpd TLS and ACME Files and Tools Needed https://openwrt.org/docs/guide-user/services/tls/acmesh Terminal access to the ‘Plug.\nSteps I knew this process was going to be awkward but I didn’t expect it to consume so much of my time.\nEverywhere I read led me to manually install and run an acme.sh script.\nThat I could not get to work.\nHowever with a combination of luci-app-acme and Terminal commands* I finally got there.\n(* I may be doing this all wrong but I think that luci-app-acme doesn’t write some config settings correctly; hence the Terminal to amend this and then run the initial certificate generation.)\nInstall The SSL module is not installed by default:\nopkg update\nopkg install lighttpd-mod-openssl\nAdd the acme modules and the LuCI bits:\nopkg install acme luci-app-acme\nThe symlink that acme created in the .well-known directory is wrong, recreate:\nrm -R /www/.well-known/\nmkdir /www/.well-known/\nln -s /var/run/acme/challenge/ /www/.well-known/acme-challenge\nEnable the acme-challenge:\nnano /etc/lighttpd/lighttpd.conf\n# ACME-challenge $HTTP[\"url\"] =~ \"^/[.]well-known/acme-challenge/\" { alias.url += ( \"/.well-known/acme-challenge\" =\u003e \"/www/.well-known/acme-challenge/\" ) } Restart:\nservice lighttpd restart\nservice lighttpd status\nCheck that the acme-challenge is working as intended:\nnano /var/run/acme/challenge/README.txt\n(Insert some text here, like ‘Oh, hello.’.)\nIn a different Terminal:\ncurl -L -v http:///.well-known/acme-challenge/README.txt\nIn LuCI:\nhttp:///luci\nServices | ACME certificates\nACME global config\nAccount email - Save \u0026 Apply\nCertificate config\n| Add\n(Needs underscores, not full stops.)\nPop-up box:\nACME certificates - Tab - General Settings\nEnabled - tick\nDomain names - Validation method - Webroot\nTab - Webroot Challenge Validation\nWebroot directory - /www/ (Same as ‘var.server_root’ in the lighttpd.conf file.)\nTab - Advanced Settings\nKey type - RSA 2048 bits\nSave\nSave \u0026 Apply\nRestart the web server and acme processes:\nservice lighttpd restart\n/etc/init.d/acme restart\nAt this point it might be wise to cast an eye over these files, especially the e-mail address:\nnano /etc/config/acme\nnano /etc/acme/ca/acme-v02.api.letsencrypt.org/directory/ca.conf\nnano /etc/acme//.conf\nRestart the server and acme process if any changes are made.\nTrigger a renewal process:\n/etc/init.d/acme renew\nNote: If a certificate has previously been generated, using the same details, then that certificate will be retrieved and a new one will not be created.\nResult:\nCert success. Your cert is in: /etc/acme//.cer Your cert key is in: /etc/acme//.key The intermediate CA cert is in: /etc/acme//ca.cer And the full-chain cert is in: /etc/acme//fullchain.cer Running renew hook: '/usr/lib/acme/notify renewed' Add the newly created certificate to the vHost configuration.\nnano /etc/lighttpd/vhosts.d/.conf\nFull working example below:\n# Site $HTTP[\"host\"] == \"\" { server.document-root = \"/www/sites/\" server.errorlog = \"/var/log/lighttpd/.error.log\" accesslog.filename = \"/var/log/lighttpd/.access.log\" $SERVER[\"socket\"] == \":443\" { ssl.engine = \"enable\" ssl.pemfile = \"/etc/acme//combined.cer\" } } Restart the web server and acme processes:\nservice lighttpd restart\n/etc/init.d/acme restart\ncrontab Run the renew process daily at midnight to update any certs as needed:\ncrontab -e\n# Renew the acme certs daily at midnight 0 0 * * * /etc/init.d/acme renew Redirecting from HTTP to HTTPS Add mod_redirect.\nnano /etc/lighttpd/lighttpd.conf\n# Added by me # Modules server.modules += ( \"mod_alias\", \"mod_redirect\" ) Add the redirect to the vHosts.\nnano /etc/lighttpd/vhosts.d/.conf\nFull working example below:\n# Site $HTTP[\"host\"] == \"\" { server.document-root = \"/www/sites/\" server.errorlog = \"/var/log/lighttpd/.error.log\" accesslog.filename = \"/var/log/lighttpd/.access.log\" $SERVER[\"socket\"] == \":443\" { ssl.engine = \"enable\" ssl.pemfile = \"/etc/acme//combined.cer\" } $SERVER[\"socket\"] == \":80\" { $HTTP[\"host\"] =~ \"(.*)\" { url.redirect = ( \"^/(.*)\" =\u003e \"https://%1/$1\" ) } } } Conclusion # BEWARE #\nToo many unsuccessful certificate creation attempts will result in being locked out for an hour.\nhttps://letsencrypt.org/docs/rate-limits/#authorization-failures-per-identifier-per-account Too many successful (5) certificate creations will result in a lockout of a day.\nhttps://letsencrypt.org/docs/rate-limits/#new-certificates-per-exact-set-of-identifiers So, don’t do what I did and generate a working cert, then delete / uninstall everything and repeatedly try again to ensure the documented steps were correct.\nNotes (stuff I found out later) Removing acme:\nservice acme stop\nopkg remove acme* --force-depends\nopkg remove luci-app-acme\nopkg remove lighttpd-mod-openssl\nrm -R /etc/acme*\nrm /etc/config/acme\nEnsure any rows regarding $SERVER[“socket”] == “:443” are either removed or commented out in:\nnano /etc/lighttpd/vhosts.d/.conf\nservice lighttpd restart\nservice lighttpd status\n",
+  "wordCount" : "727",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/01_xkcd_Red_Line_Through_HTTPS.webp","datePublished": "2025-10-19T19:14:16+01:00",
+  "dateModified": "2025-10-19T19:14:16+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Configuring lighttpd TLS and ACME on a SheevaPlug
+    </h1>
+    <div class="post-meta"><span title='2025-10-19 19:14:16 +0100 BST'>October 19, 2025</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#introduction" aria-label="Introduction">Introduction</a></li>
+                <li>
+                    <a href="#files-and-tools-needed" aria-label="Files and Tools Needed">Files and Tools Needed</a></li>
+                <li>
+                    <a href="#steps" aria-label="Steps">Steps</a><ul>
+                        
+                <li>
+                    <a href="#install" aria-label="Install">Install</a></li>
+                <li>
+                    <a href="#crontab" aria-label="crontab">crontab</a></li>
+                <li>
+                    <a href="#redirecting-from-http-to-https" aria-label="Redirecting from HTTP to HTTPS">Redirecting from HTTP to HTTPS</a></li></ul>
+                </li>
+                <li>
+                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a></li>
+                <li>
+                    <a href="#notes-stuff-i-found-out-later" aria-label="Notes (stuff I found out later)">Notes (stuff I found out later)</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>Note: The cover image is from 
+
+<a href="https://xkcd.com/2634/" target="_blank" rel="nofollow noopener noreferrer">https://xkcd.com/2634/</a>
+</p>
+<h2 id="introduction">Introduction<a hidden class="anchor" aria-hidden="true" href="#introduction">#</a></h2>
+<p>A short series of SheevaPlug posts around the installation and configuration of different Operating Systems and additional software.</p>
+<p><strong>Unbricking and booting</strong></p>
+<ul>
+<li>
+<p>
+
+
+  <a href="/posts/unbricking-a-sheevaplug">Unbricking</a>
+</p>
+</li>
+<li>
+<p>
+
+
+  <a href="/posts/installing-das-u-boot-on-a-sheevaplug-nand">Installing Das U-Boot</a>
+</p>
+</li>
+</ul>
+<p><strong>Using OpenWrt</strong></p>
+<ul>
+<li>
+<p>
+
+
+  <a href="/posts/installing-openwrt-on-a-sheevaplug-nand">Installing OpenWrt on the NAND</a>
+</p>
+</li>
+<li>
+<p>
+
+
+  <a href="/posts/configuring-openwrt-on-a-sheevaplug">Configuring OpenWrt</a>
+</p>
+</li>
+</ul>
+<p><strong>Using Debian</strong></p>
+<ul>
+<li>
+<p>
+
+
+  <a href="/posts/installing-debian-bookworm-on-a-sheevaplug-mmc">Installing Debian Bookworm on an MMC</a>
+</p>
+</li>
+<li>
+<p>
+
+
+  <a href="/posts/upgrading-debian-bookworm-to-trixie-on-a-sheevaplug-mmc">Upgrading Debian Bookworm to Trixie</a>
+</p>
+</li>
+</ul>
+<p><strong>Additional OpenWrt software</strong></p>
+<ul>
+<li>
+<p>
+
+
+  <a href="/posts/installing-lighttpd-on-a-sheevaplug-running-openwrt">Installing a lighttpd web server</a>
+</p>
+</li>
+<li>
+<p>
+
+
+  <a href="/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug">Configuring lighttpd TLS and ACME</a>
+</p>
+</li>
+</ul>
+<h2 id="files-and-tools-needed">Files and Tools Needed<a hidden class="anchor" aria-hidden="true" href="#files-and-tools-needed">#</a></h2>
+<p>
+
+<a href="https://openwrt.org/docs/guide-user/services/tls/acmesh" target="_blank" rel="nofollow noopener noreferrer">https://openwrt.org/docs/guide-user/services/tls/acmesh</a>
+</p>
+<p>Terminal access to the &lsquo;Plug.</p>
+<h2 id="steps">Steps<a hidden class="anchor" aria-hidden="true" href="#steps">#</a></h2>
+<p>I knew this process was going to be awkward but I didn&rsquo;t expect it to consume <em>so</em> much of my time.</p>
+<p>Everywhere I read led me to manually install and run an <strong>acme.sh</strong> script.</p>
+<p>That I could <strong>not</strong> get to work.</p>
+<p>However with a combination of <strong>luci-app-acme</strong> and Terminal commands* I finally got there.</p>
+<p>(* I may be doing this all wrong but I <em>think</em> that luci-app-acme doesn&rsquo;t write some config settings correctly; hence the Terminal to amend this and then run the initial certificate generation.)</p>
+<h3 id="install">Install<a hidden class="anchor" aria-hidden="true" href="#install">#</a></h3>
+<p>The <strong>SSL</strong> module is not installed by default:</p>
+<p><code>opkg update</code></p>
+<p><code>opkg install lighttpd-mod-openssl</code></p>
+<p>Add the acme modules and the LuCI bits:</p>
+<p><code>opkg install acme luci-app-acme</code></p>
+<p>The symlink that acme created in the <strong>.well-known</strong> directory is wrong, recreate:</p>
+<p><code>rm -R /www/.well-known/</code></p>
+<p><code>mkdir /www/.well-known/</code></p>
+<p><code>ln -s /var/run/acme/challenge/ /www/.well-known/acme-challenge</code></p>
+<p>Enable the <strong>acme-challenge</strong>:</p>
+<p><code>nano /etc/lighttpd/lighttpd.conf</code></p>
+<pre tabindex="0"><code># ACME-challenge
+$HTTP[&#34;url&#34;] =~ &#34;^/[.]well-known/acme-challenge/&#34; {
+    alias.url += ( &#34;/.well-known/acme-challenge&#34; =&gt; &#34;/www/.well-known/acme-challenge/&#34; )
+}
+</code></pre><p>Restart:</p>
+<p><code>service lighttpd restart</code></p>
+<p><code>service lighttpd status</code></p>
+<p>Check that the acme-challenge is working as intended:</p>
+<p><code>nano /var/run/acme/challenge/README.txt</code></p>
+<p>(Insert some text here, like &lsquo;Oh, hello.&rsquo;.)</p>
+<p>In a different Terminal:</p>
+<p><code>curl -L -v http://&lt;DOMAIN_NAME&gt;/.well-known/acme-challenge/README.txt</code></p>
+<p>In LuCI:</p>
+<p>http://&lt;PLUG_IP&gt;/luci</p>
+<p>Services | ACME certificates</p>
+<p><strong>ACME global config</strong></p>
+<p>Account email - &lt;EMAIL_ADDRESS&gt;</p>
+<p>Save &amp; Apply</p>
+<p><strong>Certificate config</strong></p>
+<p>&lt;DOMAIN_NAME&gt; | Add</p>
+<p>(Needs underscores, not full stops.)</p>
+<p>Pop-up box:</p>
+<p><strong>ACME certificates - &lt;DOMAIN_NAME&gt;</strong></p>
+<p><strong>Tab - General Settings</strong></p>
+<p>Enabled - tick</p>
+<p>Domain names - &lt;DOMAIN_NAME&gt;</p>
+<p>Validation method - Webroot</p>
+<p><strong>Tab - Webroot Challenge Validation</strong></p>
+<p>Webroot directory - /www/ (Same as &lsquo;var.server_root&rsquo; in the lighttpd.conf file.)</p>
+<p><strong>Tab - Advanced Settings</strong></p>
+<p>Key type - RSA 2048 bits</p>
+<p>Save</p>
+<p>Save &amp; Apply</p>
+<p>Restart the web server and acme processes:</p>
+<p><code>service lighttpd restart</code></p>
+<p><code>/etc/init.d/acme restart</code></p>
+<p>At this point it might be wise to cast an eye over these files, especially the e-mail address:</p>
+<p><code>nano /etc/config/acme</code></p>
+<p><code>nano /etc/acme/ca/acme-v02.api.letsencrypt.org/directory/ca.conf</code></p>
+<p><code>nano /etc/acme/&lt;DOMAIN_NAME&gt;/&lt;DOMAIN_NAME&gt;.conf</code></p>
+<p>Restart the server and acme process if any changes are made.</p>
+<p>Trigger a renewal process:</p>
+<p><code>/etc/init.d/acme renew</code></p>
+<p>Note: If a certificate has previously been generated, using the same details, then <em>that</em> certificate will be retrieved and a new one will <em>not</em> be created.</p>
+<p>Result:</p>
+<pre tabindex="0"><code>Cert success.
+Your cert is in: /etc/acme/&lt;DOMAIN_NAME&gt;/&lt;DOMAIN_NAME&gt;.cer
+Your cert key is in: /etc/acme/&lt;DOMAIN_NAME&gt;/&lt;DOMAIN_NAME&gt;.key
+The intermediate CA cert is in: /etc/acme/&lt;DOMAIN_NAME&gt;/ca.cer
+And the full-chain cert is in: /etc/acme/&lt;DOMAIN_NAME&gt;/fullchain.cer
+Running renew hook: &#39;/usr/lib/acme/notify renewed&#39;
+</code></pre><p>Add the newly created certificate to the vHost configuration.</p>
+<p><code>nano /etc/lighttpd/vhosts.d/&lt;DOMAIN_NAME&gt;.conf</code></p>
+<p>Full working example below:</p>
+<pre tabindex="0"><code># Site &lt;DOMAIN_NAME&gt;
+$HTTP[&#34;host&#34;] == &#34;&lt;DOMAIN_NAME&gt;&#34; {
+    server.document-root = &#34;/www/sites/&lt;DOMAIN_NAME&gt;&#34;
+    server.errorlog = &#34;/var/log/lighttpd/&lt;DOMAIN_NAME&gt;.error.log&#34;
+    accesslog.filename = &#34;/var/log/lighttpd/&lt;DOMAIN_NAME&gt;.access.log&#34;
+
+    $SERVER[&#34;socket&#34;] == &#34;:443&#34; {
+        ssl.engine = &#34;enable&#34;
+        ssl.pemfile = &#34;/etc/acme/&lt;DOMAIN_NAME&gt;/combined.cer&#34;
+    }
+}
+</code></pre><p>Restart the web server and acme processes:</p>
+<p><code>service lighttpd restart</code></p>
+<p><code>/etc/init.d/acme restart</code></p>
+<h3 id="crontab">crontab<a hidden class="anchor" aria-hidden="true" href="#crontab">#</a></h3>
+<p>Run the renew process daily at midnight to update any certs as needed:</p>
+<p><code>crontab -e</code></p>
+<pre tabindex="0"><code># Renew the acme certs daily at midnight
+0 0 * * * /etc/init.d/acme renew
+</code></pre><h3 id="redirecting-from-http-to-https">Redirecting from HTTP to HTTPS<a hidden class="anchor" aria-hidden="true" href="#redirecting-from-http-to-https">#</a></h3>
+<p>Add mod_redirect.</p>
+<p><code>nano /etc/lighttpd/lighttpd.conf</code></p>
+<pre tabindex="0"><code># Added by me
+# Modules
+server.modules += (
+        &#34;mod_alias&#34;,
+        &#34;mod_redirect&#34;
+)
+</code></pre><p>Add the redirect to the vHosts.</p>
+<p><code>nano /etc/lighttpd/vhosts.d/&lt;DOMAIN_NAME&gt;.conf</code></p>
+<p>Full working example below:</p>
+<pre tabindex="0"><code># Site &lt;DOMAIN_NAME&gt;
+$HTTP[&#34;host&#34;] == &#34;&lt;DOMAIN_NAME&gt;&#34; {
+    server.document-root = &#34;/www/sites/&lt;DOMAIN_NAME&gt;&#34;
+    server.errorlog = &#34;/var/log/lighttpd/&lt;DOMAIN_NAME&gt;.error.log&#34;
+    accesslog.filename = &#34;/var/log/lighttpd/&lt;DOMAIN_NAME&gt;.access.log&#34;
+
+    $SERVER[&#34;socket&#34;] == &#34;:443&#34; {
+        ssl.engine = &#34;enable&#34;
+        ssl.pemfile = &#34;/etc/acme/&lt;DOMAIN_NAME&gt;/combined.cer&#34;
+    }
+
+    $SERVER[&#34;socket&#34;] == &#34;:80&#34; {
+        $HTTP[&#34;host&#34;] =~ &#34;(.*)&#34; {
+                url.redirect = ( &#34;^/(.*)&#34; =&gt; &#34;https://%1/$1&#34; )
+        }
+    }
+}
+</code></pre><h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<p><strong># BEWARE #</strong></p>
+<p>Too many <strong>unsuccessful</strong> certificate creation attempts will result in being locked out for an hour.</p>
+<p>
+
+<a href="https://letsencrypt.org/docs/rate-limits/#authorization-failures-per-identifier-per-account" target="_blank" rel="nofollow noopener noreferrer">https://letsencrypt.org/docs/rate-limits/#authorization-failures-per-identifier-per-account</a>
+</p>
+<p>Too many <strong>successful</strong> (5) certificate creations will result in a lockout of a day.</p>
+<p>
+
+<a href="https://letsencrypt.org/docs/rate-limits/#new-certificates-per-exact-set-of-identifiers" target="_blank" rel="nofollow noopener noreferrer">https://letsencrypt.org/docs/rate-limits/#new-certificates-per-exact-set-of-identifiers</a>
+</p>
+<p>So, don&rsquo;t do what I did and generate a working cert, then delete / uninstall everything and repeatedly try again to ensure the documented steps were correct.</p>
+<h2 id="notes-stuff-i-found-out-later">Notes (stuff I found out later)<a hidden class="anchor" aria-hidden="true" href="#notes-stuff-i-found-out-later">#</a></h2>
+<p><strong>Removing acme:</strong></p>
+<p><code>service acme stop</code></p>
+<p><code>opkg remove acme* --force-depends</code></p>
+<p><code>opkg remove luci-app-acme</code></p>
+<p><code>opkg remove lighttpd-mod-openssl</code></p>
+<p><code>rm -R /etc/acme*</code></p>
+<p><code>rm /etc/config/acme</code></p>
+<p>Ensure any rows regarding <strong>$SERVER[&ldquo;socket&rdquo;] == &ldquo;:443&rdquo;</strong> are either removed or commented out in:</p>
+<p><code>nano /etc/lighttpd/vhosts.d/&lt;DOMAIN_NAME&gt;.conf</code></p>
+<p><code>service lighttpd restart</code></p>
+<p><code>service lighttpd status</code></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/hardware/">Hardware</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/openwrt/">OpenWrt</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/self-hosting/">Self Hosting</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/sheevaplug/">SheevaPlug</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/software/">Software</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="https://boffinsblog.github.io/posts/installing-lighttpd-on-a-sheevaplug-running-openwrt/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Installing lighttpd on a SheevaPlug Running OpenWrt</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

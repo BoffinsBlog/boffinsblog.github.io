@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>RSS to Toot | Boffins Blog</title>
+<meta name="keywords" content="Fediverse, Linux, Python">
+<meta name="description" content="Turn an RSS feed in to a Mastodon toot. Send either the latest RSS entry or a stream of Mastodon posts.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/rss-to-toot/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/rss-to-toot/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/rss-to-toot/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="RSS to Toot">
+  <meta property="og:description" content="Turn an RSS feed in to a Mastodon toot. Send either the latest RSS entry or a stream of Mastodon posts.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-09-24T10:55:14+01:00">
+    <meta property="article:modified_time" content="2023-09-24T10:55:14+01:00">
+    <meta property="article:tag" content="Fediverse">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Python">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/rss-to-toot/01_GamesFeedRSS_Screenshot.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/rss-to-toot/01_GamesFeedRSS_Screenshot.webp">
+<meta name="twitter:title" content="RSS to Toot">
+<meta name="twitter:description" content="Turn an RSS feed in to a Mastodon toot. Send either the latest RSS entry or a stream of Mastodon posts.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "RSS to Toot",
+      "item": "https://boffinsblog.github.io/posts/rss-to-toot/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "RSS to Toot",
+  "name": "RSS to Toot",
+  "description": "Turn an RSS feed in to a Mastodon toot. Send either the latest RSS entry or a stream of Mastodon posts.",
+  "keywords": [
+    "Fediverse", "Linux", "Python"
+  ],
+  "articleBody": "A rootin’-tootin’ RSS aggregator. Turning an RSS feed into a Mastodon toot.\nI follow quite a few RSS feeds.\nGames, news, that sort of thing.\nSo how to aggregate them all into a Mastodon feed?\nTo create a Mastodon account that was chock full of, say, games news?\nSend a single toot from an RSS feed The workflow concept is quite straightforward.\nThe python code takes an RSS feed.\nIt takes the latest post in the feed.\nIf that post is different to the last post tooted, it crafts a Mastodon toot announcing the new feed content, and updates the Mastodon timeline.\nA cron job then runs every 15 minutes to loop through this workflow, picking up and tooting any new additions to the RSS feed.\nThe Mastodon API bit to authorise sending a toot I’ve already covered how authorise access to the Mastodon API in an earlier post .\nThe same process can be followed again to allow the Python code below to write to Mastodon.\nI have one API access token per feed, and while not strictly necessary, and is slightly more of a time investment it does compartmentalise each accounts access.\nsecrets.py MASTODON_URL = 'https://foo-bar.com' MASTODON_TOKEN = 'token string' MASTODON_STATUS = MASTODON_URL + '/api/v1/statuses' MASTODON_MEDIA = MASTODON_URL + '/api/v1/media' FEED_URL = 'https://www.foo-bar.com/rss/' FILE_PATH = '/home/foo-bar/' FILE_NAME = 'logo.jpg' FILE_DESC = 'Online Logo Description' bot_with_image.py #!/usr/bin/env python # -*- coding: utf-8 -*- # A bot that takes an RSS feed and posts to Mastodon # Parses the latest entry in the RSS feed and if it doesn't match the last toot, sends the latest entry from secrets import * from pathlib import Path import requests import feedparser RSS_FEED = feedparser.parse(FEED_URL) RSS_ENTRY = RSS_FEED.entries[0] # Function to build the toot, send it and update the 'last_toot.txt' and 'last_post.txt' file def send_toot(): # Send image file to 'MASTODON_MEDIA' to generate a 'media_id' media_ids = [] media = Path(FILE_PATH) / FILE_NAME # Build the authorisation header auth = { \"Authorization\" : f\"Bearer {MASTODON_TOKEN}\" } # Define the kind of file to be sent media = { \"file\": (FILE_NAME, media.open('rb'), 'application/octet-stream') } # Add a description to the file (probably a logo / image) desc = { \"description\": FILE_DESC } # Send toot (to 'MASTODON_MEDIA') and collect the json response r = requests.post(MASTODON_MEDIA, headers=auth, files=media, data=desc) json_data = r.json() # This is the id identifier of the file just uploaded media_id = json_data['id'] # Build the text part of the toot from the chosen 'RSS_ENTRY' toot_str = '' toot_str += f\"{RSS_ENTRY['title']}\\n\\n\" toot_str += f\"{RSS_ENTRY['description']}\\n\" toot_str += f\"\\n\\n{RSS_ENTRY['link']}\\n\\n\" toot_str += f\"\\n\\nThis is an automated post from the #foo-bar RSS feed dated {RSS_ENTRY['published']}\\n\\n\" toot_str += f\"\\n\\n#foo #bar #foo-bar\\n\\n\" # Build the payload, including the newly generated 'media_id' payload = { \"status\": toot_str, \"media_ids[]\": media_id } # Send toot (to 'MASTODON_STATUS') including the newly generated 'media_id' requests.post(MASTODON_STATUS, headers=auth, data=payload) # Update the 'last_toot.txt' file with 'latest_entry' last_toot = open(Path(FILE_PATH) / \"last_toot.txt\",\"w\") last_toot.write(latest_entry) last_toot.close() # Update the 'last_post.txt' file with 'published' date last_post = open(Path(FILE_PATH) / \"last_post.txt\",\"w\") last_post.write(published) last_post.close() # Output a response print(\"New toot sent from the foo-bar RSS feed!\") # Find the latest RSS entry latest_entry = RSS_ENTRY.id # Find the latest published date published = RSS_ENTRY.published # Find the 'last_toot' sent with open(Path(FILE_PATH) / \"last_toot.txt\") as last_toot: last_toot = last_toot.read() # If 'latest_entry' does not equal 'last_toot' then send a new toot based on 'latest_entry' if latest_entry != last_toot: send_toot() elif latest_entry == last_toot: # Output a response print(\"Nothing new to add from the foo-bar RSS feed!\") Sending a stream of toots from an RSS feed What if we want to populate a Mastodon timeline with a whole stream of RSS content?\nThe following works in a similar way to the ‘send a single toot’ approach, except it starts at the bottom of the RSS feed.\nAnd then loops upwards through the feed items.\nThat way, the latest RSS post will never be the latest toot, until the Python loop has reached the start of the RSS content.\nbot_all_with_image.py #!/usr/bin/env python # -*- coding: utf-8 -*- # A bot that takes an RSS feed and posts to Mastodon # Parses the latest entry in the RSS feed and if it doesn't match the last toot, sends the latest entry from secrets import * from pathlib import Path import requests import feedparser import time RSS_FEED = feedparser.parse(FEED_URL) # Function to build the toot, send it and update the 'last_toot.txt' and 'last_post.txt' file def send_toot(): # Send image file to 'MASTODON_MEDIA' to generate a 'media_id' media_ids = [] media = Path(FILE_PATH) / FILE_NAME # Build the authorisation header auth = { \"Authorization\" : f\"Bearer {MASTODON_TOKEN}\" } # Define the kind of file to be sent media = { \"file\": (FILE_NAME, media.open('rb'), 'application/octet-stream') } # Add a description to the file (probably a logo / image) desc = { \"description\": FILE_DESC } # Send toot (to 'MASTODON_MEDIA') and collect the json response r = requests.post(MASTODON_MEDIA, headers=auth, files=media, data=desc) json_data = r.json() # This is the id identifier of the file just uploaded media_id = json_data['id'] # Build the text part of the toot from the chosen 'RSS_ENTRY' toot_str = '' toot_str += f\"{RSS_ENTRY['title']}\\n\\n\" toot_str += f\"{RSS_ENTRY['description']}\\n\" toot_str += f\"\\n\\n{RSS_ENTRY['link']}\\n\\n\" toot_str += f\"\\n\\nThis is an automated post from the #foo-bar RSS feed dated {RSS_ENTRY['published']}\\n\\n\" toot_str += f\"\\n\\n#foo #bar #foo-bar\\n\\n\" # Build the payload, including the newly generated 'media_id' payload = { \"status\": toot_str, \"media_ids[]\": media_id } # Send toot (to 'MASTODON_STATUS') including the newly generated 'media_id' requests.post(MASTODON_STATUS, headers=auth, data=payload) # Update the 'last_toot.txt' file with 'latest_entry' last_toot = open(Path(FILE_PATH) / \"last_toot.txt\",\"w\") last_toot.write(latest_entry) last_toot.close() # Update the 'last_post.txt' file with 'published' date last_post = open(Path(FILE_PATH) / \"last_post.txt\",\"w\") last_post.write(published) last_post.close() # How many RSS entries are there (-1 as the indexing starts at 0) count = len(feedparser.parse(FEED_URL)['entries'])-1 # Loop through all of the RSS entries (until it is less than 0, where the indexing started) print(\"There are \", count+1, \" RSS entries to toot\") while count != -1: latest_entry = RSS_FEED.entries[count].id # Find the published date published = RSS_FEED.entries[count].published RSS_ENTRY = RSS_FEED.entries[count] print(\"Tooting - \" + RSS_FEED.entries[count].title + \" \", count, \" toots to go\") send_toot() count = count -1 time.sleep(180) # Output a response print(\"All done!\") The following two files need to be in place and writable.\nThe files do not have to contain the exact content as below, they just need to exist so that the Python script can write:\nThe last post from the RSS feed\nThe last toot sent to Mastodon\nlast_post.txt Wed, 12 Apr 2023 20:30:00 +0000 last_toot.txt https://www.foo-bar.com/rss/100 cron job I have more than one Python script set up and they are all called from a bash script every 15 minutes using cron.\nThis is what calling one of those jobs looks like.\n# Run the Mastodon bots that turn RSS feeds into toots every N minutes */5 * * * * python /home/foo/Dev/RasPi/GamesFeedRSS/bot_with_image.py \u0026 Finally, RSS content in a toot! Screenshot of the GamesFeedRSS Mastodon Account\nAll of the Mastodon code examples can also be found here .\n",
+  "wordCount" : "1166",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/rss-to-toot/01_GamesFeedRSS_Screenshot.webp","datePublished": "2023-09-24T10:55:14+01:00",
+  "dateModified": "2023-09-24T10:55:14+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/rss-to-toot/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      RSS to Toot
+    </h1>
+    <div class="post-meta"><span title='2023-09-24 10:55:14 +0100 BST'>September 24, 2023</span>&nbsp;·&nbsp;<span>6 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#a-rootin-tootin-rss-aggregator" aria-label="A rootin’-tootin’ RSS aggregator.">A rootin’-tootin’ RSS aggregator.</a></li>
+                <li>
+                    <a href="#send-a-single-toot-from-an-rss-feed" aria-label="Send a single toot from an RSS feed">Send a single toot from an RSS feed</a></li>
+                <li>
+                    <a href="#the-mastodon-api-bit-to-authorise-sending-a-toot" aria-label="The Mastodon API bit to authorise sending a toot">The Mastodon API bit to authorise sending a toot</a></li>
+                <li>
+                    <a href="#sending-a-stream-of-toots-from-an-rss-feed" aria-label="Sending a stream of toots from an RSS feed">Sending a stream of toots from an RSS feed</a></li>
+                <li>
+                    <a href="#cron-job" aria-label="cron job">cron job</a></li>
+                <li>
+                    <a href="#finally-rss-content-in-a-toot" aria-label="Finally, RSS content in a toot!">Finally, RSS content in a toot!</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="a-rootin-tootin-rss-aggregator">A rootin’-tootin’ RSS aggregator.<a hidden class="anchor" aria-hidden="true" href="#a-rootin-tootin-rss-aggregator">#</a></h2>
+<p>Turning an RSS feed into a Mastodon toot.</p>
+<p>I follow quite a few RSS feeds.</p>
+<p>Games, news, that sort of thing.</p>
+<p>So how to aggregate them all into a Mastodon feed?</p>
+<p>To create a Mastodon account that was chock full of, say, games news?</p>
+<h2 id="send-a-single-toot-from-an-rss-feed">Send a single toot from an RSS feed<a hidden class="anchor" aria-hidden="true" href="#send-a-single-toot-from-an-rss-feed">#</a></h2>
+<p>The workflow concept is quite straightforward.</p>
+<p>The python code takes an RSS feed.</p>
+<p>It takes the latest post in the feed.</p>
+<p>If that post is different to the last post tooted, it crafts a Mastodon toot announcing the new feed content, and updates the Mastodon timeline.</p>
+<p>A cron job then runs every 15 minutes to loop through this workflow, picking up and tooting any new additions to the RSS feed.</p>
+<h2 id="the-mastodon-api-bit-to-authorise-sending-a-toot">The Mastodon API bit to authorise sending a toot<a hidden class="anchor" aria-hidden="true" href="#the-mastodon-api-bit-to-authorise-sending-a-toot">#</a></h2>
+<p>I’ve already covered how authorise access to the Mastodon API in an 
+
+
+  <a href="/posts/mastodon-ifttt-bot/">earlier post</a>
+.</p>
+<p>The same process can be followed again to allow the Python code below to write to Mastodon.</p>
+<p>I have one API access token per feed, and while not strictly necessary, and is slightly more of a time investment it does compartmentalise each accounts access.</p>
+<h3 id="secretspy">
+
+<a href="https://github.com/BoffinsBlog/Mastodon/blob/main/rss-to-toot/secrets.py" target="_blank" rel="nofollow noopener noreferrer">secrets.py</a>
+</h3>
+<pre tabindex="0"><code>MASTODON_URL = &#39;https://foo-bar.com&#39;
+MASTODON_TOKEN = &#39;token string&#39;
+MASTODON_STATUS = MASTODON_URL + &#39;/api/v1/statuses&#39;
+MASTODON_MEDIA = MASTODON_URL + &#39;/api/v1/media&#39;
+FEED_URL = &#39;https://www.foo-bar.com/rss/&#39;
+FILE_PATH = &#39;/home/foo-bar/&#39;
+FILE_NAME = &#39;logo.jpg&#39;
+FILE_DESC = &#39;Online Logo Description&#39;
+</code></pre><h3 id="bot_">
+
+<a href="https://github.com/BoffinsBlog/Mastodon/blob/main/rss-to-toot/bot_with_image.py" target="_blank" rel="nofollow noopener noreferrer">bot_with_image.py</a>
+</h3>
+<pre tabindex="0"><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# A bot that takes an RSS feed and posts to Mastodon
+# Parses the latest entry in the RSS feed and if it doesn&#39;t match the last toot, sends the latest entry
+
+from secrets import *
+from pathlib import Path
+import requests
+import feedparser
+
+RSS_FEED = feedparser.parse(FEED_URL)
+RSS_ENTRY = RSS_FEED.entries[0]
+
+# Function to build the toot, send it and update the &#39;last_toot.txt&#39; and &#39;last_post.txt&#39; file
+def send_toot():
+
+    # Send image file to &#39;MASTODON_MEDIA&#39; to generate a &#39;media_id&#39;
+    media_ids = []
+    media = Path(FILE_PATH) / FILE_NAME
+
+    # Build the authorisation header
+    auth = {
+        &#34;Authorization&#34; : f&#34;Bearer {MASTODON_TOKEN}&#34;
+        }
+
+    # Define the kind of file to be sent
+    media = {
+        &#34;file&#34;: (FILE_NAME, media.open(&#39;rb&#39;), &#39;application/octet-stream&#39;)
+    }
+
+    # Add a description to the file (probably a logo / image)
+    desc = {
+        &#34;description&#34;: FILE_DESC
+    }
+
+    # Send toot (to &#39;MASTODON_MEDIA&#39;) and collect the json response
+    r = requests.post(MASTODON_MEDIA, headers=auth, files=media, data=desc)
+    json_data = r.json()
+
+    # This is the id identifier of the file just uploaded
+    media_id = json_data[&#39;id&#39;]
+
+    # Build the text part of the toot from the chosen &#39;RSS_ENTRY&#39;
+    toot_str = &#39;&#39;
+    toot_str += f&#34;{RSS_ENTRY[&#39;title&#39;]}\n\n&#34;
+    toot_str += f&#34;{RSS_ENTRY[&#39;description&#39;]}\n&#34;
+    toot_str += f&#34;\n\n{RSS_ENTRY[&#39;link&#39;]}\n\n&#34;
+    toot_str += f&#34;\n\nThis is an automated post from the #foo-bar RSS feed dated {RSS_ENTRY[&#39;published&#39;]}\n\n&#34;
+    toot_str += f&#34;\n\n#foo #bar #foo-bar\n\n&#34;
+
+    # Build the payload, including the newly generated &#39;media_id&#39;
+    payload = {
+        &#34;status&#34;: toot_str, &#34;media_ids[]&#34;: media_id
+        }
+
+    # Send toot (to &#39;MASTODON_STATUS&#39;) including the newly generated &#39;media_id&#39;
+    requests.post(MASTODON_STATUS, headers=auth, data=payload)
+
+    # Update the &#39;last_toot.txt&#39; file with &#39;latest_entry&#39;
+    last_toot = open(Path(FILE_PATH) / &#34;last_toot.txt&#34;,&#34;w&#34;)
+    last_toot.write(latest_entry)
+    last_toot.close()
+
+    # Update the &#39;last_post.txt&#39; file with &#39;published&#39; date
+    last_post = open(Path(FILE_PATH) / &#34;last_post.txt&#34;,&#34;w&#34;)
+    last_post.write(published)
+    last_post.close()
+
+    # Output a response
+    print(&#34;New toot sent from the foo-bar RSS feed!&#34;)
+
+# Find the latest RSS entry
+latest_entry = RSS_ENTRY.id
+
+# Find the latest published date
+published = RSS_ENTRY.published
+
+# Find the &#39;last_toot&#39; sent
+with open(Path(FILE_PATH) / &#34;last_toot.txt&#34;) as last_toot:
+    last_toot = last_toot.read()
+
+# If &#39;latest_entry&#39; does not equal &#39;last_toot&#39; then send a new toot based on &#39;latest_entry&#39;
+if latest_entry != last_toot:
+    send_toot()
+
+elif latest_entry == last_toot:
+    # Output a response
+    print(&#34;Nothing new to add from the foo-bar RSS feed!&#34;)
+</code></pre><h2 id="sending-a-stream-of-toots-from-an-rss-feed">Sending a stream of toots from an RSS feed<a hidden class="anchor" aria-hidden="true" href="#sending-a-stream-of-toots-from-an-rss-feed">#</a></h2>
+<p>What if we want to populate a Mastodon timeline with a whole stream of RSS content?</p>
+<p>The following works in a similar way to the ‘send a single toot’ approach, except it <strong>starts at the bottom of the RSS feed</strong>.</p>
+<p>And then loops upwards through the feed items.</p>
+<p>That way, the latest RSS post will never be the latest toot, until the Python loop has reached the start of the RSS content.</p>
+<h3 id="bot_-1">
+
+<a href="https://github.com/BoffinsBlog/Mastodon/blob/main/rss-to-toot/bot_all_with_image.py" target="_blank" rel="nofollow noopener noreferrer">bot_all_with_image.py</a>
+</h3>
+<pre tabindex="0"><code>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# A bot that takes an RSS feed and posts to Mastodon
+# Parses the latest entry in the RSS feed and if it doesn&#39;t match the last toot, sends the latest entry
+
+from secrets import *
+from pathlib import Path
+import requests
+import feedparser
+import time
+
+RSS_FEED = feedparser.parse(FEED_URL)
+
+# Function to build the toot, send it and update the &#39;last_toot.txt&#39; and &#39;last_post.txt&#39; file
+def send_toot():
+
+    # Send image file to &#39;MASTODON_MEDIA&#39; to generate a &#39;media_id&#39;
+    media_ids = []
+    media = Path(FILE_PATH) / FILE_NAME
+
+    # Build the authorisation header
+    auth = {
+        &#34;Authorization&#34; : f&#34;Bearer {MASTODON_TOKEN}&#34;
+        }
+
+    # Define the kind of file to be sent
+    media = {
+        &#34;file&#34;: (FILE_NAME, media.open(&#39;rb&#39;), &#39;application/octet-stream&#39;)
+    }
+
+    # Add a description to the file (probably a logo / image)
+    desc = {
+        &#34;description&#34;: FILE_DESC
+    }
+
+    # Send toot (to &#39;MASTODON_MEDIA&#39;) and collect the json response
+    r = requests.post(MASTODON_MEDIA, headers=auth, files=media, data=desc)
+    json_data = r.json()
+
+    # This is the id identifier of the file just uploaded
+    media_id = json_data[&#39;id&#39;]
+
+    # Build the text part of the toot from the chosen &#39;RSS_ENTRY&#39;
+    toot_str = &#39;&#39;
+    toot_str += f&#34;{RSS_ENTRY[&#39;title&#39;]}\n\n&#34;
+    toot_str += f&#34;{RSS_ENTRY[&#39;description&#39;]}\n&#34;
+    toot_str += f&#34;\n\n{RSS_ENTRY[&#39;link&#39;]}\n\n&#34;
+    toot_str += f&#34;\n\nThis is an automated post from the #foo-bar RSS feed dated {RSS_ENTRY[&#39;published&#39;]}\n\n&#34;
+    toot_str += f&#34;\n\n#foo #bar #foo-bar\n\n&#34;
+
+    # Build the payload, including the newly generated &#39;media_id&#39;
+    payload = {
+        &#34;status&#34;: toot_str, &#34;media_ids[]&#34;: media_id
+        }
+
+    # Send toot (to &#39;MASTODON_STATUS&#39;) including the newly generated &#39;media_id&#39;
+    requests.post(MASTODON_STATUS, headers=auth, data=payload)
+
+    # Update the &#39;last_toot.txt&#39; file with &#39;latest_entry&#39;
+    last_toot = open(Path(FILE_PATH) / &#34;last_toot.txt&#34;,&#34;w&#34;)
+    last_toot.write(latest_entry)
+    last_toot.close()
+
+    # Update the &#39;last_post.txt&#39; file with &#39;published&#39; date
+    last_post = open(Path(FILE_PATH) / &#34;last_post.txt&#34;,&#34;w&#34;)
+    last_post.write(published)
+    last_post.close()
+
+# How many RSS entries are there (-1 as the indexing starts at 0)
+count = len(feedparser.parse(FEED_URL)[&#39;entries&#39;])-1
+
+# Loop through all of the RSS entries (until it is less than 0, where the indexing started)
+print(&#34;There are &#34;, count+1, &#34; RSS entries to toot&#34;)
+while count != -1:
+    latest_entry = RSS_FEED.entries[count].id
+    # Find the published date
+    published = RSS_FEED.entries[count].published
+    RSS_ENTRY = RSS_FEED.entries[count]
+    print(&#34;Tooting - &#34; + RSS_FEED.entries[count].title + &#34; &#34;, count, &#34; toots to go&#34;)
+    send_toot()
+    count = count -1
+    time.sleep(180)
+
+# Output a response
+print(&#34;All done!&#34;)
+</code></pre><p>The following two files need to be in place and writable.</p>
+<p>The files do not have to contain the exact content as below, they just need to exist so that the Python script can write:</p>
+<ul>
+<li>
+<p>The last post from the RSS feed</p>
+</li>
+<li>
+<p>The last toot sent to Mastodon</p>
+</li>
+</ul>
+<h3 id="last_">
+
+<a href="https://github.com/BoffinsBlog/Mastodon/blob/main/rss-to-toot/last_post.txt" target="_blank" rel="nofollow noopener noreferrer">last_post.txt</a>
+</h3>
+<pre tabindex="0"><code>Wed, 12 Apr 2023 20:30:00 +0000
+</code></pre><h3 id="last_-1">
+
+<a href="https://github.com/BoffinsBlog/Mastodon/blob/main/rss-to-toot/last_toot.txt" target="_blank" rel="nofollow noopener noreferrer">last_toot.txt</a>
+</h3>
+<pre tabindex="0"><code>https://www.foo-bar.com/rss/100
+</code></pre><h2 id="cron-job">cron job<a hidden class="anchor" aria-hidden="true" href="#cron-job">#</a></h2>
+<p>I have more than one Python script set up and they are all called from a bash script every 15 minutes using cron.</p>
+<p>This is what calling one of those jobs looks like.</p>
+<pre tabindex="0"><code># Run the Mastodon bots that turn RSS feeds into toots every N minutes
+*/5 * * * * python /home/foo/Dev/RasPi/GamesFeedRSS/bot_with_image.py &amp;
+</code></pre><h2 id="finally-rss-content-in-a-toot">Finally, RSS content in a toot!<a hidden class="anchor" aria-hidden="true" href="#finally-rss-content-in-a-toot">#</a></h2>
+<p><img alt="Screenshot of the GamesFeedRSS Mastodon Account. The Python script turn an RSS feed into Mastodon toots and sends the output to a Mastodon timeline." loading="lazy" src="/posts/rss-to-toot/01_GamesFeedRSS_Screenshot.webp#center" title="Screenshot of the GamesFeedRSS Mastodon Account. The Python script turn an RSS feed into Mastodon toots and sends the output to a Mastodon timeline.">
+<em>Screenshot of the GamesFeedRSS Mastodon Account</em></p>
+<p>All of the Mastodon code examples can also be found 
+
+<a href="https://github.com/BoffinsBlog/Mastodon/" target="_blank" rel="nofollow noopener noreferrer">here</a>
+.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/fediverse/">Fediverse</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/linux/">Linux</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/python/">Python</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/pi-hole-with-unbound-and-pivpn/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Pi-hole with Unbound and PiVPN</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/iceshrimp-backup-and-restore/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Iceshrimp Backup and Restore</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Nanode | Boffins Blog</title>
+<meta name="keywords" content="Arduino, Cupboard Of Forgotten Tech, Maker, Web-Servers">
+<meta name="description" content="Using an Arduino like Nanode board to present a simple web page.">
+<meta name="author" content="Boffin">
+<link rel="canonical" href="https://boffinsblog.github.io/posts/nanode/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.e13be8719bbabf4005d0d2b0f19dba897f7d41b2e807b64c47ee1436d126ab01.css" integrity="sha256-4TvocZu6v0AF0NKw8Z26iX99QbLoB7ZMR&#43;4UNtEmqwE=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://boffinsblog.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://boffinsblog.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://boffinsblog.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://boffinsblog.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://boffinsblog.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://boffinsblog.github.io/posts/nanode/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://boffinsblog.github.io/posts/nanode/">
+  <meta property="og:site_name" content="Boffins Blog">
+  <meta property="og:title" content="Nanode">
+  <meta property="og:description" content="Using an Arduino like Nanode board to present a simple web page.">
+  <meta property="og:locale" content="en-gb">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-08-26T07:31:15+01:00">
+    <meta property="article:modified_time" content="2023-08-26T07:31:15+01:00">
+    <meta property="article:tag" content="Arduino">
+    <meta property="article:tag" content="Cupboard of Forgotten Tech">
+    <meta property="article:tag" content="Maker">
+    <meta property="article:tag" content="Web-Servers">
+    <meta property="og:image" content="https://boffinsblog.github.io/posts/nanode/02_Nanode_Finished.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://boffinsblog.github.io/posts/nanode/02_Nanode_Finished.webp">
+<meta name="twitter:title" content="Nanode">
+<meta name="twitter:description" content="Using an Arduino like Nanode board to present a simple web page.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://boffinsblog.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Nanode",
+      "item": "https://boffinsblog.github.io/posts/nanode/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Nanode",
+  "name": "Nanode",
+  "description": "Using an Arduino like Nanode board to present a simple web page.",
+  "keywords": [
+    "Arduino", "Cupboard Of Forgotten Tech", "Maker", "Web-Servers"
+  ],
+  "articleBody": "A DIY web server Building a Nanode from a kit and getting it to talk to the world.\nIt was 2011 and the age of Arduino.\nEmbedded programmable chips were all the rage (remember this was a year before the first iteration of the now ubiquitous Raspberry Pi.)\nAt the inaugural Brighton Mini Maker Faire I bought my first Arduino R3 and saw the Nanode on a table.\nI can’t remember if one available to buy at that point as I think Ken Boak was putting the kits together by hand.\n(I had to resort to buying one from the London Hackspace and then having the postie deliver it.)\nSo, what is a Nanode? Nanode Finished\n“Nanode is an open source Arduino-like board that has in-built web connectivity.\nIt connects to a range of wireless, wired and ethernet interfaces.\nIt allows you to develop web based sensor and control systems - giving you web access to six analogue sensor lines and six digital I/O lines.\nIt costs under £20 as an easy build it yourself kit.\nNanode was designed with Hacking in mind.”\nhttps://wiki.london.hackspace.org.uk/view/Project:Nanode “Nanode is an Arduino like 8 bit microcontroller board with integrated Ethernet connectivity.\nIt has 6 analogue sensing channels and 6 spare digital I/O lines.\nIt can be used for a variety of web connected applications including remote control and monitoring, as a smart sensor, home automation, as a Tweeting device, and for publishing small amounts of data to the web.\nThe existing software allows it to be set up as an I/O webserver - a device which sends the state of its analogue and digital I/O to a web page - and which can be controlled from that webpage.\nHowever it is not restricted to just that role, it can act as a publisher device and send data to an intermediary open data service such as Pachube, and it can act as a web connected I/O device, which subscribes to a Pachube data feed and acts according to the data received from that feed - for example setting its I/O, updating a display or controlling some actuator device.”\nhttps://wiki.london.hackspace.org.uk/view/Project:Nanode/Applications Even though the board is capable of collecting an input from say a thermal sensor and reporting that via an API to a third party (it used to be Pachube which has long since vanished), I use mine to present a simple web page.\nI had a lot of fun assembling mine and everything it entailed.\nRelearning how to solder.\nThen bungling that by bridging two connections and remembering why I gave up soldering.\n(You can see the bridged connection in the photo, just above the six holes that look like a Lego brick.)\nBungled Soldering\nHowever, a couple of photos and an IRC session later the problem was identified and I dug out the solder sucker to rectify my mistake.\nProgramming a Nanode To keep the costs low the board does not have an FTDI serial/USB chip on board, it needs an FTDI cable to be able to connect to a host computer.\nIn this respect it is also similar the Arduino Pro and Pro Mini (or any number of the clones available).\n(One alternative would be to remove the ATmega328 chip, slot it into an Arduino and send code to it that way.)\nHowever, like the Arduino, the board can programmed using the standard Arduino IDE.\nI’m_Alive.ino // Based on the EtherCard library example 'backSoon.ino' // 2011-01-30 // // License: GPLv2 // // Present an \"I'm Alive' web page\" #include #define STATIC 1 // set to 1 to disable DHCP (adjust myip/gwip values below) #if STATIC // ethernet interface ip address static byte myip[] = { 192,168,0,250 }; // gateway ip address static byte gwip[] = { 192,168,0,1 }; #endif // ethernet mac address - must be unique on your network static byte mymac[] = { 0x4e,0x61,0x6e,0x6f,0x64,0x65 }; byte Ethernet::buffer[500]; // tcp/ip send and receive buffer const char page[] PROGMEM = \"HTTP/1.0 200 OK\\r\\n\" \"Content-Type: text/html\\r\\n\" \"Retry-After: 600\\r\\n\" \"\\r\\n\" \"\" \"\" \"I'm Alive\" \"\" \"\" \"The Nanode Lives Again !!\" \"\" \"OK, so not exactly a lot to see here,\n\" \"But the Nanode is alive.\n\" \"\n\" \"Link back to ",
+  "wordCount" : "795",
+  "inLanguage": "en",
+  "image":"https://boffinsblog.github.io/posts/nanode/02_Nanode_Finished.webp","datePublished": "2023-08-26T07:31:15+01:00",
+  "dateModified": "2023-08-26T07:31:15+01:00",
+  "author":{
+    "@type": "Person",
+    "name": "Boffin"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://boffinsblog.github.io/posts/nanode/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Boffins Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://boffinsblog.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class=" dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://boffinsblog.github.io/" accesskey="h" title="Boffins Blog (Alt + H)">Boffins Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://boffinsblog.github.io/categories/featured/" title="Featured">
+                    <span>Featured</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://boffinsblog.github.io/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://boffinsblog.github.io/">Home</a>&nbsp;»&nbsp;<a href="https://boffinsblog.github.io/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Nanode
+    </h1>
+    <div class="post-meta"><span title='2023-08-26 07:31:15 +0100 BST'>August 26, 2023</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;·&nbsp;<span>Boffin</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#a-diy-web-server" aria-label="A DIY web server">A DIY web server</a></li>
+                <li>
+                    <a href="#so-what-is-a-nanode" aria-label="So, what is a Nanode?">So, what is a Nanode?</a></li>
+                <li>
+                    <a href="#programming-a-nanode" aria-label="Programming a Nanode">Programming a Nanode</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="a-diy-web-server">A DIY web server<a hidden class="anchor" aria-hidden="true" href="#a-diy-web-server">#</a></h2>
+<p>Building a Nanode from a kit and getting it to talk to the world.</p>
+<p>It was 2011 and the age of Arduino.</p>
+<p>Embedded programmable chips were all the rage (remember this was a year before the first iteration of the now ubiquitous Raspberry Pi.)</p>
+<p>At the inaugural 
+
+<a href="https://flickr.com/groups/bmmf/" target="_blank" rel="nofollow noopener noreferrer">Brighton Mini Maker Faire</a>
+ I bought my first Arduino R3 and saw the Nanode on a table.</p>
+<p>I can’t remember if one available to buy at that point as I think Ken Boak was putting the kits together by hand.</p>
+<p>(I had to resort to buying one from the London Hackspace and then having the postie deliver it.)</p>
+<h2 id="so-what-is-a-nanode">So, what is a Nanode?<a hidden class="anchor" aria-hidden="true" href="#so-what-is-a-nanode">#</a></h2>
+<p><img alt="Photograph of a Nanode SBC or &lsquo;Single Board Computer&rsquo;. It came in kit form and this is the finished outcome, a long row of resistors and the main processor an ATmega328 chip. An Ethernet port takes up a lot of space on the right hand side, the power jack and FDTI cable connection on the left." loading="lazy" src="/posts/nanode/02_Nanode_Finished.webp#center" title="Photograph of a Nanode SBC or &#39;Single Board Computer&#39;. It came in kit form and this is the finished outcome, a long row of resistors and the main processor an ATmega328 chip. An Ethernet port takes up a lot of space on the right hand side, the power jack and FDTI cable connection on the left.">
+<em>Nanode Finished</em></p>
+<blockquote>
+<p>&ldquo;Nanode is an open source Arduino-like board that has in-built web connectivity.</p>
+<p>It connects to a range of wireless, wired and ethernet interfaces.</p>
+<p>It allows you to develop web based sensor and control systems - giving you web access to six analogue sensor lines and six digital I/O lines.</p>
+<p>It costs under £20 as an easy build it yourself kit.</p>
+<p>Nanode was designed with Hacking in mind.&rdquo;</p>
+<p><em>
+
+<a href="https://wiki.london.hackspace.org.uk/view/Project:Nanode" target="_blank" rel="nofollow noopener noreferrer">https://wiki.london.hackspace.org.uk/view/Project:Nanode</a>
+</em></p></blockquote>
+<blockquote>
+<p>&ldquo;Nanode is an Arduino like 8 bit microcontroller board with integrated Ethernet connectivity.</p>
+<p>It has 6 analogue sensing channels and 6 spare digital I/O lines.</p>
+<p>It can be used for a variety of web connected applications including remote control and monitoring, as a smart sensor, home automation, as a Tweeting device, and for publishing small amounts of data to the web.</p>
+<p>The existing software allows it to be set up as an I/O webserver - a device which sends the state of its analogue and digital I/O to a web page - and which can be controlled from that webpage.</p>
+<p>However it is not restricted to just that role, it can act as a publisher device and send data to an intermediary open data service such as Pachube, and it can act as a web connected I/O device, which subscribes to a Pachube data feed and acts according to the data received from that feed - for example setting its I/O, updating a display or controlling some actuator device.&rdquo;</p>
+<p><em>
+
+<a href="https://wiki.london.hackspace.org.uk/view/Project:Nanode/Applications" target="_blank" rel="nofollow noopener noreferrer">https://wiki.london.hackspace.org.uk/view/Project:Nanode/Applications</a>
+</em></p></blockquote>
+<p>Even though the board is capable of collecting an input from say a thermal sensor and reporting that via an API to a third party (it used to be 
+
+<a href="https://en.wikipedia.org/wiki/Xively" target="_blank" rel="nofollow noopener noreferrer">Pachube</a>
+ which has long since vanished), I use mine to present a simple web page.</p>
+<p>I had a lot of fun assembling mine and everything it entailed.</p>
+<p>Relearning how to solder.</p>
+<p>Then bungling that by bridging two connections and remembering why I gave up soldering.</p>
+<p>(You can see the bridged connection in the photo, just above the six holes that look like a Lego brick.)</p>
+<p><img alt="A close up photograph of soldering that has inadvertently bridged two pads causing the board to fail." loading="lazy" src="/posts/nanode/01_Bungled_Soldering.webp#center" title="A close up photograph of soldering that has inadvertently bridged two pads causing the board to fail.">
+<em>Bungled Soldering</em></p>
+<p>However, a couple of photos and an IRC session later the problem was identified and I dug out the solder sucker to rectify my mistake.</p>
+<h2 id="programming-a-nanode">Programming a Nanode<a hidden class="anchor" aria-hidden="true" href="#programming-a-nanode">#</a></h2>
+<p>To keep the costs low the board does not have an FTDI serial/USB chip on board, it needs an FTDI cable to be able to connect to a host computer.</p>
+<p>In this respect it is also similar the Arduino Pro and Pro Mini (or any number of the clones available).</p>
+<p>(One alternative would be to remove the ATmega328 chip, slot it into an Arduino and send code to it that way.)</p>
+<p>However, like the Arduino, the board can programmed using the standard Arduino IDE.</p>
+<h3 id="im_">
+
+<a href="https://github.com/BoffinsBlog/Nanode/blob/main/Im_Alive/Im_Alive.ino" target="_blank" rel="nofollow noopener noreferrer">I’m_Alive.ino</a>
+</h3>
+<pre tabindex="0"><code>// Based on the EtherCard library example &#39;backSoon.ino&#39;
+// 2011-01-30 &lt;jc@wippler.nl&gt;
+//
+// License: GPLv2
+//
+// Present an &#34;I&#39;m Alive&#39; web page&#34;
+
+#include &lt;EtherCard.h&gt;
+
+#define STATIC 1  // set to 1 to disable DHCP (adjust myip/gwip values below)
+
+#if STATIC
+// ethernet interface ip address
+static byte myip[] = { 192,168,0,250 };
+// gateway ip address
+static byte gwip[] = { 192,168,0,1 };
+#endif
+
+// ethernet mac address - must be unique on your network
+static byte mymac[] = { 0x4e,0x61,0x6e,0x6f,0x64,0x65 };
+
+byte Ethernet::buffer[500]; // tcp/ip send and receive buffer
+
+const char page[] PROGMEM =
+&#34;HTTP/1.0 200 OK\r\n&#34;
+&#34;Content-Type: text/html\r\n&#34;
+&#34;Retry-After: 600\r\n&#34;
+&#34;\r\n&#34;
+&#34;&lt;html&gt;&#34;
+  &#34;&lt;head&gt;&lt;title&gt;&#34;
+    &#34;I&#39;m Alive&#34;
+  &#34;&lt;/title&gt;&lt;/head&gt;&#34;
+  &#34;&lt;body&gt;&#34;
+    &#34;&lt;h3&gt;The Nanode Lives Again !!&lt;/h3&gt;&#34;
+      &#34;&lt;p&gt;&lt;em&gt;&#34;
+        &#34;OK, so not exactly a lot to see here,&lt;br /&gt;&#34;
+        &#34;But the Nanode is alive.&lt;br /&gt;&#34;
+    &#34;&lt;/em&gt;&lt;/p&gt;&#34;
+    &#34;Link back to &lt;a rel=&#34;&#34;me&#34;&#34; href=&#34;&#34;https://botsin.space/@is_now_gone&#34;&#34;&gt;Mastodon&lt;/a&gt;&#34;
+  &#34;&lt;/body&gt;&#34;
+&#34;&lt;/html&gt;&#34;
+;
+
+void setup(){
+  Serial.begin(57600);
+  Serial.println(&#34;\n[ImAlive]&#34;);
+
+  // Change &#39;SS&#39; to your Slave Select pin, if you arn&#39;t using the default pin
+  if (ether.begin(sizeof Ethernet::buffer, mymac, 8) == 0)
+    Serial.println( &#34;Failed to access Ethernet controller&#34;);
+#if STATIC
+  ether.staticSetup(myip, gwip);
+#else
+  if (!ether.dhcpSetup())
+    Serial.println(&#34;DHCP failed&#34;);
+#endif
+
+  ether.printIp(&#34;IP:  &#34;, ether.myip);
+  ether.printIp(&#34;GW:  &#34;, ether.gwip);
+  ether.printIp(&#34;DNS: &#34;, ether.dnsip);
+}
+
+void loop(){
+  // wait for an incoming TCP packet, but ignore its contents
+  if (ether.packetLoop(ether.packetReceive())) {
+    memcpy_P(ether.tcpOffset(), page, sizeof page);
+    ether.httpServerReply(sizeof page - 1);
+  }
+}
+</code></pre><p>All of the Nanode code examples can also be found 
+
+<a href="https://github.com/BoffinsBlog/Nanode/" target="_blank" rel="nofollow noopener noreferrer">here</a>
+.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="https://boffinsblog.github.io/tags/arduino/">Arduino</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/cupboard-of-forgotten-tech/">Cupboard of Forgotten Tech</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/maker/">Maker</a></li>
+      <li><a href="https://boffinsblog.github.io/tags/web-servers/">Web-Servers</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="https://boffinsblog.github.io/posts/iceshrimp-backup-and-restore/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Iceshrimp Backup and Restore</span>
+  </a>
+  <a class="next" href="https://boffinsblog.github.io/posts/installing-iceshrimp/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Installing Iceshrimp</span>
+  </a>
+</nav>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://boffinsblog.github.io/">Boffins Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+        <br>
+        <p><a href="https://www.creativecommons.org/licenses/by-nc/4.0/deed.en" rel="noopener noreferrer" target="_blank">This work is licensed under CC BY-NC-SA 4.0</a></p>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

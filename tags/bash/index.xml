@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Bash on Boffins Blog</title>
+    <link>https://boffinsblog.github.io/tags/bash/</link>
+    <description>Recent content in Bash on Boffins Blog</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 13 Sep 2023 08:10:21 +0100</lastBuildDate>
+    <atom:link href="https://boffinsblog.github.io/tags/bash/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Iceshrimp Backup and Restore</title>
+      <link>https://boffinsblog.github.io/posts/iceshrimp-backup-and-restore/</link>
+      <pubDate>Wed, 13 Sep 2023 08:10:21 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/iceshrimp-backup-and-restore/</guid>
+      <description>Scripts and cron jobs to backup and restore the Iceshrimp database and Iceshrimp files.</description>
+    </item>
+    <item>
+      <title>Installing Iceshrimp</title>
+      <link>https://boffinsblog.github.io/posts/installing-iceshrimp/</link>
+      <pubDate>Fri, 25 Aug 2023 08:10:29 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-iceshrimp/</guid>
+      <description>How I installed and finally settled on Iceshrimp as my Fediverse software of choice, a full bare-metal guide.</description>
+    </item>
+    <item>
+      <title>Firefish Backup and Restore</title>
+      <link>https://boffinsblog.github.io/posts/firefish-backup-and-restore/</link>
+      <pubDate>Sat, 22 Jul 2023 15:03:57 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/firefish-backup-and-restore/</guid>
+      <description>Scripts and cron jobs to backup and restore the PostgreSQL database and Firefish files.</description>
+    </item>
+    <item>
+      <title>Calckey Fediverse Server</title>
+      <link>https://boffinsblog.github.io/posts/calckey-fediverse-server/</link>
+      <pubDate>Mon, 19 Jun 2023 14:37:48 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/calckey-fediverse-server/</guid>
+      <description>Scripts and cron jobs to backup and restore the PostgreSQL database and Calckey files.</description>
+    </item>
+    <item>
+      <title>Upgrading Debian on a Gemini PDA</title>
+      <link>https://boffinsblog.github.io/posts/upgrading-debian-on-a-gemini-pda/</link>
+      <pubDate>Mon, 23 Jan 2023 13:25:26 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/upgrading-debian-on-a-gemini-pda/</guid>
+      <description>There is an upgrade path to Debian 10 but an &amp;lsquo;apt-get upgrade&amp;rsquo; will fail. This bash script will help.</description>
+    </item>
+    <item>
+      <title>Robot Pan / Tilt Hat CCTV</title>
+      <link>https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/</link>
+      <pubDate>Fri, 25 Feb 2022 15:10:37 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/</guid>
+      <description>An Internet controlled robot with a pan and tilt CCTV camera? What could go wrong?</description>
+    </item>
+  </channel>
+</rss>

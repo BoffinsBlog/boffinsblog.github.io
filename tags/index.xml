@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tags on Boffins Blog</title>
+    <link>https://boffinsblog.github.io/tags/</link>
+    <description>Recent content in Tags on Boffins Blog</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 19 Oct 2025 19:14:16 +0100</lastBuildDate>
+    <atom:link href="https://boffinsblog.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hardware</title>
+      <link>https://boffinsblog.github.io/tags/hardware/</link>
+      <pubDate>Sun, 19 Oct 2025 19:14:16 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/hardware/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux</title>
+      <link>https://boffinsblog.github.io/tags/linux/</link>
+      <pubDate>Sun, 19 Oct 2025 19:14:16 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/linux/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>OpenWrt</title>
+      <link>https://boffinsblog.github.io/tags/openwrt/</link>
+      <pubDate>Sun, 19 Oct 2025 19:14:16 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/openwrt/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Self Hosting</title>
+      <link>https://boffinsblog.github.io/tags/self-hosting/</link>
+      <pubDate>Sun, 19 Oct 2025 19:14:16 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/self-hosting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>SheevaPlug</title>
+      <link>https://boffinsblog.github.io/tags/sheevaplug/</link>
+      <pubDate>Sun, 19 Oct 2025 19:14:16 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/sheevaplug/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Software</title>
+      <link>https://boffinsblog.github.io/tags/software/</link>
+      <pubDate>Sun, 19 Oct 2025 19:14:16 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/software/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Web-Servers</title>
+      <link>https://boffinsblog.github.io/tags/web-servers/</link>
+      <pubDate>Sun, 19 Oct 2025 19:14:16 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/web-servers/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Debian</title>
+      <link>https://boffinsblog.github.io/tags/debian/</link>
+      <pubDate>Thu, 25 Sep 2025 07:40:58 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/debian/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Google AIY</title>
+      <link>https://boffinsblog.github.io/tags/google-aiy/</link>
+      <pubDate>Fri, 13 Jun 2025 23:19:28 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/google-aiy/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Raspberry Pi</title>
+      <link>https://boffinsblog.github.io/tags/raspberry-pi/</link>
+      <pubDate>Fri, 13 Jun 2025 23:19:28 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/raspberry-pi/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Android</title>
+      <link>https://boffinsblog.github.io/tags/android/</link>
+      <pubDate>Thu, 22 May 2025 07:40:58 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/android/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Fediverse</title>
+      <link>https://boffinsblog.github.io/tags/fediverse/</link>
+      <pubDate>Thu, 02 Jan 2025 19:21:23 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/fediverse/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Python</title>
+      <link>https://boffinsblog.github.io/tags/python/</link>
+      <pubDate>Tue, 16 Jul 2024 07:34:36 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/python/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Bash</title>
+      <link>https://boffinsblog.github.io/tags/bash/</link>
+      <pubDate>Wed, 13 Sep 2023 08:10:21 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/bash/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Arduino</title>
+      <link>https://boffinsblog.github.io/tags/arduino/</link>
+      <pubDate>Sat, 26 Aug 2023 07:31:15 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/arduino/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cupboard of Forgotten Tech</title>
+      <link>https://boffinsblog.github.io/tags/cupboard-of-forgotten-tech/</link>
+      <pubDate>Sat, 26 Aug 2023 07:31:15 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/cupboard-of-forgotten-tech/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Maker</title>
+      <link>https://boffinsblog.github.io/tags/maker/</link>
+      <pubDate>Sat, 26 Aug 2023 07:31:15 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/tags/maker/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Data Visualisation</title>
+      <link>https://boffinsblog.github.io/tags/data-visualisation/</link>
+      <pubDate>Thu, 02 Feb 2023 13:53:08 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/tags/data-visualisation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Gemini PDA</title>
+      <link>https://boffinsblog.github.io/tags/gemini-pda/</link>
+      <pubDate>Mon, 23 Jan 2023 13:25:26 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/tags/gemini-pda/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Robots</title>
+      <link>https://boffinsblog.github.io/tags/robots/</link>
+      <pubDate>Sat, 26 Mar 2022 11:08:01 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/tags/robots/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Gnuplot</title>
+      <link>https://boffinsblog.github.io/tags/gnuplot/</link>
+      <pubDate>Fri, 13 Mar 2020 20:12:31 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/tags/gnuplot/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Picade</title>
+      <link>https://boffinsblog.github.io/tags/picade/</link>
+      <pubDate>Tue, 30 Oct 2018 19:21:04 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/tags/picade/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Retro Gaming</title>
+      <link>https://boffinsblog.github.io/tags/retro-gaming/</link>
+      <pubDate>Tue, 30 Oct 2018 19:21:04 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/tags/retro-gaming/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

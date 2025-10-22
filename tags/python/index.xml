@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Python on Boffins Blog</title>
+    <link>https://boffinsblog.github.io/tags/python/</link>
+    <description>Recent content in Python on Boffins Blog</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 16 Jul 2024 07:34:36 +0100</lastBuildDate>
+    <atom:link href="https://boffinsblog.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Iceshrimp.NET RSS Bot</title>
+      <link>https://boffinsblog.github.io/posts/iceshrimp-net-rss-bot/</link>
+      <pubDate>Tue, 16 Jul 2024 07:34:36 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/iceshrimp-net-rss-bot/</guid>
+      <description>Turn an RSS feed into an Iceshrimp note. Send either the latest RSS entry or a stream of Iceshrimp posts.</description>
+    </item>
+    <item>
+      <title>Logging the Broadband Outages</title>
+      <link>https://boffinsblog.github.io/posts/logging-the-broadband-outages/</link>
+      <pubDate>Fri, 02 Feb 2024 13:21:30 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/logging-the-broadband-outages/</guid>
+      <description>Regularly pinging a known good URL and logging the response to a .csv file to record network outages.</description>
+    </item>
+    <item>
+      <title>Updating the Iceshrimp Blocklist</title>
+      <link>https://boffinsblog.github.io/posts/updating-the-iceshrimp-blocklist/</link>
+      <pubDate>Sun, 14 Jan 2024 08:48:04 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/updating-the-iceshrimp-blocklist/</guid>
+      <description>Right now updating the blocklists is a manual process, this is a way of updating the Iceshrimp blocklist automatically using Python and cron.</description>
+    </item>
+    <item>
+      <title>RSS to Toot</title>
+      <link>https://boffinsblog.github.io/posts/rss-to-toot/</link>
+      <pubDate>Sun, 24 Sep 2023 10:55:14 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/rss-to-toot/</guid>
+      <description>Turn an RSS feed in to a Mastodon toot. Send either the latest RSS entry or a stream of Mastodon posts.</description>
+    </item>
+    <item>
+      <title>Robot Pan / Tilt Hat CCTV</title>
+      <link>https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/</link>
+      <pubDate>Fri, 25 Feb 2022 15:10:37 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/robot-pan-tilt-hat-cctv/</guid>
+      <description>An Internet controlled robot with a pan and tilt CCTV camera? What could go wrong?</description>
+    </item>
+    <item>
+      <title>More Data Collection Logging and Plotting</title>
+      <link>https://boffinsblog.github.io/posts/more-data-collection-logging-and-plotting/</link>
+      <pubDate>Fri, 13 Mar 2020 20:12:31 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/more-data-collection-logging-and-plotting/</guid>
+      <description>Collecting data, logging to a csv file, plotting using gnuplot and sending to a web server.</description>
+    </item>
+    <item>
+      <title>OLED Bus Timetable</title>
+      <link>https://boffinsblog.github.io/posts/oled-bus-timetable/</link>
+      <pubDate>Sun, 14 Apr 2019 21:39:55 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/oled-bus-timetable/</guid>
+      <description>Show the bus timetable on an OLED display!</description>
+    </item>
+    <item>
+      <title>Data Collection, Logging and Plotting</title>
+      <link>https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/</link>
+      <pubDate>Wed, 13 Mar 2019 20:12:32 +0000</pubDate>
+      <guid>https://boffinsblog.github.io/posts/data-collection-logging-and-plotting/</guid>
+      <description>Data collection using an environment sensor, logging that info to a csv file and plotting a graph using gnuplot.</description>
+    </item>
+    <item>
+      <title>GoogleAIY a RaspberryPi and a Scroll pHAT</title>
+      <link>https://boffinsblog.github.io/posts/google-aiy-a-raspberrypi-and-a-scroll-phat/</link>
+      <pubDate>Wed, 25 Apr 2018 14:32:42 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/google-aiy-a-raspberrypi-and-a-scroll-phat/</guid>
+      <description>I got my RaspberryPi powered GoogleAIY box to talk nicely to both Google and a Scroll pHAT.</description>
+    </item>
+  </channel>
+</rss>

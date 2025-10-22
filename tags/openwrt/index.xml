@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>OpenWrt on Boffins Blog</title>
+    <link>https://boffinsblog.github.io/tags/openwrt/</link>
+    <description>Recent content in OpenWrt on Boffins Blog</description>
+    <generator>Hugo -- 0.149.1</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 19 Oct 2025 19:14:16 +0100</lastBuildDate>
+    <atom:link href="https://boffinsblog.github.io/tags/openwrt/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Configuring lighttpd TLS and ACME on a SheevaPlug</title>
+      <link>https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/</link>
+      <pubDate>Sun, 19 Oct 2025 19:14:16 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/configuring-lighttpd-tls-and-acme-on-a-sheevaplug/</guid>
+      <description>Configuring lighttpd on a SheevaPlug.</description>
+    </item>
+    <item>
+      <title>Installing lighttpd on a SheevaPlug Running OpenWrt</title>
+      <link>https://boffinsblog.github.io/posts/installing-lighttpd-on-a-sheevaplug-running-openwrt/</link>
+      <pubDate>Sun, 12 Oct 2025 16:51:18 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-lighttpd-on-a-sheevaplug-running-openwrt/</guid>
+      <description>Installing lighttpd on a SheevaPlug Running OpenWrt.</description>
+    </item>
+    <item>
+      <title>Configuring OpenWrt on a SheevaPlug</title>
+      <link>https://boffinsblog.github.io/posts/configuring-openwrt-on-a-sheevaplug/</link>
+      <pubDate>Fri, 29 Aug 2025 15:18:52 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/configuring-openwrt-on-a-sheevaplug/</guid>
+      <description>Configuring OpenWrt on a SheevaPlug.</description>
+    </item>
+    <item>
+      <title>Installing OpenWrt on a SheevaPlug NAND</title>
+      <link>https://boffinsblog.github.io/posts/installing-openwrt-on-a-sheevaplug-nand/</link>
+      <pubDate>Sat, 16 Aug 2025 07:40:58 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/installing-openwrt-on-a-sheevaplug-nand/</guid>
+      <description>Installing OpenWrt on a SheevaPlug NAND.</description>
+    </item>
+    <item>
+      <title>OpenWrt with AdGuardHome and Unbound on a SheevaPlug</title>
+      <link>https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/</link>
+      <pubDate>Sat, 18 May 2024 17:36:40 +0100</pubDate>
+      <guid>https://boffinsblog.github.io/posts/openwrt-with-adguardhome-and-unbound-on-a-sheevaplug/</guid>
+      <description>Take some OpenWrt with a dash of AdGuardHome, add a splash of Unbound and install it all on a SheevaPlug; will it be a recipe for disaster?</description>
+    </item>
+  </channel>
+</rss>
